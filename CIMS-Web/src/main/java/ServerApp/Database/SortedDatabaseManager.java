@@ -43,6 +43,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             requestsTable = "REQUEST",
             requestTagsTable = "REQUESTTAGS",
             newsItemTable = "NEWSITEM",
+            pictureTable = "PICTURE",
             newsSituationsTable = "NEWSSITUATION",
             situationsTable = "SITUATION",
             situationsAdviceTable = "SITUATIONADVICE",
