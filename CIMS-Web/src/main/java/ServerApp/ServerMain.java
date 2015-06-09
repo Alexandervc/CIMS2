@@ -12,6 +12,7 @@ import ServerApp.Database.SortedDatabaseManager;
 import ServerApp.Database.TasksDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
+import ServerApp.FTP.FTPManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ public class ServerMain {
     public static PlanExecutorHandler planExecutorHandler = null;
     public static ConnectionHandler connectionHandler = null;
     public static PushHandler pushHandler = null;
+    public static FTPManager ftpManager = null;
 
     public static DummyDatabaseManager dummyDatabaseManager = null;
 
@@ -55,7 +57,8 @@ public class ServerMain {
         tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
 
         planExecutorHandler = new PlanExecutorHandler();
-
+        ftpManager = new FTPManager();
+        
         dummyDatabaseManager = new DummyDatabaseManager();
     }
 
