@@ -45,7 +45,8 @@ public class TasksDatabaseManager extends DatabaseManager {
             planTable = "PLAN",
             keywordTable = "KEYWORD",
             stepTable = "STEP",
-            userTable = "USER";
+            userTable = "USER",
+            citizenTable = "CITIZEN";
 
     /**
      * A data-only container for all variables needed for initiating a plan.
@@ -126,7 +127,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             String outputDeclineReason = rs.getString("REASON");
             Tag outputExecutorTag = Tag.valueOf(rs.getString("TAG"));
             int outputDataID = rs.getInt("DATAID");
-            
+
             // gets data (if needs be)
             ISortedData outputData = null;
             if (data != null) {
@@ -141,7 +142,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             output.add(outputItem);
         }
 
-        for(ITask task : output) {
+        for (ITask task : output) {
             // gets task executor
             IServiceUser executor = getTaskExecutor(task.getId());
             task.setExecutor(executor);
@@ -525,7 +526,13 @@ public class TasksDatabaseManager extends DatabaseManager {
             if (execUserName != null && !execUserName.isEmpty()) {
                 query += " WHERE ID IN "
                         + "(SELECT TASKID FROM " + userTaskTable
-                        + " WHERE USERNAME = ?)";
+                        + " WHERE USERNAME = ?)"
+                        + " AND (ID NOT IN "
+                        + "(SELECT TASKID FROM " + stepTable + ")"
+                        + " OR (ID IN "
+                        + "(SELECT TASKID FROM " + stepTable + " AS s, " + planTable + " AS p"
+                        + " WHERE p.ID = s.PLANID"
+                        + " AND s.NUMBER = p.CURRENTSTEP)))";
                 count++;
             }
             boolean firstItem = true;
@@ -799,7 +806,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 query += ")";
                 prepStat = conn.prepareStatement(query);
                 int rep = 1;
-                for(int key : output.keySet()){
+                for (int key : output.keySet()) {
                     prepStat.setInt(rep, key);
                     rep++;
                 }
