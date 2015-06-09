@@ -21,6 +21,7 @@ public class Plan implements IPlan {
     private HashSet<String> keywords;
     private List<IStep> steps;
     private boolean template;
+    private int currentStep;
     
     /**
      * 
@@ -49,6 +50,7 @@ public class Plan implements IPlan {
         this.steps = steps;
         this.template = template;
         this.steps.sort(null);
+        this.currentStep = 0;
     }
     
     @Override
@@ -87,6 +89,25 @@ public class Plan implements IPlan {
     @Override
     public boolean isTemplate() {
         return this.template;
+    }
+    
+    @Override
+    public int getCurrentStep() {
+        return this.currentStep;
+    }
+    
+    /**
+     * Increases the currentStep
+     * @return true if there is a next step, otherwise false
+     */
+    @Override
+    public boolean nextStep() {
+        if(this.currentStep >= 0 && this.currentStep < this.getSteps().size()) {
+            this.currentStep++;
+            return true;
+        } else {
+            return false;
+        }
     }
     
     @Override

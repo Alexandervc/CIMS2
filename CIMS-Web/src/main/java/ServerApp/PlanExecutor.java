@@ -13,7 +13,6 @@ import Shared.Tasks.IPlan;
  */
 public class PlanExecutor {
     private IPlan plan;
-    private int nextStep;
 
     /**
      * 
@@ -24,16 +23,21 @@ public class PlanExecutor {
             throw new IllegalArgumentException("Plan cannot be null or empty");
         }
         this.plan = plan;
-        this.nextStep = 1;
     }
     
     public void executeNextStep() {
-        if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
-            ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(nextStep - 1));
-            ServerMain.pushHandler.pushTaskToChief(this.plan.getSteps().get(nextStep - 1));
-            this.nextStep++;
-        } else {
-            ServerMain.planExecutorHandler.removePlanExecutor(this.plan);
+        if(this.plan.nextStep()) {
+            //push
+            ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(this.plan.getCurrentStep() - 1));
         }
+        // write to db
+        
+//        //if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
+//            ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(nextStep - 1));
+//            ServerMain.pushHandler.pushTaskToChief(this.plan.getSteps().get(nextStep - 1));
+//            //this.nextStep++;
+//        //} else {
+//            ServerMain.planExecutorHandler.removePlanExecutor(this.plan);
+//        //}
     }
 }

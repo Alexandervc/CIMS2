@@ -6,6 +6,7 @@
 package Shared.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,4 +22,10 @@ public interface INewsItem extends IData {
     public void setDate(Date date);
     public String getCity();
     public String getStreet();
+    public List<String> getPictures();
+    /**
+     * 
+     * @param picture the ftp-link, cannot be null or empty
+     */
+    public void addPicture(String picture);
 }

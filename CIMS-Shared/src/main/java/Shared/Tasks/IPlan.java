@@ -22,4 +22,10 @@ public interface IPlan extends Serializable {
     HashSet<String> getKeywords();
     List<IStep> getSteps();
     boolean isTemplate();
+    int getCurrentStep();
+    /**
+     * Increases the currentStep
+     * @return true if there is a next step, otherwise false
+     */
+    boolean nextStep();
 }
