@@ -6,6 +6,7 @@
 package FTP;
 
 import ServerApp.FTP.FTPManager;
+import java.io.File;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,7 +20,8 @@ import static org.junit.Assert.*;
  */
 public class ftpTest {
     private FTPManager manager = new FTPManager();
-    
+    private String filepath;
+    private String remotename;
     public ftpTest() {
     }
     
@@ -33,7 +35,8 @@ public class ftpTest {
     
     @Before
     public void setUp() {
-        
+        this.remotename = "UnitTest1.jpg";
+        this.filepath = "E:/64277_816878888362056_5899858130298802750_n.jpg";
     }
     
     @After
@@ -47,9 +50,13 @@ public class ftpTest {
     // public void hello() {}
     @Test
     public void Upload(){
-        String filepath = "E:/64277_816878888362056_5899858130298802750_n.jpg";
-        String remotename = "UnitTest1.jpg";
-        boolean succeed = manager.uploadFile(filepath, remotename);
+        boolean succeed = manager.uploadFile(this.filepath, this.remotename);
         assertEquals(succeed, true);
+    }
+    
+    @Test
+    public void Download(){
+        File file = manager.downloadFile(this.remotename);
+        assertNotNull(file);
     }
 }

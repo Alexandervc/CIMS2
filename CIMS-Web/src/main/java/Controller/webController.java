@@ -10,6 +10,7 @@ import Shared.Data.Advice;
 import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +43,7 @@ public class webController extends HttpServlet {
                 "Source2", situations, 1, date));
         news.add(new NewsItem(3, "Title3", "Description3", "Rachelsmolen, Eindhoven",
                 "Source3", situations, 2, date));
-
+        news.get(0).addPicture(ServerMain.ftpManager.downloadFile("UnitTest1.jpg").getAbsolutePath());
     }
 
     public INewsItem getNewsWithID(String ID) {
@@ -89,5 +90,10 @@ public class webController extends HttpServlet {
         DateFormat time = new SimpleDateFormat("HH:mm");
             
         return date.format(newsDate) + " om " + time.format(newsDate);
+    }
+    public String getFile(){
+        String path = news.get(0).getPictures().get(0);
+        System.out.println("Filepath = "+ path);
+        return path;
     }
 }

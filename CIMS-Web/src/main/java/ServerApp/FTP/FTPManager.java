@@ -8,6 +8,7 @@ package ServerApp.FTP;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.file.Files;
@@ -27,11 +28,13 @@ public class FTPManager {
     private String user = "i204267";
     private String pass = "lve201090";
     private boolean login = false;
+    private String basePath;
 
     private FTPSClient ftpClient = null;
 
-    public FTPManager() {
+    public FTPManager(String basePath) {
         try {
+            this.basePath = basePath;
             ftpClient = new FTPSClient();
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -50,15 +53,27 @@ public class FTPManager {
             if (login) {
                 return true;
             } else {
-                System.out.println("Connection FTPS fail...");
+                System.out.println("Log in FTP failed");
                 return false;
             }
         } catch (SocketException ex) {
+            System.out.println("Log in FTP failed, SocketException error");
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } catch (IOException ex) {
+            System.out.println("Log in FTP failed, IOException error");
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
+        }
+    }
+    
+    private void closeLogIn(){
+        try{
+        ftpClient.logout();
+        ftpClient.disconnect();  
+        }catch (IOException ex) {
+            System.out.println("Logout FTP failed");
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -73,20 +88,59 @@ public class FTPManager {
                 FileInputStream fis = new FileInputStream(filePath);
                 boolean done = ftpClient.storeFile(newName, fis);
                 if (done) {
+                    closeLogIn();
                     return true;
                 } else {
+                    closeLogIn();
                     return false;
                 }
             } else {
                 System.out.println("Connection with ftps server failed");
+                closeLogIn();
                 return false;
             }
         } catch (FileNotFoundException ex) {
+            closeLogIn();
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } catch (IOException ex) {
+            closeLogIn();
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
+        }
+    }
+
+    //return filepath
+
+    public File downloadFile(String filename) {
+        try {
+            boolean succeed = logInToFTP();
+            if (succeed) {
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
+                ftpClient.enterLocalPassiveMode();
+                
+                File file = new File(this.basePath+filename);
+                FileOutputStream fos = new FileOutputStream(file);
+                boolean done = ftpClient.retrieveFile(filename, fos);
+                fos.close();
+                
+                if(done){
+                    closeLogIn();
+                    return file;
+                }
+                else{
+                    closeLogIn();
+                    return null;
+                }           
+            } else {
+                closeLogIn();
+                return null;
+            }
+        } catch (IOException ex) {
+            closeLogIn();
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 }
