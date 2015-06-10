@@ -6,7 +6,6 @@
 package ServerApp.Database;
 
 import ServerApp.ServerMain;
-import static ServerApp.ServerMain.sortedDatabaseManager;
 import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
 import Shared.Tag;
@@ -19,6 +18,7 @@ import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.HQChief;
 import Shared.Users.HQUser;
+import Shared.Users.ICitizen;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
@@ -142,10 +142,33 @@ public class TasksDatabaseManager extends DatabaseManager {
             output.add(outputItem);
         }
 
+        if (!openConnection()) {
+            closeConnection();
+            return null;
+        }
+        
+        IStep outputStep;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rsStep;
+        
         for (ITask task : output) {
             // gets task executor
             IServiceUser executor = getTaskExecutor(task.getId());
             task.setExecutor(executor);
+            
+            outputStep = (IStep) task;
+            query = "SELECT * FROM " + stepTable
+                    + " WHERE TASKID = " + task.getId();
+            prepStat = conn.prepareStatement(query);
+            rsStep = prepStat.executeQuery();
+            
+            while(rsStep.next()) {
+                int outputStepNr = rsStep.getInt("NUMBER");
+                String outputCondition = rsStep.getString("CONDITION");
+                outputStep = new Step(task, outputStepNr, outputCondition);
+                task = outputStep;
+            }
         }
 
         return output;
@@ -339,24 +362,29 @@ public class TasksDatabaseManager extends DatabaseManager {
         }
         return output;
     }
-    
+
+    /**
+     *
+     * @param input
+     * @return
+     */
     public boolean updatePlan(IPlan input) {
         if (!openConnection() || (input == null)) {
             closeConnection();
             return false;
         }
-        
+
         boolean output = false;
         String query;
         PreparedStatement prepStat;
-        
+
         try {
             query = "UPDATE " + planTable
                     + " SET CURRENTSTEP = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, input.getCurrentStep());
             prepStat.execute();
-            
+
             output = true;
         } catch (SQLException ex) {
             System.out.println("failed to update plan: " + ex.getMessage());
@@ -487,6 +515,16 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
+        return output;
+    }
+
+    public ICitizen getCitizen(String input) {
+        if (!openConnection() || input == null) {
+            closeConnection();
+            return null;
+        }
+        ICitizen output = null;
+
         return output;
     }
 
@@ -637,6 +675,53 @@ public class TasksDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
                     + ": " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param input
+     * @param password
+     * @return
+     */
+    public ICitizen registerCitizen(ICitizen input, String password) {
+        if (!openConnection() || input == null || password == null) {
+            closeConnection();
+            return null;
+        }
+
+        ICitizen output = null;
+        String query;
+        PreparedStatement prepStat;
+
+        try {
+            query = "INSERT INTO " + userTable
+                    + " (USERNAME, PASSWORD, NAME, ROLE)"
+                    + " VALUES (?, ?, ?, CITIZEN)";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, input.getUsername());
+            prepStat.setString(2, password);
+            prepStat.setString(3, input.getName());
+            prepStat.executeQuery();
+
+            query = "INSERT INTO " + citizenTable
+                    + " (USERNAME, CITY, STREET)"
+                    + " VALUES (?, ?, ?)";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, input.getUsername());
+            prepStat.setString(2, input.getCity());
+            prepStat.setString(3, input.getStreet());
+            prepStat.executeQuery();
+
+            output = input;
+        } catch (SQLException ex) {
+            System.out.println("failed register citizen: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
             output = null;
