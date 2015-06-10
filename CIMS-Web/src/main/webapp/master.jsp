@@ -104,9 +104,9 @@
                 </div>
                 <nav>
                     <ul>
-                        <li class="menu"><a href="index.html" style="width:100px">Home</a></li>
-                        <li class="menu"><a href="report.html" style="width:200px">Melding maken</a></li>
-                        <li class="account"><a href="signin.html">Registreren/Inloggen</a></li>
+                        <li class="menu"><a href="index.jsp" style="width:100px">Home</a></li>
+                        <li class="menu"><a href="report.jsp" style="width:200px">Melding maken</a></li>
+                        <li class="account"><a href="signin.jsp">Registreren/Inloggen</a></li>
                         <!-- if user is ingelogd
                         <li class="account">Hallo, username</li> -->
                     </ul>
