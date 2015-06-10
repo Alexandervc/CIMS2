@@ -231,6 +231,23 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * Sends the given task to the server
+     *
+     * @param task cannot be null
+     */
+    public void resendTask(ITask task) {
+        ServerBoundTransaction transaction
+                = new ServerBoundTransaction(this.getCommandID(),
+                        ConnCommand.TASK_RESEND, task);
+        try {
+            this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Sends the new given plan to the server

@@ -96,4 +96,30 @@ public class Step extends Task implements IStep {
     public void setSortedData(ISortedData data) {
         super.setSortedData(data);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + this.planId;
+        hash = 97 * hash + this.stepnr;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Step other = (Step) obj;
+        if (this.planId != other.planId) {
+            return false;
+        }
+        if (this.stepnr != other.stepnr) {
+            return false;
+        }
+        return true;
+    }
 }

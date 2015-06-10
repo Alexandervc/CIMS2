@@ -29,7 +29,9 @@ public class PlanExecutor {
         if(this.plan.nextStep()) {
             //push
             ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(this.plan.getCurrentStep() - 1));
+            ServerMain.pushHandler.pushTaskToChief(this.plan.getSteps().get(this.plan.getCurrentStep() - 1));
         }
+        System.out.println(this.plan.getCurrentStep());
         // write to db
         ServerMain.tasksDatabaseManager.updatePlan(this.plan);
 //        //if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {

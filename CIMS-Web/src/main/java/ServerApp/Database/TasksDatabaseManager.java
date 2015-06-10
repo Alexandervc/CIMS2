@@ -151,27 +151,36 @@ public class TasksDatabaseManager extends DatabaseManager {
         String query;
         PreparedStatement prepStat;
         ResultSet rsStep;
+        List<ITask> tempTasks = new ArrayList<>();
         
         for (ITask task : output) {
             // gets task executor
             IServiceUser executor = getTaskExecutor(task.getId());
             task.setExecutor(executor);
             
-            outputStep = (IStep) task;
             query = "SELECT * FROM " + stepTable
                     + " WHERE TASKID = " + task.getId();
             prepStat = conn.prepareStatement(query);
             rsStep = prepStat.executeQuery();
             
+            boolean isStep = false;
+            
             while(rsStep.next()) {
                 int outputStepNr = rsStep.getInt("NUMBER");
                 String outputCondition = rsStep.getString("CONDITION");
+                int planId = rsStep.getInt("PLANID");
                 outputStep = new Step(task, outputStepNr, outputCondition);
-                task = outputStep;
+                outputStep.setPlanId(planId);
+                tempTasks.add(outputStep);
+                isStep = true;
+            }
+            
+            if(!isStep) {
+                tempTasks.add(task);
             }
         }
 
-        return output;
+        return tempTasks;
     }
 
     /**
@@ -382,7 +391,8 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             query = "UPDATE " + planTable
-                    + " SET CURRENTSTEP = ?";
+                    + " SET CURRENTSTEP = ?"
+                    + " WHERE ID = " + input.getId();
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, input.getCurrentStep());
             prepStat.execute();

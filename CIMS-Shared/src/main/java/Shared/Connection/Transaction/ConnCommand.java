@@ -80,6 +80,11 @@ public enum ConnCommand {
      */
     TASK_SEND,
     /**
+     * params: ITask <br>
+     * result: boolean
+     */
+    TASK_RESEND,
+    /**
      * params: IPlan <br>
      * result: boolean
      */

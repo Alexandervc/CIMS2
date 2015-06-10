@@ -115,6 +115,9 @@ public class ConnectionWorker implements Runnable {
                 case TASK_SEND:
                     outgoing = this.sendTask(incoming);
                     break;
+                case TASK_RESEND:
+                    outgoing = this.resendTask(incoming);
+                    break;
                 case PLAN_SEND_NEW:
                     outgoing = this.saveNewPlan(incoming);
                     break;
@@ -352,6 +355,26 @@ public class ConnectionWorker implements Runnable {
             return output.setError();
         }
     }
+    
+    /**
+     * Saves a task and sends it to the executor
+     */
+    private ClientBoundTransaction resendTask(ServerBoundTransaction input) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            ITask task = (ITask) input.objects[0];
+            boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
+            ITask updatedTask = ServerMain.tasksDatabaseManager.getTask(task.getId());
+            if (success) {
+                ServerMain.pushHandler.pushTaskToChief(updatedTask);
+                ServerMain.pushHandler.pushTaskToService(updatedTask);
+            }
+            return output.setResult(updatedTask);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return output.setError();
+        }
+    }
 
     /**
      * Saves a new plan
@@ -449,6 +472,7 @@ public class ConnectionWorker implements Runnable {
                     || task.getStatus() == TaskStatus.FAILED)
                     && task instanceof IStep) {
                 // Execute next step of plan
+                System.out.println("task plan id: " + ((IStep) task).getPlanId());
                 ServerMain.planExecutorHandler.executeNextStepOf((IStep) task);
             }
             return output.setResult(success);

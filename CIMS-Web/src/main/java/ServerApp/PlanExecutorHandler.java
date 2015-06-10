@@ -43,6 +43,9 @@ public class PlanExecutorHandler {
      * @param step 
      */
     public void executeNextStepOf(IStep step) {
+        if(this.executors.get((step.getPlanId())) == null) {
+            System.out.println("planExecutor null");
+        }
         this.executors.get(step.getPlanId()).executeNextStep();
     }
 }

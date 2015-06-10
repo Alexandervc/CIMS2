@@ -1399,7 +1399,7 @@ public class HeadquartersController implements Initializable {
         }
     }
 
-    public void updateTask() {
+    public void resendTask() {
         try {
             if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
@@ -1413,10 +1413,7 @@ public class HeadquartersController implements Initializable {
                     task.setExecutor((IServiceUser) object);
                     task.setStatus(TaskStatus.SENT);
                     task.setDeclineReason(null);
-                    connectionManager.sendTask(task);
-
-                    lvtTasks.getItems().remove(lvtTasks.getSelectionModel().getSelectedItem());
-                    lvtTasks.getSelectionModel().selectFirst();
+                    connectionManager.resendTask(task);
 
                     lblTasks.setVisible(true);
                     lblTasks.setText("Taak is up-to-date");

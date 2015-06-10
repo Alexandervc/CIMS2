@@ -301,7 +301,7 @@
                     </FXCollections>
                   </items>
                 </ComboBox>
-                <Button fx:id="btnNewTask" layoutX="1004.0" layoutY="418.0" mnemonicParsing="false" onAction="#updateTask" prefWidth="178.0" text="Opnieuw toekennen" />
+                <Button fx:id="btnNewTask" layoutX="1004.0" layoutY="418.0" mnemonicParsing="false" onAction="#resendTask" prefWidth="178.0" text="Opnieuw toekennen" />
                 <Button fx:id="btnMarkRead" layoutX="802.0" layoutY="419.0" mnemonicParsing="false" onAction="#markAsRead" prefWidth="189.0" text="Markeren als gelezen" />
                 <Label fx:id="lblTasks" font="$x2" layoutX="804.0" layoutY="338.0" prefWidth="379.0" text="Melding" />
                 <Label font="$x1" layoutX="804.0" layoutY="26.0" text="Taak" underline="false" />
