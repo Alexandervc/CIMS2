@@ -295,7 +295,9 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // inserts plan itself
-            query = "INSERT INTO " + planTable + " VALUES (ID, ?, ?, ?)";
+            query = "INSERT INTO " + planTable 
+                    + " (ID, TITLE, DESCRIPTION, TEMPLATE)"
+                    + " VALUES (ID, ?, ?, ?)";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, input.getTitle());
             prepStat.setString(2, input.getDescription());

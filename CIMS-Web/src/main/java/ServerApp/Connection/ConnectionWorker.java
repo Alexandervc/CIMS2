@@ -18,6 +18,7 @@ import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
+import Shared.Tasks.Step;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.UserRole;
 import java.nio.channels.SocketChannel;
@@ -431,6 +432,16 @@ public class ConnectionWorker implements Runnable {
                 if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
                     ServerMain.pushHandler.pushTaskToChief(task);
                 }
+            }
+            
+            if(task instanceof IStep) {
+                System.out.println("instance of IStep");
+            }
+            if(task instanceof ITask) {
+                System.out.println("instance of ITask");
+            }
+            if(task instanceof Step) {
+                System.out.println("instance of Step");
             }
 
             if (success 
