@@ -616,16 +616,18 @@ public class TasksDatabaseManager extends DatabaseManager {
             boolean firstItem = true;
 
             for (TaskStatus status : filter) {
-                if (firstItem && execUserName != null && !execUserName.isEmpty()) {
-                    query += " AND STATUS = ?";
-                    firstItem = false;
-                } else if (firstItem) {
-                    query += " WHERE STATUS = ?";
+                if (firstItem) {
+                    query += " AND (STATUS = ?";
                     firstItem = false;
                 } else {
                     query += " OR STATUS = ?";
                 }
             }
+            
+            if(filter.size() > 0) {
+                query += ")";
+            }
+            
             prepStat = conn.prepareStatement(query);
             if (execUserName != null && !execUserName.isEmpty()) {
                 prepStat.setString(1, execUserName);
