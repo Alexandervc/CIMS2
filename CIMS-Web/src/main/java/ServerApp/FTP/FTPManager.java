@@ -5,14 +5,18 @@
  */
 package ServerApp.FTP;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.net.ftp.FTPClient;
+import javax.faces.context.FacesContext;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPSClient;
 
 /**
  *
@@ -20,53 +24,69 @@ import org.apache.commons.net.ftp.FTPClient;
  */
 public class FTPManager {
 
-    private static final int BUFFER_SIZE = 4096;
-
-    private String ftpUrl = null;
-    private String host = null;
     private String user = "i204267";
     private String pass = "lve201090";
-    private URL url = null;
-    private String uploadPath = null;
+    private boolean login = false;
 
-    private FTPClient client;
-    private FileInputStream fis = null;
+    private FTPSClient ftpClient = null;
 
     public FTPManager() {
-        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient = new FTPSClient();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    public boolean logInToFTP() {
         try {
             // pass directory path on server to connect  
-            ftpClient.connect("145.85.4.24");
+            this.ftpClient.connect("athena.fhict.nl");
 
             // pass username and password, returned true if authentication is  
             // successful  
-            boolean login = ftpClient.login("i204267", "lve201090");
+            this.login = this.ftpClient.login(this.user, this.pass);
 
             if (login) {
-                System.out.println("Connection established...");
-                System.out.println("Status: " + ftpClient.getStatus());
-                // logout the user, returned true if logout successfully  
-                boolean logout = ftpClient.logout();
-                if (logout) {
-                    System.out.println("Connection close...");
+                return true;
+            } else {
+                System.out.println("Connection FTPS fail...");
+                return false;
+            }
+        } catch (SocketException ex) {
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean uploadFile(String filePath, String newName) {
+        try {
+            boolean succeed = logInToFTP();
+            if (succeed) {
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
+                ftpClient.enterLocalPassiveMode();
+
+                FileInputStream fis = new FileInputStream(filePath);
+                boolean done = ftpClient.storeFile(newName, fis);
+                if (done) {
+                    return true;
+                } else {
+                    return false;
                 }
             } else {
-                System.out.println("Connection fail...");
+                System.out.println("Connection with ftps server failed");
+                return false;
             }
-
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch(IOException ex){
-            ex.printStackTrace();
-        }finally {
-            try {
-                ftpClient.disconnect();
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-    
     }
 }
