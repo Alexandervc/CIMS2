@@ -28,13 +28,11 @@ public class FTPManager {
     private String user = "i204267";
     private String pass = "lve201090";
     private boolean login = false;
-    private String basePath;
 
     private FTPSClient ftpClient = null;
 
-    public FTPManager(String basePath) {
+    public FTPManager() {
         try {
-            this.basePath = basePath;
             ftpClient = new FTPSClient();
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,7 +118,7 @@ public class FTPManager {
                 ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 ftpClient.enterLocalPassiveMode();
                 
-                File file = new File(this.basePath+filename);
+                File file = new File(filename);
                 FileOutputStream fos = new FileOutputStream(file);
                 boolean done = ftpClient.retrieveFile(filename, fos);
                 fos.close();

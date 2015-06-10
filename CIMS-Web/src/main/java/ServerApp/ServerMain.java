@@ -56,10 +56,10 @@ public class ServerMain {
         unsortedDatabaseManager = new UnsortedDatabaseManager(baseDir + "unsorteddatabase.properties");
         tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
 
-        planExecutorHandler = new PlanExecutorHandler();
-        ftpManager = new FTPManager();
-        
+        planExecutorHandler = new PlanExecutorHandler();        
         dummyDatabaseManager = new DummyDatabaseManager();
+        
+        ftpManager = new FTPManager();
     }
 
     public static void stopDatabases(){
