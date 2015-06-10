@@ -14,9 +14,7 @@ import Shared.Data.ISortedData;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.Data.SortedData;
-import Shared.Data.Status;
 import Shared.Tag;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,7 +89,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         }
 
         HashMap<Integer, INewsItem> itemsMap = assignSituations(newsSituations);
-        for(int id : order){
+        for (int id : order) {
             output.add(itemsMap.get(id));
         }
 
@@ -118,6 +115,26 @@ public class SortedDatabaseManager extends DatabaseManager {
                 item.addSituation(situations.get(sitID));
             }
             output.put(item.getId(), item);
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param news
+     * @param rs
+     * @return INewsItem
+     * @throws SQLException
+     */
+    private INewsItem addPictures(INewsItem news, ResultSet rs) throws SQLException {
+        if (news == null || rs == null) {
+            return news;
+        }
+
+        INewsItem output = news;
+        while (rs.next()) {
+            String link = rs.getString("LINK");
+            output.addPicture(link);
         }
         return output;
     }
@@ -578,6 +595,14 @@ public class SortedDatabaseManager extends DatabaseManager {
             rs = prepStat.executeQuery();
             output = this.extractNewsItems(rs);
 
+            for (INewsItem n : output) {
+                query = "SELECT LINK FROM " + pictureTable
+                        + " WHERE ID = " + n.getId();
+                prepStat = conn.prepareStatement(query);
+                rs = prepStat.executeQuery();
+                this.addPictures(n, rs);
+            }
+
         } catch (SQLException ex) {
             System.out.println("failed to get news items: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -588,7 +613,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
         return output;
     }
-    
+
     /**
      *
      * @return all NewsItems
@@ -646,6 +671,18 @@ public class SortedDatabaseManager extends DatabaseManager {
             for (Situation sit : item.getSituations()) {
                 prepStat.setInt(1, item.getId());
                 prepStat.setInt(2, sit.getID());
+                prepStat.addBatch();
+            }
+            prepStat.executeBatch();
+            
+            //inserts picture links
+            query = "INSERT INTO " + pictureTable
+                    + " (ID, LINK)"
+                    + " VALUES (?, ?)";
+            prepStat = conn.prepareStatement(query);
+            for (String p : item.getPictures()) {
+                prepStat.setInt(1, item.getId());
+                prepStat.setString(2, p);
                 prepStat.addBatch();
             }
             prepStat.executeBatch();
@@ -708,6 +745,18 @@ public class SortedDatabaseManager extends DatabaseManager {
             for (Situation sit : item.getSituations()) {
                 prepStat.setInt(1, item.getId());
                 prepStat.setInt(2, sit.getID());
+                prepStat.addBatch();
+            }
+            prepStat.executeBatch();
+            
+            // inserts new pictures
+            query = "INSERT INTO " + pictureTable
+                    + " (ID, LINK)"
+                    + " VALUES (?, ?)";
+            prepStat = conn.prepareStatement(query);
+            for (String p : item.getPictures()) {
+                prepStat.setInt(1, item.getId());
+                prepStat.setString(2, p);
                 prepStat.addBatch();
             }
             prepStat.executeBatch();
@@ -775,6 +824,16 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
             outputList = this.extractNewsItems(rs);
+
+            for (INewsItem n : outputList) {
+                query = "SELECT LINK FROM " + pictureTable
+                        + " WHERE ID = ?";
+                prepStat = conn.prepareStatement(query);
+                prepStat.setInt(1, ID);
+                rs = prepStat.executeQuery();
+                n = this.addPictures(n, rs);
+            }
+
         } catch (SQLException ex) {
             System.out.println("failed to get newsitem by ID " + ID);
             ex.printStackTrace();

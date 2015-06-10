@@ -341,6 +341,34 @@ public class TasksDatabaseManager extends DatabaseManager {
         }
         return output;
     }
+    
+    public boolean updatePlan(IPlan input) {
+        if (!openConnection() || (input == null)) {
+            closeConnection();
+            return false;
+        }
+        
+        boolean output = false;
+        String query;
+        PreparedStatement prepStat;
+        
+        try {
+            query = "UPDATE " + planTable
+                    + " SET CURRENTSTEP = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, input.getCurrentStep());
+            prepStat.execute();
+            
+            output = true;
+        } catch (SQLException ex) {
+            System.out.println("failed to update plan: " + ex.getMessage());
+            output = false;
+            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
 
     /**
      *

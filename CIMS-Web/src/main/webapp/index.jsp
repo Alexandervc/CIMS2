@@ -42,7 +42,17 @@
 
                     <h1><%= n.getTitle() %></h1>
                     <p class ="date"><%= n.getDateString() %></p>
-                    <p><% out.println(n.getCity().toUpperCase() +  " - " + n.getDescription()); %></p>
+                    
+                    <%
+                        String des = "";
+                        if (n.getDescription().length() >= 200) {
+                            des = n.getDescription().substring(0,200);
+                        } else {
+                            des = n.getDescription();
+                        }
+                    %>
+                    
+                    <p><% out.println(n.getCity().toUpperCase() +  " - " + des + "..."); %></p>
                     <a class="read" href=<% out.println("news.jsp?newsid=" + n.getId()); %>><b>Lees verder</b> &#10162;</a>
                 </article>
         <%      }

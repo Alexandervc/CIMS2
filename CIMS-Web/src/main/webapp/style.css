@@ -4,7 +4,7 @@ body {
 	color: #000000;
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 14px;
-	float:  center;
+	float: center;
 	background-color: #ffffff;
 }
 
@@ -15,6 +15,7 @@ h1, h2, h3 {
 
 h1 { font-size: 22px; }
 h2 { font-size: 18px; }
+h3 { font-size: 16px; }
 
 img {
 	padding: 0;
@@ -37,26 +38,45 @@ nav {
 	font-size: 24px;
 	vertical-align: bottom;
 	border-left: 2px dotted #f11621;
+	
 }
 
 nav ul {
 	list-style-type: none;
 	margin:0;
 	padding: 0;
-	text-align: center;
+	text-align: center;	
 }
+
 nav li {
-	padding-top: 15px;
-	border-right: 2px dotted #f11621;
-	float: left;
+	float: left;	
 }
+
 nav a {
-	display: block;
-	width: 100px;
-	height: 45px;
-	color: #111111;
+	color: #000;
 	text-decoration: none;
-	background-color: transparent;
+	display: block;
+}
+
+nav a:hover {
+	color: #bbb;
+}
+
+.menu {	
+	padding-top: 15px;
+	border-right: 2px dotted #f11621;	
+}
+.menu a {
+	height: 45px;
+}
+
+.account {
+	padding: 25px 0 0 100px;
+	float: left;
+	font-size: 16px;
+}
+.account a {	
+	width: 100px;
 }
 
 #page {
@@ -172,7 +192,7 @@ footer {
 .advice {
 	width: 210px;
 	float: left;
-	margin: 30px 10px;
+	margin: 30px 0 0 10px;
 	padding: 10px;
 	font-size: 14px;
 }
@@ -186,10 +206,19 @@ footer {
 	width: 40px;
 }
 
+.upload {
+	width: 210px;
+	margin: 6px 0;
+}
+
+::-webkit-file-upload-button {
+    height: 30px;
+}
+
 #pics {
 	float: left;
 	width: 630px;	
-        overflow: hidden;
+	overflow: hidden;
 }
 
 #map {
@@ -203,3 +232,42 @@ footer {
 	height: 380px;
 	margin: 10px;
 }
+
+/**--------------- signin.html / register.html / report.html ---------------**/
+
+.formpart1 {
+	float: left;
+	width: 170px;
+}
+
+.formpart2 {
+	float: left;
+	width: 700px;
+}
+
+.forminput {
+	width: 300px;
+	color: #666;
+	margin-top: 8px;
+}
+
+.forminput2 {
+	width: 500px;
+	color: #666;
+	margin-top: 8px;
+	resize: none;
+}
+
+.button {
+	float: left;
+	padding: 10px 20px 0 0;
+}
+
+.btn {
+	height: 30px;	
+}
+
+.registration {
+	width: 120px;
+}
+
