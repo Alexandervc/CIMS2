@@ -456,16 +456,6 @@ public class ConnectionWorker implements Runnable {
                     ServerMain.pushHandler.pushTaskToChief(task);
                 }
             }
-            
-            if(task instanceof IStep) {
-                System.out.println("instance of IStep");
-            }
-            if(task instanceof ITask) {
-                System.out.println("instance of ITask");
-            }
-            if(task instanceof Step) {
-                System.out.println("instance of Step");
-            }
 
             if (success 
                     && (task.getStatus() == TaskStatus.SUCCEEDED

@@ -34,6 +34,8 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
+    
+    private IServiceUser user = null;
 
     private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
 
@@ -125,6 +127,7 @@ public class ConnectionHandler {
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
             this.registerCommandSent(transaction);
+            this.user = user;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -248,6 +251,10 @@ public class ConnectionHandler {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public IServiceUser getCurrentUser() {
+        return this.user;
     }
 
 }

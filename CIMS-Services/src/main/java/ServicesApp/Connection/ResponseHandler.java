@@ -18,6 +18,7 @@ import Shared.Data.ISortedData;
 import Shared.NetworkException;
 import Shared.Tasks.ITask;
 import Shared.Users.IUser;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -241,7 +242,13 @@ class ResponseHandler implements IResponseHandler {
             if (transaction.result == ConnState.COMMAND_SUCCESS) {
                 ITask task = (ITask) transaction.data;
                 List<ITask> tasks = Arrays.asList(new ITask[]{task});
-                this.servicesController.displayTasks(tasks);
+                List<ITask> myTasks = new ArrayList<>();
+                for(ITask t : tasks) {
+                    if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor())) {
+                        myTasks.add(t);
+                    }
+                }
+                this.servicesController.displayTasks(myTasks);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
