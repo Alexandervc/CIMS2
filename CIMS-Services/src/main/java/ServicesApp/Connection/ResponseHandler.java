@@ -240,7 +240,8 @@ class ResponseHandler implements IResponseHandler {
         try {
             if (transaction.result == ConnState.COMMAND_SUCCESS) {
                 ITask task = (ITask) transaction.data;
-                this.servicesController.displayTasks(Arrays.asList(new ITask[]{task}));
+                List<ITask> tasks = Arrays.asList(new ITask[]{task});
+                this.servicesController.displayTasks(tasks);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
