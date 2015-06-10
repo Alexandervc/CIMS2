@@ -118,11 +118,12 @@ public class FTPManager {
                 ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 ftpClient.enterLocalPassiveMode();
                 
-                File file = new File(filename);
+                File file = File.createTempFile("/work/Catalina/localhost/CIMS_Web/"+filename, ".jpg");
+                System.out.println(file.getAbsolutePath());
                 FileOutputStream fos = new FileOutputStream(file);
                 boolean done = ftpClient.retrieveFile(filename, fos);
                 fos.close();
-                
+                //file.deleteOnExit();
                 if(done){
                     closeLogIn();
                     return file;

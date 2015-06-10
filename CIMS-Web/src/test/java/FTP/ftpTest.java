@@ -57,6 +57,7 @@ public class ftpTest {
     @Test
     public void Download(){
         File file = manager.downloadFile(this.remotename);
+        System.out.println(file.getAbsolutePath());
         assertNotNull(file);
     }
 }

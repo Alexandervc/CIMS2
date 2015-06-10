@@ -55,7 +55,7 @@
                     <!--met foto-->
                     <div id="pics" >
                         <h2>Foto's</h2>
-                        <a href=<%= controller.getFile() %> data-lightbox="news">
+                        <a href=<%= request.getContextPath() + controller.getFile() %> data-lightbox="news">
                             <img src=<%= controller.getFile() %> alt="foto"/>
                         </a>
                         <a href="images/foto1.jpg" data-lightbox="news">

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.http.*;
 
 /**
@@ -35,6 +36,7 @@ public class webController extends HttpServlet {
     private Date date = new Date();
 
     public webController() {
+        //File tmpDir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         news.add(new NewsItem(1, "Title1", "Description1", "Rachelsmolen, Eindhoven",
@@ -43,7 +45,8 @@ public class webController extends HttpServlet {
                 "Source2", situations, 1, date));
         news.add(new NewsItem(3, "Title3", "Description3", "Rachelsmolen, Eindhoven",
                 "Source3", situations, 2, date));
-        news.get(0).addPicture(ServerMain.ftpManager.downloadFile("UnitTest1.jpg").getAbsolutePath());
+        ServerMain.ftpManager.uploadFile("E:/64277_816878888362056_5899858130298802750_n.jpg", "UnitTest1.jpg");
+        news.get(0).addPicture("/work/Catalina/localhost/CIMS_Web/UnitTest1.jpg");
     }
 
     public INewsItem getNewsWithID(String ID) {
@@ -93,7 +96,6 @@ public class webController extends HttpServlet {
     }
     public String getFile(){
         String path = news.get(0).getPictures().get(0);
-        System.out.println("Filepath = "+ path);
         return path;
     }
 }
