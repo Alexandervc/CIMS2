@@ -172,7 +172,7 @@
                     <h2>Foto uploaden</h2>
                     <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
 		
-                    <form action="index.html" method="post">
+                    <form action="index.jsp" method="post">
                         <input type="file" name="img" class="upload"><br />
                         <input type="submit" value="Verzenden" class="btn upload" />
                     </form>
