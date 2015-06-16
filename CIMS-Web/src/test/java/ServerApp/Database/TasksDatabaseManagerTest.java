@@ -19,11 +19,12 @@ import Shared.Users.HQChief;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
+import Shared.Users.Citizen;
+import Shared.Users.ICitizen;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -273,12 +274,19 @@ public class TasksDatabaseManagerTest {
 
     @Test
     public void testUsers() {
+        // register citizen
+        ICitizen result = new Citizen("testey", "Test McTestey", "Eindhoven", "Rachelsmolen 4");
+        result = myDB.registerCitizen(result, "test123");
+        
+        assertNotNull("citizen was not registered", result);
         // loginUser
         IUser chiefUser = myDB.loginUser("chief01", "chief01");
         IUser fireUser = myDB.loginUser("firefighter01", "firefighter01");
+        IUser citizenUser = myDB.loginUser("testey", "test123");
 
         assertNotNull("chiefUser was null", chiefUser);
         assertNotNull("fireUser was null", fireUser);
+        assertNotNull("citizenUser was null", citizenUser);
         assertNull("able to login on blank info",
                 myDB.loginUser("", ""));
         assertNull("able to login on wrongly capitalised info",
@@ -290,13 +298,18 @@ public class TasksDatabaseManagerTest {
                 "Melanie Kwetters", chiefUser.getName());
         assertEquals("fireUser had wrong name",
                 "Bart Bouten", fireUser.getName());
+        assertEquals("citizenUser had wrong name", 
+                "Test McTestey", citizenUser.getName());
         assertTrue("chiefUser was not a hqChief",
                 chiefUser instanceof HQChief);
         assertTrue("fireUser was not a ServiceUser",
                 fireUser instanceof ServiceUser);
+        assertTrue("citizenUser was not a Citizen", 
+                citizenUser instanceof Citizen);
 
         HQChief chief = (HQChief) chiefUser;
         ServiceUser firefighter = (ServiceUser) fireUser;
+        Citizen citizen = (Citizen) citizenUser;
 
         assertEquals("firefighter had wrong tag",
                 Tag.FIREDEPARTMENT, firefighter.getType());
@@ -304,16 +317,21 @@ public class TasksDatabaseManagerTest {
         // get user
         chiefUser = myDB.getUser("chief01");
         fireUser = myDB.getUser("firefighter01");
+        citizenUser = myDB.getUser("testey");
         assertNull("database returned user on blank name",
                 myDB.getUser(""));
         assertEquals("getUser chiefUser had wrong name",
                 chief.getName(), chiefUser.getName());
         assertEquals("getUser fireUser had wrong name",
                 firefighter.getName(), fireUser.getName());
+        assertEquals("getUser citizenUser had wrong name", 
+                citizen.getName(), citizenUser.getName());
         assertTrue("getUser chiefUser was not a hqChief",
                 chiefUser instanceof HQChief);
         assertTrue("getUser fireUser was not a ServiceUser",
                 fireUser instanceof ServiceUser);
+        assertTrue("getUser citizenUser was not a Citizen", 
+                citizenUser instanceof Citizen);
 
         // get service users
         List<IServiceUser> serviceUsers = myDB.getServiceUsers();
