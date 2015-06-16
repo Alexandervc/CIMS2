@@ -114,12 +114,13 @@ public class FTPManager {
         try {
             boolean succeed = logInToFTP();
             if (succeed) {
+                String[] newname = filename.split(".");
+                String remote = newname[0];
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 ftpClient.enterLocalPassiveMode();
                 
-                File file = File.createTempFile("/work/Catalina/localhost/CIMS_Web/"+filename, ".jpg");
-                System.out.println(file.getAbsolutePath());
+                File file = File.createTempFile(remote, ".jpg");
                 FileOutputStream fos = new FileOutputStream(file);
                 boolean done = ftpClient.retrieveFile(filename, fos);
                 fos.close();
