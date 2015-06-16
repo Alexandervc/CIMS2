@@ -46,7 +46,7 @@ public class webController extends HttpServlet {
         news.add(new NewsItem(3, "Title3", "Description3", "Rachelsmolen, Eindhoven",
                 "Source3", situations, 2, date));
         ServerMain.ftpManager.uploadFile("E:/64277_816878888362056_5899858130298802750_n.jpg", "UnitTest1.jpg");
-        news.get(0).addPicture("/work/Catalina/localhost/CIMS_Web/UnitTest1.jpg");
+        news.get(0).addPicture("UnitTest1.jpg");
     }
 
     public INewsItem getNewsWithID(String ID) {
@@ -94,8 +94,8 @@ public class webController extends HttpServlet {
             
         return date.format(newsDate) + " om " + time.format(newsDate);
     }
-    public String getFile(){
-        String path = news.get(0).getPictures().get(0);
-        return path;
+    public String getFile(String photoName){
+        System.out.println("Filepath = "+"http://athena.fhict.nl/users/i204267/"+photoName);
+        return "http://athena.fhict.nl/users/i204267/"+photoName;
     }
 }

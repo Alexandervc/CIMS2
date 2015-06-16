@@ -22,6 +22,7 @@
             webController controller = new webController();
             String ID = request.getParameter("newsid");
             INewsItem item = null;
+            String photo = null;
             try {
                 item = controller.getNewsWithID(ID);
             } catch (Exception ex) {
@@ -40,6 +41,16 @@
                     <p><%= item.getCity().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
+                        <h2>Foto's</h2>
+                        <% if(!item.getPictures().isEmpty()){ 
+                            for(String x : item.getPictures())
+                            {
+                                photo = x;
+                        %>
+                        <a href=<%= controller.getFile(photo) %> data-lightbox="news">
+                            <img src=<%= controller.getFile(photo) %> alt="foto"/>
+                        </a>
+                        <%} } %>
                     </div>
 
                     <div id="map" >
@@ -55,9 +66,6 @@
                     <!--met foto-->
                     <div id="pics" >
                         <h2>Foto's</h2>
-                        <a href=<%= request.getContextPath() + controller.getFile() %> data-lightbox="news">
-                            <img src=<%= controller.getFile() %> alt="foto"/>
-                        </a>
                         <a href="images/foto1.jpg" data-lightbox="news">
                             <img src="images/foto1.jpg" alt="foto"/>
                         </a>
