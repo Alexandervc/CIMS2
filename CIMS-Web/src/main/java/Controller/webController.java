@@ -46,7 +46,7 @@ public class webController extends HttpServlet {
         news.add(new NewsItem(3, "Title3", "Description3", "Rachelsmolen, Eindhoven",
                 "Source3", situations, 2, date));
         ServerMain.ftpManager.uploadFile("E:/64277_816878888362056_5899858130298802750_n.jpg", "UnitTest1.jpg");
-        news.get(0).addPicture("/work/Catalina/localhost/CIMS_Web/UnitTest1.jpg");
+        news.get(0).addPicture("UnitTest1.jpg");
     }
 
     public INewsItem getNewsWithID(String ID) {
@@ -86,16 +86,34 @@ public class webController extends HttpServlet {
         }
         return set;
     }
-    
-    public String getDate(){
+
+    public String getDate() {
         Date newsDate = new Date();
         DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
         DateFormat time = new SimpleDateFormat("HH:mm");
-            
+
         return date.format(newsDate) + " om " + time.format(newsDate);
     }
-    public String getFile(){
-        String path = news.get(0).getPictures().get(0);
-        return path;
+
+    public String getFile(String photoName) {
+        System.out.println("Filepath = " + "http://athena.fhict.nl/users/i204267/" + photoName);
+        return "http://athena.fhict.nl/users/i204267/" + photoName;
+    }
+
+    public boolean sendPhoto(String path, INewsItem item) {
+        try {
+            System.out.println("filepath = " + path);
+            String newName = "NewsItem" + item.getId() + "-" + item.getPictures().size() + 10 + ".jpg";
+            boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
+            //boolean database = ServerMain.sortedDatabaseManager.addPicture(newName, item);
+            if (upload) //&& database
+            {
+                return true;
+            }
+            return false;
+        } catch (Exception ex) {
+            Logger.getLogger(webController.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }

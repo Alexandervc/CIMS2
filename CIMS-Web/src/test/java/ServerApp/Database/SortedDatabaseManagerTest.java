@@ -258,5 +258,11 @@ public class SortedDatabaseManagerTest {
                 (expectedTime + 3600000 > dateMillis)
                 || (expectedTime - 3600000 < dateMillis));
     }
+    
+    @Test
+    private void testPictures() {
+        List<INewsItem> items = myDB.getNewsItems(0, 5);
+        
+    }
 
 }

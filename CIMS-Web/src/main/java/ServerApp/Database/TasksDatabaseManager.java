@@ -16,12 +16,14 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.Citizen;
 import Shared.Users.HQChief;
 import Shared.Users.HQUser;
 import Shared.Users.ICitizen;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
+import Shared.Users.User;
 import Shared.Users.UserRole;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,9 +102,24 @@ public class TasksDatabaseManager extends DatabaseManager {
                 case CHIEF:
                     output.add(new HQChief(outputUserName, outputName));
                     break;
+                case CITIZEN:
+                    output.add(checkCitizen(new User(outputUserName, outputName)));
+                    break;
                 default:
                     throw new SQLException("User did not have a role defined");
             }
+        }
+        return output;
+    }
+
+    private List<ICitizen> extractCitizens(ResultSet rs, IUser user) throws SQLException {
+        List<ICitizen> output = new ArrayList<>();
+        while (rs.next()) {
+            String outputUserName = rs.getString("USERNAME");
+            String outputCity = rs.getString("CITY");
+            String outputStreet = rs.getString("STREET");
+
+            output.add(new Citizen(outputUserName, user.getName(), outputCity, outputStreet));
         }
         return output;
     }
@@ -146,26 +163,26 @@ public class TasksDatabaseManager extends DatabaseManager {
             closeConnection();
             return null;
         }
-        
+
         IStep outputStep;
         String query;
         PreparedStatement prepStat;
         ResultSet rsStep;
         List<ITask> tempTasks = new ArrayList<>();
-        
+
         for (ITask task : output) {
             // gets task executor
             IServiceUser executor = getTaskExecutor(task.getId());
             task.setExecutor(executor);
-            
+
             query = "SELECT * FROM " + stepTable
                     + " WHERE TASKID = " + task.getId();
             prepStat = conn.prepareStatement(query);
             rsStep = prepStat.executeQuery();
-            
+
             boolean isStep = false;
-            
-            while(rsStep.next()) {
+
+            while (rsStep.next()) {
                 int outputStepNr = rsStep.getInt("NUMBER");
                 String outputCondition = rsStep.getString("CONDITION");
                 int planId = rsStep.getInt("PLANID");
@@ -174,8 +191,8 @@ public class TasksDatabaseManager extends DatabaseManager {
                 tempTasks.add(outputStep);
                 isStep = true;
             }
-            
-            if(!isStep) {
+
+            if (!isStep) {
                 tempTasks.add(task);
             }
         }
@@ -327,7 +344,7 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // inserts plan itself
-            query = "INSERT INTO " + planTable 
+            query = "INSERT INTO " + planTable
                     + " (ID, TITLE, DESCRIPTION, TEMPLATE)"
                     + " VALUES (ID, ?, ?, ?)";
             prepStat = conn.prepareStatement(query);
@@ -626,11 +643,11 @@ public class TasksDatabaseManager extends DatabaseManager {
                     query += " OR STATUS = ?";
                 }
             }
-            
-            if(filter.size() > 0) {
+
+            if (filter.size() > 0) {
                 query += ")";
             }
-            
+
             prepStat = conn.prepareStatement(query);
             if (execUserName != null && !execUserName.isEmpty()) {
                 prepStat.setString(1, execUserName);
@@ -667,6 +684,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return null if not found
      */
     public IUser loginUser(String userName, String password) {
+        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc");
         if (!openConnection() || (userName == null) || (password == null)) {
             closeConnection();
             return null;
@@ -676,6 +694,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
+        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
         try {
             query = "SELECT * FROM " + userTable
                     + " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
@@ -689,8 +708,42 @@ public class TasksDatabaseManager extends DatabaseManager {
             if (extractedUsers.size() == 1) {
                 output = extractedUsers.get(0);
             }
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
+                    + ": " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+
+    private ICitizen checkCitizen(IUser user) {
+        if (!openConnection() || user == null) {
+            closeConnection();
+            return null;
+        }
+
+        ICitizen output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT FROM " + citizenTable
+                    + " WHERE USERNAME = " + user.getUsername();
+            prepStat = conn.prepareStatement(query);
+            rs = prepStat.executeQuery();
+
+            List<ICitizen> extractedCitizens = this.extractCitizens(rs, user);
+            if (extractedCitizens.size() == 1) {
+                output = extractedCitizens.get(0);
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed check if citizen attempt for " + user.getUsername()
                     + ": " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);

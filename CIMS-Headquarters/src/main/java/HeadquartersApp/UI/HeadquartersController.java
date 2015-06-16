@@ -761,9 +761,7 @@ public class HeadquartersController implements Initializable {
                 List<IServiceUser> users = new ArrayList<>();
                 if (task != null) {
                     for (IServiceUser s : serviceUsers) {
-                        if (s.getType() == task.getTargetExecutor()) {
-                            users.add(s);
-                        }
+                        users.add(s);
                     }
                 } else {
                     users.addAll(serviceUsers);
@@ -1389,7 +1387,7 @@ public class HeadquartersController implements Initializable {
 
                 connectionManager.updateTask(task);
             }
-            
+
             lblTasks.setVisible(true);
             lblTasks.setText("Taak is gelezen");
         } catch (IllegalArgumentException iaEx) {
@@ -1463,13 +1461,13 @@ public class HeadquartersController implements Initializable {
             String title = tfnTitle.getText();
             String description = tanDescription.getText();
             String location = null;
-            
+
             if (!tfnCity.getText().isEmpty()) {
-                location = tfnStreet.getText() + ", " + tfnCity.getText();                
+                location = tfnStreet.getText() + ", " + tfnCity.getText();
             } else {
                 throw new IllegalArgumentException("Plaats niet ingevoerd");
             }
-            
+
             String source = this.user.getUsername();
             int victims = Integer.parseInt(tfnVictims.getText());
             HashSet<Situation> situations = new HashSet<>();
@@ -1524,42 +1522,42 @@ public class HeadquartersController implements Initializable {
 
         });
     }
-    
+
     public void selectNewsItem() {
         INewsItem news = (INewsItem) lvbNews.getSelectionModel().getSelectedItem();
-        
+
         if (news != null) {
             // Fill GUI with information
             tfbTitle.setText(news.getTitle());
             tabDescription.setText(news.getDescription());
-            
+
             if (!news.getCity().isEmpty()) {
                 tfbCity.setText(news.getCity());
-            }  
-            
+            }
+
             if (!news.getStreet().isEmpty()) {
                 tfbStreet.setText(news.getStreet());
             }
-            
+
             tfbVictims.setText(String.valueOf(news.getVictims()));
-            
+
             if (ccbSituations != null) {
                 ccbSituations.getCheckModel().clearChecks();
-                
+
                 for (Situation s : news.getSituations()) {
                     Situation t = null;
 
-                    for (Situation o : (ObservableList<Situation>)ccbSituations.getItems()) {
+                    for (Situation o : (ObservableList<Situation>) ccbSituations.getItems()) {
                         if (o.getID() == s.getID()) {
                             t = o;
-                        }                        
+                        }
                     }
 
                     if (t != null) {
                         ccbSituations.getCheckModel().check(t);
                     }
                 }
-            }            
+            }
         } else {
             // Clear GUI
             tfbTitle.clear();
@@ -1580,21 +1578,21 @@ public class HeadquartersController implements Initializable {
             if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
-            
-            INewsItem n = (INewsItem)lvbNews.getSelectionModel().getSelectedItem();
+
+            INewsItem n = (INewsItem) lvbNews.getSelectionModel().getSelectedItem();
             int id = n.getId();
 
             // Load values from GUI
             String title = tfbTitle.getText();
             String description = tabDescription.getText();
             String location = null;
-            
+
             if (!tfbCity.getText().isEmpty()) {
-                location = tfbStreet.getText() + ", " + tfbCity.getText();                
+                location = tfbStreet.getText() + ", " + tfbCity.getText();
             } else {
                 throw new IllegalArgumentException("Plaats niet ingevoerd");
             }
-            
+
             String source = this.user.getUsername();
             int victims = Integer.parseInt(tfbVictims.getText());
             HashSet<Situation> situations = new HashSet<>();

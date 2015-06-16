@@ -12,5 +12,6 @@ package Shared.Users;
 public enum UserRole {
     CHIEF,
     SERVICE,
-    HQ
+    HQ,
+    CITIZEN
 }

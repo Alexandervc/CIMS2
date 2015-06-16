@@ -22,11 +22,14 @@
             webController controller = new webController();
             String ID = request.getParameter("newsid");
             INewsItem item = null;
+            String photo = null;
             try {
                 item = controller.getNewsWithID(ID);
             } catch (Exception ex) {
                 item = null;
             }
+            
+            
             
         %>
     </head>	
@@ -40,6 +43,16 @@
                     <p><%= item.getCity().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
+                        <h2>Foto's</h2>
+                        <% if(!item.getPictures().isEmpty()){ 
+                            for(String x : item.getPictures())
+                            {
+                                photo = x;
+                        %>
+                        <a href=<%= controller.getFile(photo) %> data-lightbox="news">
+                            <img src=<%= controller.getFile(photo) %> alt="foto"/>
+                        </a>
+                        <%} } %>
                     </div>
 
                     <div id="map" >
@@ -55,9 +68,6 @@
                     <!--met foto-->
                     <div id="pics" >
                         <h2>Foto's</h2>
-                        <a href=<%= request.getContextPath() + controller.getFile() %> data-lightbox="news">
-                            <img src=<%= controller.getFile() %> alt="foto"/>
-                        </a>
                         <a href="images/foto1.jpg" data-lightbox="news">
                             <img src="images/foto1.jpg" alt="foto"/>
                         </a>
@@ -167,16 +177,19 @@
                     </ul>
                     <%}%>
                 </article>
-                
+                <% if(item !=null){ %>
                 <article class="advice">
                     <h2>Foto uploaden</h2>
                     <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
 		
-                    <form action="index.jsp" method="post">
-                        <input type="file" name="img" class="upload"><br />
+                    
+                    <form  method="post" enctype="multipart/form-data"
+                           action="index.jsp" >
+                        <input id="fileName" type="file" name="img" class="upload"><br />
                         <input type="submit" value="Verzenden" class="btn upload" />
-                    </form>
+                    </form> 
 		</article>
+                        <%} %>
             </section>
         </div>	
     </body>

@@ -28,6 +28,7 @@
         <%
             String ID = request.getParameter("newsid");
             String location = "";
+            int distance = 0;
             
             if(ID != null && !ID.isEmpty()) {
                 webController controller = new webController();
@@ -57,41 +58,78 @@
         <script type='text/javascript' >
             function loadMaps() {
                 <% if(ID != null && !ID.isEmpty()) { %>
-                    geocoder = new google.maps.Geocoder();
-                    var mapCanvas = document.getElementById('mapcanvas');
-                    var mapOptions = {
-                        zoom: 14,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    };
-                    var map = new google.maps.Map(mapCanvas, mapOptions);
+                    var LatLng = 0;
+                    var LatLng2 = 0;
+                    var distance = 0;
+                    load();
 
-                    var addressFromDB = "<%= location %>";
-                    var address = addressFromDB + ", Nederland";
-                    geocoder.geocode({'address': address}, function (results, status) {
-                        if (status === google.maps.GeocoderStatus.OK) {
-                            map.setCenter(results[0].geometry.location);
+                    function load() {	
+                            geocoder = new google.maps.Geocoder();	
+                            var mapCanvas = document.getElementById('mapcanvas');
+                            var mapOptions = {
+                                    zoom: 14,
+                                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                            }
+                            var map = new google.maps.Map(mapCanvas, mapOptions);		
 
-                            //Add location mark                            
-                            var marker = new google.maps.Marker({
-                                map: map,
-                                position: results[0].geometry.location
+                            var addressFromDB = "<%= location %>";
+                            var addressHome = "Polderzicht, Wijk en Aalburg";
+                            var address = addressFromDB + ", Nederland";
+                            var address2 = addressHome + ", Nederland";			
+
+                            geocoder.geocode( {'address': address}, function(results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK) {
+                                            LatLng = results[0].geometry.location;					
+                                            map.setCenter(LatLng);
+
+                                            //Add location mark
+                                            var marker = new google.maps.Marker({
+                                                    map: map,
+                                                    position: LatLng
+                                            });
+
+                                            <% if(!location.equals("")) { %>
+                                                var addressinfo = addressFromDB;
+                                                <% if(location.contains(",")) { %>
+                                                    addressinfo = addressFromDB.replace(",", "<br />");
+                                                <% } %>
+
+                                                infowindow = new google.maps.InfoWindow({content:addressinfo});
+                                                google.maps.event.addListener(marker, "click", function(){
+                                                        infowindow.open(map,marker);
+                                                });
+
+                                                infowindow.open(map,marker);
+                                            <% } %>
+                                            setLatLng(1,LatLng);
+                                    } else {
+                                            alert("Geocode was not successful for the following reason: " + status);
+                                    }	
+                            });						
+
+                            geocoder.geocode( {'address': address2}, function(results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK) {
+                                            LatLng2 = results[0].geometry.location;
+                                            setLatLng(2,LatLng2); 
+                                            calcDistance();
+                                    } else {
+                                            alert("Geocode was not successful for the following reason: " + status);
+                                    }	
                             });
-                            
-                            <% if(!location.equals("")) { %>
-                                var addressinfo = addressFromDB;
-                                <% if(location.contains(",")) { %>
-                                    addressinfo = addressFromDB.replace(",", "<br />");
-                                <% } %>
-                                infowindow = new google.maps.InfoWindow({content: addressinfo});                                 
-                                google.maps.event.addListener(marker, "click", function () {
-                                    infowindow.open(map, marker);
-                                });
-                                infowindow.open(map, marker);
-                            <% } %>
-                        } else {
-                            alert("Geocode was not successful for the following reason: " + status);
-                        }
-                    });
+                    }		
+
+                    function setLatLng(nr, value) {		
+                            if (nr == 1) {
+                                    LatLng = value;
+                            } else if (nr == 2) {
+                                    LatLng2 = value;
+                            }
+                    }
+
+                    function calcDistance() {
+                            //Distance in meter
+                            distance = google.maps.geometry.spherical.computeDistanceBetween(LatLng, LatLng2);
+                    }
                 <% } %>
             }
         </script>

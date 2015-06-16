@@ -126,7 +126,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return INewsItem
      * @throws SQLException
      */
-    private INewsItem addPictures(INewsItem news, ResultSet rs) throws SQLException {
+    private INewsItem addPicturesToNewsItem(INewsItem news, ResultSet rs) throws SQLException {
         if (news == null || rs == null) {
             return news;
         }
@@ -137,6 +137,33 @@ public class SortedDatabaseManager extends DatabaseManager {
             output.addPicture(link);
         }
         return output;
+    }
+    
+    public boolean insertPicture(INewsItem news, String link) {
+        if (!openConnection() || news == null || link == null) {
+            closeConnection();
+            return false;
+        }
+        
+        boolean success = false;
+        String query;
+        PreparedStatement prepStat;
+        try {
+            query = "INSERT INTO " + pictureTable
+                    + "VALUES (?, ?)";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, news.getId());
+            prepStat.setString(2, link);
+            prepStat.execute();
+            
+            success = true;
+        } catch(SQLException ex) {
+            System.out.println("addPicture failed: " + ex);
+            success = false;
+        } finally {
+            closeConnection();
+        }
+        return success;
     }
 
     /**
@@ -600,7 +627,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                         + " WHERE ID = " + n.getId();
                 prepStat = conn.prepareStatement(query);
                 rs = prepStat.executeQuery();
-                this.addPictures(n, rs);
+                this.addPicturesToNewsItem(n, rs);
             }
 
         } catch (SQLException ex) {
@@ -831,7 +858,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 prepStat = conn.prepareStatement(query);
                 prepStat.setInt(1, ID);
                 rs = prepStat.executeQuery();
-                n = this.addPictures(n, rs);
+                n = this.addPicturesToNewsItem(n, rs);
             }
 
         } catch (SQLException ex) {

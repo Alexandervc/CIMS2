@@ -108,38 +108,4 @@ public class FTPManager {
         }
     }
 
-    //return filepath
-
-    public File downloadFile(String filename) {
-        try {
-            boolean succeed = logInToFTP();
-            if (succeed) {
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                ftpClient.setFileTransferMode(FTP.BINARY_FILE_TYPE);
-                ftpClient.enterLocalPassiveMode();
-                
-                File file = File.createTempFile("/work/Catalina/localhost/CIMS_Web/"+filename, ".jpg");
-                System.out.println(file.getAbsolutePath());
-                FileOutputStream fos = new FileOutputStream(file);
-                boolean done = ftpClient.retrieveFile(filename, fos);
-                fos.close();
-                //file.deleteOnExit();
-                if(done){
-                    closeLogIn();
-                    return file;
-                }
-                else{
-                    closeLogIn();
-                    return null;
-                }           
-            } else {
-                closeLogIn();
-                return null;
-            }
-        } catch (IOException ex) {
-            closeLogIn();
-            Logger.getLogger(FTPManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
 }
