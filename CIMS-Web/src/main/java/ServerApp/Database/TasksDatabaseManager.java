@@ -16,12 +16,14 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.Citizen;
 import Shared.Users.HQChief;
 import Shared.Users.HQUser;
 import Shared.Users.ICitizen;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
+import Shared.Users.User;
 import Shared.Users.UserRole;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,9 +102,24 @@ public class TasksDatabaseManager extends DatabaseManager {
                 case CHIEF:
                     output.add(new HQChief(outputUserName, outputName));
                     break;
+                case CITIZEN:
+                    output.add(checkCitizen(new User(outputUserName, outputName)));
+                    break;
                 default:
                     throw new SQLException("User did not have a role defined");
             }
+        }
+        return output;
+    }
+    
+    private List<ICitizen> extractCitizens(ResultSet rs, IUser user) throws SQLException {
+        List<ICitizen> output = new ArrayList<>();
+        while (rs.next()) {
+            String outputUserName = rs.getString("USERNAME");
+            String outputCity = rs.getString("CITY");
+            String outputStreet = rs.getString("STREET");
+            
+            output.add(new Citizen(outputUserName, user.getName(), outputCity, outputStreet));
         }
         return output;
     }
@@ -689,8 +706,46 @@ public class TasksDatabaseManager extends DatabaseManager {
             if (extractedUsers.size() == 1) {
                 output = extractedUsers.get(0);
             }
+            
+            ICitizen tempCitizen = checkCitizen(output);
+            if(tempCitizen != null) {
+                output = tempCitizen;
+            }
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
+                    + ": " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+    
+    private ICitizen checkCitizen(IUser user) {
+        if (!openConnection() || user == null) {
+            closeConnection();
+            return null;
+        }
+        
+        ICitizen output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+        
+        try {
+            query = "SELECT FROM " + citizenTable
+                    + " WHERE USERNAME = " + user.getUsername();
+            prepStat = conn.prepareStatement(query);
+            rs = prepStat.executeQuery();
+            
+            List<ICitizen> extractedCitizens = this.extractCitizens(rs, user);
+            if (extractedCitizens.size() == 1) {
+                output = extractedCitizens.get(0);
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed check if citizen attempt for " + user.getUsername()
                     + ": " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
