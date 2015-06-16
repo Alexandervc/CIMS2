@@ -720,12 +720,12 @@ public class TasksDatabaseManager extends DatabaseManager {
         try {
             query = "INSERT INTO " + userTable
                     + " (USERNAME, PASSWORD, NAME, ROLE)"
-                    + " VALUES (?, ?, ?, CITIZEN)";
+                    + " VALUES (?, ?, ?, 'CITIZEN')";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, input.getUsername());
             prepStat.setString(2, password);
             prepStat.setString(3, input.getName());
-            prepStat.executeQuery();
+            prepStat.execute();
 
             query = "INSERT INTO " + citizenTable
                     + " (USERNAME, CITY, STREET)"
@@ -734,7 +734,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setString(1, input.getUsername());
             prepStat.setString(2, input.getCity());
             prepStat.setString(3, input.getStreet());
-            prepStat.executeQuery();
+            prepStat.execute();
 
             output = input;
         } catch (SQLException ex) {
