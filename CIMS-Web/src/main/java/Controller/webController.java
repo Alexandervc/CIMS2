@@ -86,16 +86,34 @@ public class webController extends HttpServlet {
         }
         return set;
     }
-    
-    public String getDate(){
+
+    public String getDate() {
         Date newsDate = new Date();
         DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
         DateFormat time = new SimpleDateFormat("HH:mm");
-            
+
         return date.format(newsDate) + " om " + time.format(newsDate);
     }
-    public String getFile(String photoName){
-        System.out.println("Filepath = "+"http://athena.fhict.nl/users/i204267/"+photoName);
-        return "http://athena.fhict.nl/users/i204267/"+photoName;
+
+    public String getFile(String photoName) {
+        System.out.println("Filepath = " + "http://athena.fhict.nl/users/i204267/" + photoName);
+        return "http://athena.fhict.nl/users/i204267/" + photoName;
+    }
+
+    public boolean sendPhoto(String path, INewsItem item) {
+        try {
+            System.out.println("filepath = " + path);
+            String newName = "NewsItem" + item.getId() + "-" + item.getPictures().size() + 10 + ".jpg";
+            boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
+            //boolean database = ServerMain.sortedDatabaseManager.addPicture(newName, item);
+            if (upload) //&& database
+            {
+                return true;
+            }
+            return false;
+        } catch (Exception ex) {
+            Logger.getLogger(webController.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }

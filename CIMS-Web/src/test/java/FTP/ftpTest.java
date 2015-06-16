@@ -53,11 +53,4 @@ public class ftpTest {
         boolean succeed = manager.uploadFile(this.filepath, this.remotename);
         assertEquals(succeed, true);
     }
-    
-    @Test
-    public void Download(){
-        File file = manager.downloadFile(this.remotename);
-        System.out.println(file.getAbsolutePath());
-        assertNotNull(file);
-    }
 }

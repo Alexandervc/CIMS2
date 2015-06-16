@@ -177,16 +177,19 @@
                     </ul>
                     <%}%>
                 </article>
-                
+                <% if(item !=null){ %>
                 <article class="advice">
                     <h2>Foto uploaden</h2>
                     <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
 		
-                    <form action="index.jsp" method="post">
-                        <input type="file" name="img" class="upload"><br />
+                    
+                    <form  method="post" enctype="multipart/form-data"
+                           action="index.jsp" >
+                        <input id="fileName" type="file" name="img" class="upload"><br />
                         <input type="submit" value="Verzenden" class="btn upload" />
-                    </form>
+                    </form> 
 		</article>
+                        <%} %>
             </section>
         </div>	
     </body>
