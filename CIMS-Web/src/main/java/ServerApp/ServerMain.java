@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServlet;
  * @author Kargathia
  */
 public class ServerMain {
-    
+
     public static String SERVER_ADDRESS = "127.0.0.1";
     public static final int SERVER_PORT = 9090;
 
@@ -53,11 +53,11 @@ public class ServerMain {
      */
     public static void main(String[] args) {
         SERVER_ADDRESS = getIpAddress();
-        if(SERVER_ADDRESS == null || !SERVER_ADDRESS.contains(".")) {
+        if (SERVER_ADDRESS == null || !SERVER_ADDRESS.contains(".")) {
             SERVER_ADDRESS = "127.0.0.1";
         }
         System.out.println(SERVER_ADDRESS);
-        
+
         try {
 
             Properties props = new Properties();
@@ -70,36 +70,36 @@ public class ServerMain {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         startDatabases(null);
         startConnection(false);
     }
 
     public static void startDatabases(String baseDir) {
-        if(baseDir == null){
+        if (baseDir == null) {
             baseDir = "";
-        } else if (!baseDir.endsWith("\\")){
-            baseDir+= "\\";
+        } else if (!baseDir.endsWith("\\")) {
+            baseDir += "\\";
         }
         System.out.println("baseDir: " + baseDir);
         sortedDatabaseManager = new SortedDatabaseManager(baseDir + "sorteddatabase.properties");
         unsortedDatabaseManager = new UnsortedDatabaseManager(baseDir + "unsorteddatabase.properties");
         tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
 
-        planExecutorHandler = new PlanExecutorHandler();        
+        planExecutorHandler = new PlanExecutorHandler();
         dummyDatabaseManager = new DummyDatabaseManager();
-        
+
         ftpManager = new FTPManager();
     }
 
-    public static void stopDatabases(){
-        if(sortedDatabaseManager != null){
+    public static void stopDatabases() {
+        if (sortedDatabaseManager != null) {
             sortedDatabaseManager.shutDownConnection();
         }
-        if(unsortedDatabaseManager != null){
+        if (unsortedDatabaseManager != null) {
             unsortedDatabaseManager.shutDownConnection();
         }
-        if(tasksDatabaseManager != null){
+        if (tasksDatabaseManager != null) {
             tasksDatabaseManager.shutDownConnection();
         }
     }
@@ -118,16 +118,16 @@ public class ServerMain {
             e.printStackTrace();
         }
     }
-    
+
     private static String getIpAddress() {
-        String ipAddress = null;        
+        String ipAddress = null;
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface intf = en.nextElement();
-                if(intf.getName().contains("eth1")) {
+                if (intf.getName().contains("eth1")) {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                         InetAddress addr = enumIpAddr.nextElement();
-                        if(ipAddress == null) {
+                        if (ipAddress == null) {
                             String address = addr.getLocalHost() + "";
                             ipAddress = address.substring(address.indexOf("/")).substring(1);
                         }

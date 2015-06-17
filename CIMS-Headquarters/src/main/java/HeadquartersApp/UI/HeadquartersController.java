@@ -453,6 +453,7 @@ public class HeadquartersController implements Initializable {
                     connectionManager.unsubscribeUnsorted();
                 }
 
+                lvuUnsortedData.getItems().removeAll(output);
                 lvuUnsortedData.getItems().addAll(output);
                 if (lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
                     lvuUnsortedData.getSelectionModel().selectFirst();

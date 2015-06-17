@@ -34,7 +34,7 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
-    
+
     private IServiceUser user = null;
 
     private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
@@ -192,7 +192,7 @@ public class ConnectionHandler {
         HashSet<TaskStatus> statusses = new HashSet<>();
         statusses.add(TaskStatus.INPROCESS);
         statusses.add(TaskStatus.SENT);
-        
+
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
                         ConnCommand.TASKS_GET, username, statusses);
@@ -252,7 +252,7 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
-    
+
     public IServiceUser getCurrentUser() {
         return this.user;
     }
