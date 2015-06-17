@@ -33,10 +33,9 @@
 
                 <article class="news">
 
-                    <% //if(n.getPicture() != null) { 
-                        if(!true) {%>
+                    <% if(!n.getPictures().isEmpty()) { %>
                         <div class="fotodiv">
-                            <img src="images/foto1.jpg" alt="cover" class="foto"/>
+                            <img src=<%= controller.getFile(n.getPictures().get(0)) %> alt="cover" class="foto"/>
                         </div>
                     <% } %>
 

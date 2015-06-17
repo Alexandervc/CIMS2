@@ -42,8 +42,9 @@
                     <p><%= item.getCity().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
+                        <% if(!item.getPictures().isEmpty()){ %>
                         <h2>Foto's</h2>
-                        <% if(!item.getPictures().isEmpty()){ 
+                        <% 
                             for(String x : item.getPictures())
                             {
                                 photo = x;

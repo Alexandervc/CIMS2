@@ -43,10 +43,6 @@ public class webController extends HttpServlet {
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         news.add(new NewsItem(1, "Title1", "Description1", "Rachelsmolen, Eindhoven",
                 "Source1", situations, 0, date));
-        news.add(new NewsItem(2, "Title2", "Description2", "Rachelsmolen, Eindhoven",
-                "Source2", situations, 1, date));
-        news.add(new NewsItem(3, "Title3", "Description3", "Rachelsmolen, Eindhoven",
-                "Source3", situations, 2, date));
         ServerMain.ftpManager.uploadFile("E:/64277_816878888362056_5899858130298802750_n.jpg", "UnitTest1.jpg");
         news.get(0).addPicture("UnitTest1.jpg");
     }
