@@ -760,8 +760,8 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             query = "INSERT INTO " + userTable
-                    + " (USERNAME, PASSWORD, NAME, ROLE)"
-                    + " VALUES (?, ?, ?, 'CITIZEN')";
+                    + " (USERNAME, PASSWORD, NAME, ROLE, TAG)"
+                    + " VALUES (?, ?, ?, 'CITIZEN', NULL)";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, input.getUsername());
             prepStat.setString(2, password);
