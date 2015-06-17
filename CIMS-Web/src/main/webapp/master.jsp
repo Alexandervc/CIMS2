@@ -146,11 +146,12 @@
                         <li class="menu"><a href="index.jsp" style="width:100px">Home</a></li>
                         <li class="menu"><a href="report.jsp" style="width:200px">Melding maken</a></li>
                         <% if(session.getAttribute("User") == null) { %>
-                            <li class="account"><a href="signin.jsp">Registreren/Inloggen</a></li>
+                            <li class="account" style="padding-left:100px"><a href="signin.jsp">Registreren/Inloggen</a></li>
                         <% } else { 
                             IUser user = (IUser) session.getAttribute("User");
                             if(user != null) { %>
-                                <li class="account"><a href="signout.jsp"><%= user.getUsername() %> uitloggen</a></li>
+                                <li class="account" style="padding-left:80px">Hallo <%= user.getUsername() %>, </li>
+                                <li class="account"><a href="signout.jsp">uitloggen</a></li>
                         <%  }
                            } %>
                     </ul>

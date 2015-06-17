@@ -14,9 +14,11 @@
         <title>Uitloggen</title>
     </head>
     <body>
-        <% session.setAttribute("User", null);
-        response.setHeader("Refresh", "5;url=index.jsp"); %>
-        U bent succesvol uitgelogd. <br />
-        U wordt over enkele seconden gelanceerd naar de homepagina.
+        <article class="news">
+            <% session.setAttribute("User", null);
+            response.setHeader("Refresh", "5;url=index.jsp"); %>
+            U bent succesvol uitgelogd <br />
+            U wordt over enkele seconden teruggestuurd naar de homepagina
+        </article>
     </body>
 </html>
