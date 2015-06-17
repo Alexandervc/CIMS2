@@ -48,7 +48,7 @@
                             <input class="forminput" type="password" name="password" required="required"><br />
                             <input class="forminput" type="password" name="repeatPassword" required="required"><br />
                             
-                            <div id="error">
+                            <div class="error">
                                 <% if(session.getAttribute("Error") != null) {
                                     String errorMessage = String.valueOf(session.getAttribute("Error"));
                                     if(errorMessage != null && !errorMessage.isEmpty()) {

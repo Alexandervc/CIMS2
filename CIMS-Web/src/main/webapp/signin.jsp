@@ -36,7 +36,7 @@
                             <input class="forminput" type="text" name="username" required="required" value="<%= tempSigninUser.getUsername() %>"/><br />
                             <input class="forminput" type="password" name="password" required="required"/><br />
                             
-                            <div id="error">
+                            <div class="error">
                                 <% if(session.getAttribute("Error") != null) {
                                     String errorMessage = String.valueOf(session.getAttribute("Error"));
                                     if(errorMessage != null && !errorMessage.isEmpty()) {

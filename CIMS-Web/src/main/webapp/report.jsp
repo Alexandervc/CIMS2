@@ -29,7 +29,7 @@
                         </div>
                         <div class="formpart2">
                             <input class="forminput2" type="text" name="title" required="required"/><br />
-                            <textarea class="forminput2" name="description" rows="6" cols="50"required="required" ></textarea><br />			
+                            <textarea class="forminput2" name="description" rows="6" cols="50" ></textarea><br />			
                             <input class="forminput2" type="text" name="street"/><br />
                             <input class="forminput2" type="text" name="city" required="required"/><br />
 
