@@ -15,7 +15,9 @@
     </head>
     <body>
         <article class="news">
-
+            <% response.setHeader("Refresh", "5;url=signin.jsp"); %>
+            U heeft niet de juiste rechten om op deze pagina te komen <br />
+            U wordt binnen enkele seconden doorgestuurd naar de inlogpagina
         </article>
     </body>
 </html>
