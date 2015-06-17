@@ -15,6 +15,7 @@
 <%@page import="Shared.Data.INewsItem"%>
 <%@page import="Controller.webController"%>
 <%@page import="Shared.Users.IUser"%>
+<%@page import="Shared.Users.ICitizen"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -29,7 +30,24 @@
         <%
             String ID = request.getParameter("newsid");
             String location = "";
-            int distance = 0;
+            IUser user = null;
+            ICitizen citizen = null;
+            String livingplace = "";
+
+            if(session.getAttribute("User") != null) {
+                user = (IUser) session.getAttribute("User");
+
+                if (user instanceof ICitizen) {
+                    citizen = (ICitizen)user;
+
+                    if (!citizen.getStreet().equals("") && !citizen.getCity().equals("")) {
+                        livingplace = citizen.getStreet() + ", " + citizen.getCity();
+                    }
+                    else if (!citizen.getCity().equals("")) {
+                        livingplace = citizen.getCity();
+                    }
+                }
+            }
             
             if(ID != null && !ID.isEmpty()) {
                 webController controller = new webController();
@@ -74,7 +92,7 @@
                             var map = new google.maps.Map(mapCanvas, mapOptions);		
 
                             var addressFromDB = "<%= location %>";
-                            var addressHome = "Polderzicht, Wijk en Aalburg";
+                            var addressHome = "<%= livingplace %>";
                             var address = addressFromDB + ", Nederland";
                             var address2 = addressHome + ", Nederland";			
 
@@ -112,7 +130,7 @@
                                     if (status == google.maps.GeocoderStatus.OK) {
                                             LatLng2 = results[0].geometry.location;
                                             setLatLng(2,LatLng2); 
-                                            calcDistance();
+                                            calculateDistance();
                                     } else {
                                             alert("Geocode was not successful for the following reason: " + status);
                                     }	
@@ -130,6 +148,7 @@
                     function calcDistance() {
                             //Distance in meter
                             distance = google.maps.geometry.spherical.computeDistanceBetween(LatLng, LatLng2);
+                            controller.calculateDistance(ID, distance);
                     }
                 <% } %>
             }
@@ -145,15 +164,12 @@
                     <ul>
                         <li class="menu"><a href="index.jsp" style="width:100px">Home</a></li>
                         <li class="menu"><a href="report.jsp" style="width:200px">Melding maken</a></li>
-                        <% if(session.getAttribute("User") == null) { %>
+                        <% if(user == null) { %>
                             <li class="account" style="padding-left:100px"><a href="signin.jsp">Registreren/Inloggen</a></li>
-                        <% } else { 
-                            IUser user = (IUser) session.getAttribute("User");
-                            if(user != null) { %>
+                        <% } else { %>
                                 <li class="account" style="padding-left:80px">Hallo <%= user.getUsername() %>, </li>
                                 <li class="account"><a href="signout.jsp">uitloggen</a></li>
-                        <%  }
-                           } %>
+                        <% } %>
                     </ul>
                 </nav>
             </div>

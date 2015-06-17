@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,6 +34,7 @@ public class webController extends HttpServlet {
     private HashSet<Situation> situations = new HashSet<Situation>();
     private HashSet<Advice> advices = new HashSet<Advice>();
     private List<INewsItem> news = new ArrayList<INewsItem>();
+    private HashMap<Integer,Integer> distances = new HashMap<>();
     private Date date = new Date();
 
     public webController() {
@@ -115,5 +117,15 @@ public class webController extends HttpServlet {
             Logger.getLogger(webController.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+    
+    public void calcDistance(int newsid, int distance) {
+        if (distance >= 0) {
+            distances.put(newsid, distance);
+        } else {
+            distances.put(newsid, -1);
+        }
+        
+        System.out.println(distance);
     }
 }
