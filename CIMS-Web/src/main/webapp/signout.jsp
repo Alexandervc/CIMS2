@@ -14,11 +14,11 @@
         <title>Uitloggen</title>
     </head>
     <body>
-        <article class="news">
+        <article class="message">
             <% session.setAttribute("User", null);
             response.setHeader("Refresh", "5;url=index.jsp"); %>
-            U bent succesvol uitgelogd <br />
-            U wordt over enkele seconden doorgestuurd naar de homepagina
+            <p>U bent succesvol uitgelogd</p>
+            <p>U wordt over enkele seconden doorgestuurd naar de homepagina</p>
         </article>
     </body>
 </html>

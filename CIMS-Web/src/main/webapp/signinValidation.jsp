@@ -20,7 +20,7 @@
         <title>Inloggenvalidatie</title>
     </head>
     <body>
-        <article class="news">        
+        <article class="message">        
             <% SigninValidationController controller = new SigninValidationController();
             try {
                 IUser user = controller.signIn(tempSigninUser); 

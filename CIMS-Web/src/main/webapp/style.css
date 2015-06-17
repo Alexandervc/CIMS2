@@ -273,10 +273,19 @@ footer {
         width: 120px;
 }
 
-/**--------------- errors ---------------**/
+/**--------------- errors/messages ---------------**/
 
 .error {
         color: RED;
         margin: 10px 0;
         font-weight: bold;
+}
+
+.message {
+	width: 880px;
+	margin: 30px 10px;
+	padding: 20px;
+	overflow: hidden;
+        font-style: italic;
+        font-size: 16px;
 }

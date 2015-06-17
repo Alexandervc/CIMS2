@@ -20,7 +20,7 @@
         <title>Registreervalidatie</title>
     </head>
     <body>
-        <article class="news">
+        <article class="message">
             <% RegisterValidationController controller = new RegisterValidationController();
             try {
                 boolean registered = controller.registerUser(registeredUser);
