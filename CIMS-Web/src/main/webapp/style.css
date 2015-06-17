@@ -74,6 +74,11 @@ nav a:hover {
         float: left;
         font-size: 16px;
         padding-top: 25px;
+        text-align: right;
+        width: 270px;
+}
+.account a {
+        float: right;
 }
 
 #page {
