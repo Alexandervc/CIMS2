@@ -13,10 +13,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CIMS 112 Nieuws</title>
+        <title>Registreren</title>
         <% if(registeredUser.getName() == null || registeredUser.getName().isEmpty()) { 
             registeredUser = new HelpUser();
-        }%>
+        }
+        if(session.getAttribute("User") != null) {
+            response.sendRedirect("index.jsp");
+        } %>
     </head>
     <body>
         <div id="page">		

@@ -14,6 +14,7 @@
 
 <%@page import="Shared.Data.INewsItem"%>
 <%@page import="Controller.webController"%>
+<%@page import="Shared.Users.IUser"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -144,9 +145,14 @@
                     <ul>
                         <li class="menu"><a href="index.jsp" style="width:100px">Home</a></li>
                         <li class="menu"><a href="report.jsp" style="width:200px">Melding maken</a></li>
-                        <li class="account"><a href="signin.jsp">Registreren/Inloggen</a></li>
-                        <!-- if user is ingelogd
-                        <li class="account">Hallo, username</li> -->
+                        <% if(session.getAttribute("User") == null) { %>
+                            <li class="account"><a href="signin.jsp">Registreren/Inloggen</a></li>
+                        <% } else { 
+                            IUser user = (IUser) session.getAttribute("User");
+                            if(user != null) { %>
+                                <li class="account"><a href="signout.jsp"><%= user.getUsername() %> uitloggen</a></li>
+                        <%  }
+                           } %>
                     </ul>
                 </nav>
             </div>

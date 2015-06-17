@@ -526,7 +526,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-            query = "SELECT * FROM " + userTable + " WHERE BINARY USERNAME = ?";
+            query = "SELECT * FROM " + userTable + " WHERE USERNAME = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             rs = prepStat.executeQuery();
@@ -733,9 +733,10 @@ public class TasksDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-            query = "SELECT FROM " + citizenTable
-                    + " WHERE USERNAME = " + user.getUsername();
+            query = "SELECT * FROM " + citizenTable
+                    + " WHERE USERNAME = ?";
             prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, user.getUsername());
             rs = prepStat.executeQuery();
 
             List<ICitizen> extractedCitizens = this.extractCitizens(rs, user);

@@ -8,8 +8,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CIMS 112 Nieuws</title>
+        <title>Informatie doorgeven</title>
+        <% if(session.getAttribute("User") == null) {
+            response.sendRedirect("index.jsp");
+        } %>
     </head>
     <body>
         <div id="page">		

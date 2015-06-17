@@ -17,7 +17,7 @@
 
 <html>
     <head>
-        <title>Register Validation</title>
+        <title>Registreervalidatie</title>
     </head>
     <body>
         <% RegisterValidationController controller = new RegisterValidationController();

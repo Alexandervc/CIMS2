@@ -16,8 +16,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8">
-        <title>CIMS 112 Nieuws</title>
+        <title>Nieuwsbericht</title>
         <%
             webController controller = new webController();
             String ID = request.getParameter("newsid");
