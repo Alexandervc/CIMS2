@@ -20,26 +20,28 @@
         <title>Inloggenvalidatie</title>
     </head>
     <body>
-        <% SigninValidationController controller = new SigninValidationController();
-        try {
-            IUser user = controller.signIn(tempSigninUser); 
-            tempSigninUser = null;
-            %><c:remove var="tempSigninUser" scope="session" /><%
-            
-            if(user != null) {
-                // Signin succesfull
-                session.setAttribute("User", user);
-                response.sendRedirect("index.jsp");
-            } else {
-                // Signin failed
-                session.setAttribute("Error", "Combinatie van gebruikersnaam en wachtwoord is onjuist");
+        <article class="news">        
+            <% SigninValidationController controller = new SigninValidationController();
+            try {
+                IUser user = controller.signIn(tempSigninUser); 
+                tempSigninUser = null;
+                %><c:remove var="tempSigninUser" scope="session" /><%
+
+                if(user != null) {
+                    // Signin succesfull
+                    session.setAttribute("User", user);
+                    response.sendRedirect("index.jsp");
+                } else {
+                    // Signin failed
+                    session.setAttribute("Error", "Combinatie van gebruikersnaam en wachtwoord is onjuist");
+                    response.sendRedirect("signin.jsp");
+                }
+
+            } catch (IllegalArgumentException iaEx) {
+                session.setAttribute("Error", iaEx.getMessage());
                 response.sendRedirect("signin.jsp");
-            }
-            
-        } catch (IllegalArgumentException iaEx) {
-            session.setAttribute("Error", iaEx.getMessage());
-            response.sendRedirect("signin.jsp");
-            iaEx.printStackTrace();
-        }%>
+                iaEx.printStackTrace();
+            }%>
+        </article>
     </body>
 </html>

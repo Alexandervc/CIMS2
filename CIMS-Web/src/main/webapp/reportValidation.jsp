@@ -20,6 +20,7 @@
         <title>Melding validatie</title>
     </head>
     <body>
+        <article class="news">
         <% ReportValidationController controller = new ReportValidationController();
         try {
             IUser user = null;
@@ -44,5 +45,6 @@
             session.setAttribute("Error", iaEx.getMessage());
             response.sendRedirect("report.jsp");
         } %>
+        </article>
     </body>
 </html>

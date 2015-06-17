@@ -14,6 +14,8 @@
         <title>Onjuiste rechten</title>
     </head>
     <body>
+        <article class="news">
 
+        </article>
     </body>
 </html>
