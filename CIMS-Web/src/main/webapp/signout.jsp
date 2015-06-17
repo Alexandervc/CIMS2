@@ -18,7 +18,7 @@
             <% session.setAttribute("User", null);
             response.setHeader("Refresh", "5;url=index.jsp"); %>
             U bent succesvol uitgelogd <br />
-            U wordt over enkele seconden teruggestuurd naar de homepagina
+            U wordt over enkele seconden doorgestuurd naar de homepagina
         </article>
     </body>
 </html>

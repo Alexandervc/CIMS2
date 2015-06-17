@@ -34,7 +34,7 @@
             if(success) {
                 %><c:remove var="unsortedData" scope="session" /><%
                 out.println("Bericht succesvol verzonden <br />");
-                out.println("U wordt over enkele seconden gelanceerd naar de pagina om meldingen te versturen");
+                out.println("U wordt over enkele seconden doorgestuurd naar de pagina om meldingen te versturen");
                 response.setHeader("Refresh", "5;url=report.jsp");
             } else {
                 session.setAttribute("Error", "Kon nieuwe melding niet versturen");

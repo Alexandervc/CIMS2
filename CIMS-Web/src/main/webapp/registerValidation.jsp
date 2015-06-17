@@ -27,7 +27,7 @@
                 if(registered) { %>
                     <c:remove var="registeredUser" scope="session" />
                     <% out.println("U bent succesvol geregistreerd <br />");
-                    out.println("U wordt over een paar seconden gelanceerd naar het loginscherm");
+                    out.println("U wordt over een paar seconden doorgestuurd naar het loginscherm");
                     response.setHeader("Refresh", "5;url=signin.jsp");
                 } else {
                     response.sendRedirect("register.jsp");
