@@ -5,13 +5,17 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<jsp:useBean id="unsortedData" class="HelpClasses.HelpUnsortedData" scope="session" />
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>Informatie doorgeven</title>
         <% if(session.getAttribute("User") == null) {
             response.sendRedirect("index.jsp");
-        } %>
+        }
+        %>
     </head>
     <body>
         <div id="page">		
@@ -29,9 +33,19 @@
                         </div>
                         <div class="formpart2">
                             <input class="forminput2" type="text" name="title" required="required"/><br />
-                            <textarea class="forminput2" name="description" rows="6" cols="50" ></textarea><br />			
+                            <textarea class="forminput2" name="description" rows="6" cols="50"></textarea><br />			
                             <input class="forminput2" type="text" name="street"/><br />
                             <input class="forminput2" type="text" name="city" required="required"/><br />
+                            
+                            <div class="error">
+                                <% if(session.getAttribute("Error") != null) {
+                                    String errorMessage = String.valueOf(session.getAttribute("Error"));
+                                    if(errorMessage != null && !errorMessage.isEmpty()) {
+                                        out.println(errorMessage);
+                                        session.setAttribute("Error", null);
+                                    }
+                                } %>
+                            </div>
 
                             <div id="buttons">
                                 <div class="button">
