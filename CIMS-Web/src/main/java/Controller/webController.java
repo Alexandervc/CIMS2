@@ -103,10 +103,17 @@ public class webController extends HttpServlet {
     public boolean sendPhoto(String path, INewsItem item) {
         try {
             System.out.println("filepath = " + path);
-            String newName = "NewsItem" + item.getId() + "-" + item.getPictures().size() + 10 + ".jpg";
+            String newName = "";
+            if(!item.getPictures().isEmpty()){
+            newName = "NewsItem" + item.getId() + "_" + item.getPictures().size() + 10 + ".jpg";
+            }
+            else
+            {
+                newName = "NewsItem" + item.getId() + "_9.jpg";
+            }
             boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
-            //boolean database = ServerMain.sortedDatabaseManager.addPicture(newName, item);
-            if (upload) //&& database
+            boolean database = ServerMain.sortedDatabaseManager.insertPicture(item, newName);
+            if (upload && database)
             {
                 return true;
             }

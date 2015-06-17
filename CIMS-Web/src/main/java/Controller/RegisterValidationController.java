@@ -32,9 +32,9 @@ public class RegisterValidationController {
         if(!registeredUser.getPassword().equals(registeredUser.getRepeatPassword())) {
             throw new IllegalArgumentException("Beide wachtwoorden komen niet overeen");
         }
-        if(ServerMain.tasksDatabaseManager.getCitizen(registeredUser.getUsername()) != null) {
-            throw new IllegalArgumentException("Er bestaat al een gebruiker met deze gebruikersnaam");
-        }
+//        if(ServerMain.tasksDatabaseManager.getCitizen(registeredUser.getUsername()) != null) {
+//            throw new IllegalArgumentException("Er bestaat al een gebruiker met deze gebruikersnaam");
+//        }
         
         ICitizen newCitizen = new Citizen(registeredUser.getUsername(),
                                         registeredUser.getName(),

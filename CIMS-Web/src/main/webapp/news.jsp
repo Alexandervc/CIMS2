@@ -4,6 +4,7 @@
     Author     : Linda
 --%>
 
+<%@page import="HelpClasses.HelpFile"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="Shared.Data.INewsItem"%>
@@ -12,7 +13,9 @@
 <%@page import="Shared.Data.Situation"%>
 <%@page import="Shared.Data.NewsItem"%>
 <%@page import="Controller.webController"%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -28,9 +31,6 @@
             } catch (Exception ex) {
                 item = null;
             }
-            
-            
-            
         %>
     </head>	
     <body>	
@@ -184,8 +184,8 @@
 		
                     
                     <form  method="post" enctype="multipart/form-data"
-                           action="index.jsp" >
-                        <input id="fileName" type="file" name="img" class="upload"><br />
+                           action=<%= "uploadFile.jsp?newsid="+item.getId() %> >
+                        <input type="file" required="required" name="img" class="upload"><br />
                         <input type="submit" value="Verzenden" class="btn upload" />
                     </form> 
 		</article>
