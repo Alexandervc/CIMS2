@@ -8,6 +8,7 @@ package Controller;
 import HelpClasses.HelpUnsortedData;
 import ServerApp.ServerMain;
 import Shared.Data.IData;
+import Shared.Data.UnsortedData;
 import Shared.Users.IUser;
 
 /**
@@ -27,6 +28,9 @@ public class ReportValidationController {
      * @return true if sending unsortedData is successfull, otherwise false
      */
     public boolean sendUnsortedData(HelpUnsortedData unsortedData, IUser uploader) {
+        if(unsortedData == null || uploader == null) {
+            throw new IllegalArgumentException("Kon waarden niet ophalen");
+        }
         if(unsortedData.getCity() == null || unsortedData.getCity().isEmpty()) {
             throw new IllegalArgumentException("Voer een plaats in");
         }
@@ -42,9 +46,12 @@ public class ReportValidationController {
         String source = uploader.getUsername();
         
         // Make new unsortedData
+        IData newUnsortedData = new UnsortedData(unsortedData.getTitle(),
+                                        unsortedData.getDescription(),
+                                        location,
+                                        source);
         
-        
-        IData data = ServerMain.unsortedDatabaseManager.insertToUnsortedData(null);
+        IData data = ServerMain.unsortedDatabaseManager.insertToUnsortedData(newUnsortedData);
         return (data != null);
     }
 }
