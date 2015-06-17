@@ -4,6 +4,7 @@
     Author     : Melanie
 --%>
 
+<%@page import="HelpClasses.HelpUnsortedData"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <jsp:useBean id="unsortedData" class="HelpClasses.HelpUnsortedData" scope="session" />
@@ -15,7 +16,9 @@
         <% if(session.getAttribute("User") == null) {
             response.sendRedirect("index.jsp");
         }
-        %>
+        if(unsortedData.getTitle() == null || unsortedData.getTitle().isEmpty()) {
+            unsortedData = new HelpUnsortedData();
+        } %>
     </head>
     <body>
         <div id="page">		
@@ -32,10 +35,10 @@
                             <p>Plaats:</p>	
                         </div>
                         <div class="formpart2">
-                            <input class="forminput2" type="text" name="title" required="required"/><br />
-                            <textarea class="forminput2" name="description" rows="6" cols="50"></textarea><br />			
-                            <input class="forminput2" type="text" name="street"/><br />
-                            <input class="forminput2" type="text" name="city" required="required"/><br />
+                            <input class="forminput2" type="text" name="title" required="required" value="<%= unsortedData.getTitle() %>"/><br />
+                            <textarea class="forminput2" name="description" rows="6" cols="50" value="<%= unsortedData.getDescription() %>"></textarea><br />			
+                            <input class="forminput2" type="text" name="street" value="<%= unsortedData.getStreet() %>"/><br />
+                            <input class="forminput2" type="text" name="city" required="required" value="<%= unsortedData.getCity() %>"/><br />
                             
                             <div class="error">
                                 <% if(session.getAttribute("Error") != null) {
