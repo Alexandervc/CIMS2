@@ -22,6 +22,7 @@ import javafx.stage.Stage;
  * @author Alexander
  */
 public class Services extends Application {
+
     private ConnectionHandler connectionmanager;
     private ServicesLogInController controller;
     private ServicesController servicesController;
@@ -38,16 +39,15 @@ public class Services extends Application {
         }
         String ipAdressServer = props.getProperty("ServerIp");
         System.out.println(ipAdressServer);
-                
+
         portNumber = Integer.valueOf(props.getProperty("ServerPort"));
-        
+
         this.stage = stage;
         this.connectionmanager = new ConnectionHandler(this.ipAdressServer, this.portNumber);
         this.goToLogIn();
     }
-    
-    public void goToLogIn() throws Exception
-    {
+
+    public void goToLogIn() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesLogInFX.fxml"));
         Parent root = (Parent) loader.load();
         controller = (ServicesLogInController) loader.getController();
@@ -61,10 +61,9 @@ public class Services extends Application {
         logIn = true;
         stage.show();
     }
-    
+
     public void goToServices(ConnectionHandler manager, IUser user)
-            throws Exception
-    {
+            throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
         Parent root = (Parent) loader.load();
         servicesController = (ServicesController) loader.getController();
@@ -78,13 +77,12 @@ public class Services extends Application {
         logIn = false;
         stage.show();
     }
-    
+
     @Override
     public void stop() throws Exception {
-        if(logIn){
+        if (logIn) {
             controller.close();
-        }
-        else{
+        } else {
             servicesController.close(false);
         }
         super.stop();

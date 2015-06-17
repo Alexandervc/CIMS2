@@ -14,7 +14,7 @@
     <head>
         <title>Informatie doorgeven</title>
         <% if(session.getAttribute("User") == null) {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("wrongPermissions.jsp");
         }
         if(unsortedData.getTitle() == null || unsortedData.getTitle().isEmpty()) {
             unsortedData = new HelpUnsortedData();

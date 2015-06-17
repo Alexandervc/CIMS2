@@ -35,6 +35,7 @@ public class RegisterValidationController {
         if(!registeredUser.getPassword().equals(registeredUser.getRepeatPassword())) {
             throw new IllegalArgumentException("Beide wachtwoorden komen niet overeen");
         }
+
         if(ServerMain.tasksDatabaseManager.getUser(registeredUser.getUsername()) != null) {
             throw new IllegalArgumentException("Er bestaat al een gebruiker met deze gebruikersnaam");
         }
