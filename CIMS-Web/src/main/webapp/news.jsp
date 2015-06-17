@@ -27,9 +27,6 @@
             } catch (Exception ex) {
                 item = null;
             }
-            
-            
-            
         %>
     </head>	
     <body>	

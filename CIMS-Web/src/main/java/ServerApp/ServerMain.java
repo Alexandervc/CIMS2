@@ -19,10 +19,13 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
@@ -125,7 +128,8 @@ public class ServerMain {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                         InetAddress addr = enumIpAddr.nextElement();
                         if(ipAddress == null) {
-                            ipAddress = addr.getHostAddress();
+                            String address = addr.getLocalHost() + "";
+                            ipAddress = address.substring(address.indexOf("/")).substring(1);
                         }
                     }
                 }
@@ -133,6 +137,9 @@ public class ServerMain {
         } catch (SocketException ex) {
             System.out.println("Server: Cannot retrieve network interface list");
             System.out.println("Server: UnknownHostException: " + ex.getMessage());
+        } catch (UnknownHostException ex) {
+            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+            Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ipAddress;
     }
