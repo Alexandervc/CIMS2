@@ -20,7 +20,7 @@
                     <h2>Melding maken</h2>
                     <p>Heeft u belangrijke informatie over een noodsituatie, meld het dan hier.</p>
 
-                    <form action="index.jsp" method="post">
+                    <form action="reportValidation.jsp" method="post">
                         <div class="formpart1">
                             <p>Titel:</p>
                             <p>Beschrijving:</p>

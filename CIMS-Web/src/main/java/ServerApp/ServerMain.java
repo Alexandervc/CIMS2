@@ -13,8 +13,16 @@ import ServerApp.Database.TasksDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.FTP.FTPManager;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.SocketException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.Enumeration;
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
@@ -89,3 +97,86 @@ public class ServerMain {
         }
     }
 }
+
+//private static final int portnumber = 1099;
+//    private static final String bindingname = "Administration";
+//    
+//    private Registry registry;
+//    private IAdministration admin;
+//    
+//    public ServerController(String ipAdress) {
+//        try {
+//            System.setProperty("java.rmi.server.hostname", ipAdress);
+//
+//            Properties props = new Properties();
+//            props.setProperty("ServerIp", ipAdress);
+//            props.setProperty("ServerPort", String.valueOf(portnumber));
+//            try (FileOutputStream out = new FileOutputStream("network.props")) {
+//                props.store(out, null);
+//            }
+//            
+//            this.admin = Administration.getInstance();
+//            
+//            this.registry = LocateRegistry.createRegistry(portnumber);
+//            if(this.registry != null){
+//                this.registry.rebind(bindingname, admin);
+//            }
+//            System.out.println("running...");
+//            this.setUpSocketServer();
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//    
+//    private static String getIpAddress() {
+//        String ipAddress = null;        
+//        try {
+//            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+//                NetworkInterface intf = en.nextElement();
+//                if(intf.getName().contains("eth1")) {
+//                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+//                        InetAddress addr = enumIpAddr.nextElement();
+//                        if(ipAddress == null) {
+//                            ipAddress = addr.getHostAddress();
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (SocketException ex) {
+//            System.out.println("Server: Cannot retrieve network interface list");
+//            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+//        }
+//        return ipAddress;
+//    }
+//    
+//    private void setUpSocketServer() throws IOException {
+//        ServerSocket serverSocket = null;
+//        boolean listening = true;
+//
+//        try {
+//            serverSocket = new ServerSocket(4444);
+//            System.out.println("Socket Server is listening: Sound supported");
+//            System.out.println("Waiting for incoming clients...");
+//        } catch (IOException e) {
+//            System.out.println("Could not create Server Socket: Sound not supported");
+//        }
+//        
+//        while (listening) {
+//            Thread t = new Thread(new SSSrunnable(serverSocket.accept()));
+//            t.start();
+//        }
+//        serverSocket.close();
+//    }
+//    
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String[] args) {
+//        System.out.println("SERVER AIRHOCKEY");
+//        String ipAdress = getIpAddress();
+//        if(ipAdress == null || !ipAdress.contains(".")) {
+//            ipAdress = "127.0.0.1";
+//        }
+//        System.out.println(ipAdress);
+//        new ServerController(ipAdress);
+//    }

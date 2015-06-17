@@ -25,7 +25,6 @@ public class Headquarters extends Application {
     private HeadquartersController hqController;
     private ConnectionHandler connectionHandler;
     private String ipAdressServer = "127.0.0.1";
-    ;
 
     private Stage stage;
 
@@ -43,6 +42,27 @@ public class Headquarters extends Application {
         }
         this.goToLogIn();
     }
+    
+//    private void configure() throws FileNotFoundException, IOException{
+//        System.out.println("CLIENT AIRHOCKEY");
+//        
+//        Properties props = new Properties();
+//        try (FileInputStream in = new FileInputStream("network.props")) {
+//            props.load(in);
+//        }
+//        String ipAdressServer = props.getProperty("ServerIp");
+//        System.out.println(ipAdressServer);
+//        
+//        String ipAdressClient = this.getIpAddress();
+//        if(ipAdressClient == null || !ipAdressClient.contains(".")) {
+//            ipAdressClient = "127.0.0.1";
+//        }
+//        System.out.println(ipAdressClient);
+//                
+//        int portnumber = Integer.valueOf(props.getProperty("ServerPort"));
+//
+//        ((AdministrationFXController) fxmlLoader.getController()).setValues(ipAdressServer, ipAdressClient, portnumber, "Administration");
+//    }
 
     public void goToLogIn() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
