@@ -186,8 +186,17 @@
                     <form  method="post" enctype="multipart/form-data"
                            action=<%= "uploadFile.jsp?newsid="+item.getId() %> >
                         <input type="file" required="required" name="img" class="upload"><br />
+                        <div class="error">
+                                <% if(session.getAttribute("Error") != null) {
+                                    String errorMessage = String.valueOf(session.getAttribute("Error"));
+                                    if(errorMessage != null && !errorMessage.isEmpty()) {
+                                        out.println(errorMessage);
+                                        session.setAttribute("Error", null);
+                                    }
+                                } %>
+                            </div>
                         <input type="submit" value="Verzenden" class="btn upload" />
-                    </form> 
+                    </form>
 		</article>
                         <%} %>
             </section>

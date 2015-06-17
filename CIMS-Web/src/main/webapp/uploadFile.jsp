@@ -74,13 +74,10 @@
                             fi.write(file);
                             boolean succeed =controller.sendPhoto(file.getPath(), item);
                             if(succeed){
-                                out.println("De foto is succesvol verstuurd. <br />");
-                                out.println("U wordt over een paar seconden gelanceerd naar het nieuwsitem.");
-                                response.setHeader("Refresh", "5;url=news.jsp?newsid=" + item.getId());
+                                response.sendRedirect("news.jsp?newsid=" + item.getId());
                             }else{
-                                out.println("Het versturen van de foto is niet gelukt, probeer het later nog eens. <br />");
-                                out.println("U wordt over een paar seconden gelanceerd naar het nieuwsitem.");
-                                response.setHeader("Refresh", "5;url=news.jsp?newsid=" + item.getId());
+                                session.setAttribute("Error", "Versturen van de foto is mislukt");
+                                response.sendRedirect("news.jsp?newsid=" + item.getId());
                             }
                         }
                     }
