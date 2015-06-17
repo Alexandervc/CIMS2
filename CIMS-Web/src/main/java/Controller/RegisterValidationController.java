@@ -26,15 +26,19 @@ public class RegisterValidationController {
      * @return true if the user is successfull registered, otherwise false
      */
     public boolean registerUser(HelpUser registeredUser) {
+        if(registeredUser == null) {
+            throw new IllegalArgumentException("Kon waarden niet ophalen");
+        }
         if(registeredUser.getPassword() == null || registeredUser.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Voer een wachtwoord in");
         }
         if(!registeredUser.getPassword().equals(registeredUser.getRepeatPassword())) {
             throw new IllegalArgumentException("Beide wachtwoorden komen niet overeen");
         }
-//        if(ServerMain.tasksDatabaseManager.getCitizen(registeredUser.getUsername()) != null) {
-//            throw new IllegalArgumentException("Er bestaat al een gebruiker met deze gebruikersnaam");
-//        }
+
+        if(ServerMain.tasksDatabaseManager.getUser(registeredUser.getUsername()) != null) {
+            throw new IllegalArgumentException("Er bestaat al een gebruiker met deze gebruikersnaam");
+        }
         
         ICitizen newCitizen = new Citizen(registeredUser.getUsername(),
                                         registeredUser.getName(),

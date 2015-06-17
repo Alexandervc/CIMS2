@@ -21,10 +21,13 @@ import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
 import Shared.Users.Citizen;
 import Shared.Users.ICitizen;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -102,63 +105,59 @@ public class TasksDatabaseManagerTest {
 
         // get tasks // TODO 
         List<ITask> tasks = myDB.getTasks(executor.getUsername(), new HashSet<>());
-        assertEquals("wrong number of tasks", 3, tasks.size());
+        assertEquals("wrong number of tasks", 2, tasks.size());
 
         // tests if tasks are correct
         for (ITask taskItem : tasks) {
-            String expectedTitle = "?????";
-            String expectedDescription = "??????";
-            String expectedReason = "??????";
-            Tag expectedTag = null;
-            int expectedDataID = -9999;
-            TaskStatus expectedStatus = null;
-            boolean expectedHasData = true;
-
-            if (taskItem.getId() == 3) {
-                expectedTitle = "Zet ladder neer";
-                expectedDescription = "Zet de ladder tegen de boom.";
-                expectedReason = null;
-                expectedTag = Tag.FIREDEPARTMENT;
-                expectedHasData = true;
-                expectedDataID = 3;
-                expectedStatus = TaskStatus.SENT;
-            } else if (taskItem.getId() == 4) {
-                expectedTitle = "Kat pakken";
-                expectedDescription = "Beklim de ladder en haal de kat uit de boom.";
-                expectedReason = "Allergisch voor katten";
-                expectedTag = Tag.FIREDEPARTMENT;
-                expectedHasData = true;
-                expectedDataID = 3;
-                expectedStatus = TaskStatus.REFUSED;
-            } else if (taskItem.getId() == 11) {
-                expectedTitle = task2.getTitle();
-                expectedDescription = task2.getDescription();
-                expectedReason = task2.getDeclineReason();
-                expectedTag = task2.getTargetExecutor();
-                expectedHasData = true;
-                expectedDataID = task2.getSortedData().getId();
-                expectedStatus = task2.getStatus();
-            } else {
-                fail("no recognized task ID");
+            try {
+                String expectedTitle = "?????";
+                String expectedDescription = "??????";
+                String expectedReason = "??????";
+                Tag expectedTag = null;
+                int expectedDataID = -9999;
+                TaskStatus expectedStatus = null;
+                boolean expectedHasData = true;
+                
+                if (taskItem.getId() == 3) {
+                    expectedTitle = "Zet ladder neer";
+                    expectedDescription = "Zet de ladder tegen de boom.";
+                    expectedReason = null;
+                    expectedTag = Tag.FIREDEPARTMENT;
+                    expectedHasData = true;
+                    expectedDataID = 3;
+                    expectedStatus = TaskStatus.SENT;
+                } else if (taskItem.getId() == myDB.getMaxID("USERTASK")) {
+                    expectedTitle = task2.getTitle();
+                    expectedDescription = task2.getDescription();
+                    expectedReason = task2.getDeclineReason();
+                    expectedTag = task2.getTargetExecutor();
+                    expectedHasData = true;
+                    expectedDataID = task2.getSortedData().getId();
+                    expectedStatus = task2.getStatus();
+                } else {
+                    fail("no recognized task ID");
+                }
+                
+                assertEquals("different title " + taskItem.getId(),
+                        expectedTitle, taskItem.getTitle());
+                assertEquals("different description " + taskItem.getId(),
+                        expectedDescription, taskItem.getDescription());
+                assertEquals("different decline reason " + taskItem.getId(),
+                        expectedReason, taskItem.getDeclineReason());
+                assertEquals("different tag " + taskItem.getId(),
+                        expectedTag, taskItem.getTargetExecutor());
+                if (expectedHasData) {
+                    assertEquals("different Data" + taskItem.getId(),
+                            expectedDataID, taskItem.getSortedData().getId());
+                } else {
+                    assertNull("has data when he shouldn't " + taskItem.getId(),
+                            taskItem.getSortedData());
+                }
+                assertEquals("different status " + taskItem.getId(),
+                        expectedStatus, taskItem.getStatus());
+            } catch (SQLException ex) {
+                Logger.getLogger(TasksDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            assertEquals("different title " + taskItem.getId(),
-                    expectedTitle, taskItem.getTitle());
-            assertEquals("different description " + taskItem.getId(),
-                    expectedDescription, taskItem.getDescription());
-            assertEquals("different decline reason " + taskItem.getId(),
-                    expectedReason, taskItem.getDeclineReason());
-            assertEquals("different tag " + taskItem.getId(),
-                    expectedTag, taskItem.getTargetExecutor());
-            if (expectedHasData) {
-                assertEquals("different Data" + taskItem.getId(),
-                        expectedDataID, taskItem.getSortedData().getId());
-            } else {
-                assertNull("has data when he shouldn't " + taskItem.getId(),
-                        taskItem.getSortedData());
-            }
-            assertEquals("different status " + taskItem.getId(),
-                    expectedStatus, taskItem.getStatus());
         }
 
         // gets only active tasks
@@ -236,39 +235,43 @@ public class TasksDatabaseManagerTest {
         assertTrue("Not all plans were retrieved", plans.size() == 4);
 
         for (IPlan planItem : plans) {
-            String expectedTitle = "??????????";
-            String expectedDesc = "???????????";
-            int expectedKeywordsCount = -1;
-            int expectedStepCount = -1;
-            // sets expected
-            if (planItem.getId() == 1) {
-                expectedTitle = "Brand";
-                expectedDesc = "Brand in een gebouw met 3 verdiepingen.";
-                expectedKeywordsCount = 3;
-                expectedStepCount = 2;
-            } else if (planItem.getId() == 2) {
-                expectedTitle = "Auto ongeluk";
-                expectedDesc = "Er is een auto ongeluk op de snelweg. "
-                        + "Er zijn geen gewonden, maar wel veel schade aan de"
-                        + " autos en troep op de weg.";
-                expectedKeywordsCount = 6;
-                expectedStepCount = 4;
-            } else if (planItem.getId() == 3 || planItem.getId() == 4) {
-                expectedTitle = plan.getTitle();
-                expectedDesc = plan.getDescription();
-                expectedKeywordsCount = plan.getKeywords().size();
-                expectedStepCount = plan.getSteps().size();
-            } else {
-                fail("id fail (testGetPlans): " + planItem.getId());
+            try {
+                String expectedTitle = "??????????";
+                String expectedDesc = "???????????";
+                int expectedKeywordsCount = -1;
+                int expectedStepCount = -1;
+                // sets expected
+                if (planItem.getId() == 1) {
+                    expectedTitle = "Brand";
+                    expectedDesc = "Brand in een gebouw met 3 verdiepingen.";
+                    expectedKeywordsCount = 3;
+                    expectedStepCount = 2;
+                } else if (planItem.getId() == 2) {
+                    expectedTitle = "Auto ongeluk";
+                    expectedDesc = "Er is een auto ongeluk op de snelweg. "
+                            + "Er zijn geen gewonden, maar wel veel schade aan de"
+                            + " autos en troep op de weg.";
+                    expectedKeywordsCount = 6;
+                    expectedStepCount = 4;
+                } else if (planItem.getId() == myDB.getMaxID("PLAN") - 1 || planItem.getId() == myDB.getMaxID("PLAN")) {
+                    expectedTitle = plan.getTitle();
+                    expectedDesc = plan.getDescription();
+                    expectedKeywordsCount = plan.getKeywords().size();
+                    expectedStepCount = plan.getSteps().size();
+                } else {
+                    fail("id fail (testGetPlans): " + planItem.getId());
+                }
+                
+                // checks values
+                assertEquals("title fail (testGetPlans)", expectedTitle, planItem.getTitle());
+                assertEquals("desc fail (testGetPlans)", expectedDesc, planItem.getDescription());
+                assertEquals("keyword count fail (testGetPlans)", expectedKeywordsCount,
+                        planItem.getKeywords().size());
+                assertEquals("step count fail (testGetPlans)", expectedStepCount,
+                        planItem.getSteps().size());
+            } catch (SQLException ex) {
+                Logger.getLogger(TasksDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            // checks values
-            assertEquals("title fail (testGetPlans)", expectedTitle, planItem.getTitle());
-            assertEquals("desc fail (testGetPlans)", expectedDesc, planItem.getDescription());
-            assertEquals("keyword count fail (testGetPlans)", expectedKeywordsCount,
-                    planItem.getKeywords().size());
-            assertEquals("step count fail (testGetPlans)", expectedStepCount,
-                    planItem.getSteps().size());
         }
     }
 
@@ -368,7 +371,7 @@ public class TasksDatabaseManagerTest {
                     expectedTag = Tag.AMBULANCE;
                     break;
                 case "policeofficer01":
-                    expectedName = "Bob Steers";
+                    expectedName = "Bobby de Hond";
                     expectedTag = Tag.POLICE;
                     break;
                 case "policeofficer02":

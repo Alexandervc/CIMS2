@@ -71,12 +71,9 @@ nav a:hover {
 }
 
 .account {
-	padding: 25px 0 0 100px;
-	float: left;
-	font-size: 16px;
-}
-.account a {	
-	width: 100px;
+        float: left;
+        font-size: 16px;
+        padding-top: 25px;
 }
 
 #page {
@@ -264,10 +261,17 @@ footer {
 }
 
 .btn {
-	height: 30px;	
+        height: 30px;	
 }
 
 .registration {
-	width: 120px;
+        width: 120px;
 }
 
+/**--------------- errors ---------------**/
+
+.error {
+        color: RED;
+        margin: 10px 0;
+        font-weight: bold;
+}

@@ -4,12 +4,21 @@
     Author     : Melanie
 --%>
 
+<%@page import="HelpClasses.HelpUnsortedData"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<jsp:useBean id="unsortedData" class="HelpClasses.HelpUnsortedData" scope="session" />
+
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CIMS 112 Nieuws</title>
+        <title>Informatie doorgeven</title>
+        <% if(session.getAttribute("User") == null) {
+            response.sendRedirect("wrongPermissions.jsp");
+        }
+        if(unsortedData.getTitle() == null || unsortedData.getTitle().isEmpty()) {
+            unsortedData = new HelpUnsortedData();
+        } %>
     </head>
     <body>
         <div id="page">		
@@ -18,7 +27,7 @@
                     <h2>Melding maken</h2>
                     <p>Heeft u belangrijke informatie over een noodsituatie, meld het dan hier.</p>
 
-                    <form action="index.jsp" method="post">
+                    <form action="reportValidation.jsp" method="post">
                         <div class="formpart1">
                             <p>Titel:</p>
                             <p>Beschrijving:</p>
@@ -26,10 +35,20 @@
                             <p>Plaats:</p>	
                         </div>
                         <div class="formpart2">
-                            <input class="forminput2" type="text" name="title" required="required"/><br />
-                            <textarea class="forminput2" name="description" rows="6" cols="50"required="required" ></textarea><br />			
-                            <input class="forminput2" type="text" name="street"/><br />
-                            <input class="forminput2" type="text" name="city" required="required"/><br />
+                            <input class="forminput2" type="text" name="title" required="required" value="<%= unsortedData.getTitle() %>"/><br />
+                            <textarea class="forminput2" name="description" rows="6" cols="50" value="<%= unsortedData.getDescription() %>"></textarea><br />			
+                            <input class="forminput2" type="text" name="street" value="<%= unsortedData.getStreet() %>"/><br />
+                            <input class="forminput2" type="text" name="city" required="required" value="<%= unsortedData.getCity() %>"/><br />
+                            
+                            <div class="error">
+                                <% if(session.getAttribute("Error") != null) {
+                                    String errorMessage = String.valueOf(session.getAttribute("Error"));
+                                    if(errorMessage != null && !errorMessage.isEmpty()) {
+                                        out.println(errorMessage);
+                                        session.setAttribute("Error", null);
+                                    }
+                                } %>
+                            </div>
 
                             <div id="buttons">
                                 <div class="button">
