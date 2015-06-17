@@ -260,9 +260,37 @@ public class SortedDatabaseManagerTest {
     }
     
     @Test
-    private void testPictures() {
+    public void testPictures() {
         List<INewsItem> items = myDB.getNewsItems(0, 5);
+        String picture1 = "plaatje1.jpg";
+        String picture2 = "plaatje2.jpg";
         
+        assertTrue("picture1 was not inserted in database", 
+                myDB.insertPicture(items.get(0), picture1));
+        assertTrue("picture2 was not inserted in database",
+                myDB.insertPicture(items.get(0), picture2));
+        assertFalse("picture1 was inserted for a second time in database", 
+                myDB.insertPicture(items.get(1), picture1));
+        
+        List<String> pictures = myDB.getNewsItemByID(items.get(0).getId()).getPictures();
+        boolean result = false;
+        if(pictures.contains(picture1)) {
+            result = true;
+        }
+        assertTrue("picture1 was not added to newsitem", result);
+        
+        result = false;
+        if(pictures.contains(picture2)) {
+            result = true;
+        }
+        assertTrue("picture2 was not added to newsitem", result);
+        
+        result = false;        
+        pictures = myDB.getNewsItemByID(items.get(1).getId()).getPictures();
+        if(pictures.contains(picture1)) {
+            result = true;
+        }
+        assertFalse("picture1 was added to newsitem", result);
     }
 
 }

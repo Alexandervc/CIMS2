@@ -547,16 +547,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         return output;
     }
 
-    public ICitizen getCitizen(String input) {
-        if (!openConnection() || input == null) {
-            closeConnection();
-            return null;
-        }
-        ICitizen output = null;
-
-        return output;
-    }
-
     /**
      *
      * @return all ServiceUsers
@@ -684,7 +674,6 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return null if not found
      */
     public IUser loginUser(String userName, String password) {
-        System.out.println("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc");
         if (!openConnection() || (userName == null) || (password == null)) {
             closeConnection();
             return null;
@@ -694,7 +683,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
         try {
             query = "SELECT * FROM " + userTable
                     + " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
@@ -708,7 +696,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             if (extractedUsers.size() == 1) {
                 output = extractedUsers.get(0);
             }
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
                     + ": " + ex.getMessage());
