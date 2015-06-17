@@ -43,8 +43,6 @@ public class webController extends HttpServlet {
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         news.add(new NewsItem(1, "Title1", "Description1", "Rachelsmolen, Eindhoven",
                 "Source1", situations, 0, date));
-        ServerMain.ftpManager.uploadFile("E:/64277_816878888362056_5899858130298802750_n.jpg", "UnitTest1.jpg");
-        news.get(0).addPicture("UnitTest1.jpg");
     }
 
     public INewsItem getNewsWithID(String ID) {
