@@ -7,6 +7,8 @@ package ServicesApp.UI;
 
 import ServicesApp.Connection.ConnectionHandler;
 import Shared.Users.IUser;
+import java.io.FileInputStream;
+import java.util.Properties;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -25,12 +27,22 @@ public class Services extends Application {
     private ServicesController servicesController;
     private Stage stage;
     private String ipAdressServer = "127.0.0.1";
+    private int portNumber;
     private boolean logIn = true;
 
     @Override
     public void start(Stage stage) throws Exception {
+        Properties props = new Properties();
+        try (FileInputStream in = new FileInputStream("../network.props")) {
+            props.load(in);
+        }
+        String ipAdressServer = props.getProperty("ServerIp");
+        System.out.println(ipAdressServer);
+                
+        portNumber = Integer.valueOf(props.getProperty("ServerPort"));
+        
         this.stage = stage;
-        this.connectionmanager = new ConnectionHandler(this.ipAdressServer);
+        this.connectionmanager = new ConnectionHandler(this.ipAdressServer, this.portNumber);
         this.goToLogIn();
     }
     

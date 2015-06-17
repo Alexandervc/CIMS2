@@ -63,8 +63,8 @@ public class ConnectionHandler {
      * @param address
      * @throws IOException
      */
-    public ConnectionHandler(String address) throws IOException {
-        this.client = new ClientConnection(InetAddress.getByName(address), DEFAULT_PORT);
+    public ConnectionHandler(String address, int port) throws IOException {
+        this.client = new ClientConnection(InetAddress.getByName(address), port);
         this.commandID = 0;
 
         Thread clientThread = new Thread(client);

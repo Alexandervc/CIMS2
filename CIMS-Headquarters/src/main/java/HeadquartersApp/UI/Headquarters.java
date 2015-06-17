@@ -7,6 +7,8 @@ package HeadquartersApp.UI;
 
 import HeadquartersApp.Connection.ConnectionHandler;
 import Shared.Users.IUser;
+import java.io.FileInputStream;
+import java.util.Properties;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -25,17 +27,27 @@ public class Headquarters extends Application {
     private HeadquartersController hqController;
     private ConnectionHandler connectionHandler;
     private String ipAdressServer = "127.0.0.1";
+    private int portNumber;
 
     private Stage stage;
 
     @Override
     public void start(Stage stage) throws Exception {
+        Properties props = new Properties();
+        try (FileInputStream in = new FileInputStream("../network.props")) {
+            props.load(in);
+        }
+        String ipAdressServer = props.getProperty("ServerIp");
+        System.out.println(ipAdressServer);
+                
+        portNumber = Integer.valueOf(props.getProperty("ServerPort"));
+        
         try {
             this.stage = stage;
             this.stage.setTitle("Headquarters CIMS");
             this.stage.setMinWidth(100);
             this.stage.setMinHeight(100);
-            this.connectionHandler = new ConnectionHandler(this.ipAdressServer);
+            this.connectionHandler = new ConnectionHandler(this.ipAdressServer, this.portNumber);
             goToLogIn();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -46,20 +58,7 @@ public class Headquarters extends Application {
 //    private void configure() throws FileNotFoundException, IOException{
 //        System.out.println("CLIENT AIRHOCKEY");
 //        
-//        Properties props = new Properties();
-//        try (FileInputStream in = new FileInputStream("network.props")) {
-//            props.load(in);
-//        }
-//        String ipAdressServer = props.getProperty("ServerIp");
-//        System.out.println(ipAdressServer);
-//        
-//        String ipAdressClient = this.getIpAddress();
-//        if(ipAdressClient == null || !ipAdressClient.contains(".")) {
-//            ipAdressClient = "127.0.0.1";
-//        }
-//        System.out.println(ipAdressClient);
-//                
-//        int portnumber = Integer.valueOf(props.getProperty("ServerPort"));
+        
 //
 //        ((AdministrationFXController) fxmlLoader.getController()).setValues(ipAdressServer, ipAdressClient, portnumber, "Administration");
 //    }
