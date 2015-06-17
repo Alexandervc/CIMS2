@@ -33,7 +33,7 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
-    private boolean subscribedUnsorted; 
+    private boolean subscribedUnsorted;
 
     private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class ConnectionHandler {
 
 //        this.testMethods();
     }
-    
+
     public void setSubscribedUnsorted(boolean subscribedUnsorted) {
         this.subscribedUnsorted = subscribedUnsorted;
     }
@@ -84,15 +84,15 @@ public class ConnectionHandler {
     private synchronized int getCommandID() {
         return this.commandID++;
     }
-    
-    private void registerCommandSent(ServerBoundTransaction transaction){
-        synchronized(inProgressCommands){
+
+    private void registerCommandSent(ServerBoundTransaction transaction) {
+        synchronized (inProgressCommands) {
             inProgressCommands.put(transaction.ID, transaction.command);
         }
     }
 
     protected void notifyCommandResponse(int ID) {
-        synchronized(inProgressCommands){
+        synchronized (inProgressCommands) {
             inProgressCommands.remove(ID);
             System.out.println("Non-answered commands remaining: "
                     + inProgressCommands.size());
@@ -100,8 +100,7 @@ public class ConnectionHandler {
     }
 
     /**
-     * Terminates the active pool, in preparation for program shutdown.
-     * //TODO
+     * Terminates the active pool, in preparation for program shutdown. //TODO
      */
     public void close() {
 //        if (this.collectFuture != null) {
@@ -231,7 +230,7 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * Sends the given task to the server
      *
@@ -366,12 +365,12 @@ public class ConnectionHandler {
      */
     public void getTasks() {
         HashSet<TaskStatus> statuses = new HashSet<TaskStatus>();
-        for(TaskStatus ts : TaskStatus.values()) {
-            if(ts != TaskStatus.READ && ts != TaskStatus.UNASSIGNED) {
+        for (TaskStatus ts : TaskStatus.values()) {
+            if (ts != TaskStatus.READ && ts != TaskStatus.UNASSIGNED) {
                 statuses.add(ts);
             }
         }
-        
+
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
                         ConnCommand.TASKS_GET, null, statuses);
@@ -443,7 +442,7 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * Gets all NewsItems from server and sends returnvalue to
      * hqController.displayNewsItems()
@@ -495,10 +494,10 @@ public class ConnectionHandler {
      * Tries to unsubscribe to unsorted data from server.
      */
     public void unsubscribeUnsorted() {
-        if(!this.subscribedUnsorted) {
+        if (!this.subscribedUnsorted) {
             return;
         }
-        
+
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
                         ConnCommand.USERS_UNSORTED_UNSUBSCRIBE);
@@ -509,7 +508,5 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
-
-
 
 }

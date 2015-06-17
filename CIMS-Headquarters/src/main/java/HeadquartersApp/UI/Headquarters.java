@@ -39,9 +39,9 @@ public class Headquarters extends Application {
         }
         String ipAdressServer = props.getProperty("ServerIp");
         System.out.println(ipAdressServer);
-                
+
         portNumber = Integer.valueOf(props.getProperty("ServerPort"));
-        
+
         try {
             this.stage = stage;
             this.stage.setTitle("Headquarters CIMS");
@@ -54,14 +54,6 @@ public class Headquarters extends Application {
         }
         this.goToLogIn();
     }
-    
-//    private void configure() throws FileNotFoundException, IOException{
-//        System.out.println("CLIENT AIRHOCKEY");
-//        
-        
-//
-//        ((AdministrationFXController) fxmlLoader.getController()).setValues(ipAdressServer, ipAdressClient, portnumber, "Administration");
-//    }
 
     public void goToLogIn() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
@@ -100,9 +92,9 @@ public class Headquarters extends Application {
 
     @Override
     public void stop() throws Exception {
-        if(hqController != null){
+        if (hqController != null) {
             hqController.close(false);
-        }    
+        }
         super.stop();
     }
 
