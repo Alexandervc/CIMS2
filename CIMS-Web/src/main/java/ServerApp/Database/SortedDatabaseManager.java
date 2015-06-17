@@ -150,7 +150,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         try {
             query = "INSERT INTO " + pictureTable
-                    + "VALUES (?, ?)";
+                    + " VALUES (?, ?)";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, news.getId());
             prepStat.setString(2, link);
