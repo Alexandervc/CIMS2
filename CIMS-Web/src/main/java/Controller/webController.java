@@ -34,11 +34,10 @@ public class webController extends HttpServlet {
     private HashSet<Situation> situations = new HashSet<Situation>();
     private HashSet<Advice> advices = new HashSet<Advice>();
     private List<INewsItem> news = new ArrayList<INewsItem>();
-    private HashMap<Integer,Integer> distances = new HashMap<>();
+    private HashMap<Integer, Integer> distances = new HashMap<>();
     private Date date = new Date();
 
     public webController() {
-        //File tmpDir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         news.add(new NewsItem(1, "Title1", "Description1", "Rachelsmolen, Eindhoven",
@@ -92,25 +91,20 @@ public class webController extends HttpServlet {
     }
 
     public String getFile(String photoName) {
-        System.out.println("Filepath = " + "http://athena.fhict.nl/users/i204267/" + photoName);
         return "http://athena.fhict.nl/users/i204267/" + photoName;
     }
 
     public boolean sendPhoto(String path, INewsItem item) {
         try {
-            System.out.println("filepath = " + path);
             String newName = "";
-            if(!item.getPictures().isEmpty()){
-            newName = "NewsItem" + item.getId() + "_" + (item.getPictures().size() + 10) + ".jpg";
-            }
-            else
-            {
+            if (!item.getPictures().isEmpty()) {
+                newName = "NewsItem" + item.getId() + "_" + (item.getPictures().size() + 10) + ".jpg";
+            } else {
                 newName = "NewsItem" + item.getId() + "_10.jpg";
             }
             boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
             boolean database = ServerMain.sortedDatabaseManager.insertPicture(item, newName);
-            if (upload && database)
-            {
+            if (upload && database) {
                 return true;
             }
             return false;
@@ -119,14 +113,13 @@ public class webController extends HttpServlet {
             return false;
         }
     }
-    
+
     public void calcDistance(int newsid, int distance) {
         if (distance >= 0) {
             distances.put(newsid, distance);
         } else {
             distances.put(newsid, -1);
         }
-        
         System.out.println(distance);
     }
 }
