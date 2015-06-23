@@ -39,7 +39,6 @@ public class IndexController {
     }
     
     public String getFile(String photoName) {
-        System.out.println("Filepath = " + "http://athena.fhict.nl/users/i204267/" + photoName);
-        return "http://athena.fhict.nl/users/i204267/" + photoName;
+       return "http://athena.fhict.nl/users/i204267/" + photoName;
     }
 }
