@@ -28,7 +28,8 @@
         %>
     </head>	
     <body>	
-        <% for (INewsItem n : controller.getNewsItems(limit * (pagenr - 1), limit)) { 
+        <% if (controller.getNewsItemCount() > 0) {
+            for (INewsItem n : controller.getNewsItems(limit * (pagenr - 1), limit)) { 
             if(n != null) { %>
 
                 <article class="news">
@@ -78,6 +79,11 @@
                         </li>
                     </ul>
                 </div>
+        <% } else { %>
+            <article class="message">
+                 Er is geen informatie om weer te geven
+             </article>
+        <% } %>
     </body>
 </html>
 
