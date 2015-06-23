@@ -3,6 +3,7 @@
     Created on : 17-jun-2015, 9:42:09
     Author     : Linda
 --%>
+<%@page import="org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException"%>
 <%@page import="org.apache.commons.fileupload.FileItem"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Iterator"%>
@@ -81,8 +82,12 @@
                             }
                         }
                     }
+                } catch (SizeLimitExceededException sleEx) {
+                    session.setAttribute("Error", "Bestand te groot: " + sleEx.getMessage());
+                    response.sendRedirect("news.jsp?newsid=" + item.getId());
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    session.setAttribute("Error", ex.getMessage());
+                    response.sendRedirect("news.jsp?newsid=" + item.getId());
                 }
             } else {
                 out.println("<p>No file uploaded</p>");

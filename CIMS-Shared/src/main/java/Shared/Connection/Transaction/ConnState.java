@@ -10,13 +10,6 @@ package Shared.Connection.Transaction;
  * @author Kargathia
  */
 public enum ConnState {
-
-    CONNECTION_START,
-    CONNECTION_END,
-    TRANSFER_START,
-    TRANSFER_END,
-    COMMAND_ERROR,
     COMMAND_SUCCESS,
     COMMAND_FAIL,
-    COMMAND_UNKNOWN
 }

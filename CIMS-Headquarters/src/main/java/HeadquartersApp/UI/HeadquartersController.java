@@ -1653,26 +1653,46 @@ public class HeadquartersController implements Initializable {
             }
         }
     }
+    
+    private void clearMessages() {
+        lblApplyPlan.setVisible(false);
+        lblInformationReport.setVisible(false);
+        lblProcessSortedData.setVisible(false);
+        lblSendPlan.setVisible(false);
+        lblTasks.setVisible(false);
+        lblUnsortedReport.setVisible(false);
+        lblbMessage.setVisible(false);
+        lblnMessage.setVisible(false);
+    }
 
     public void showDialog(String title, String melding, boolean warning) {
-        Alert alert = null;
+        Platform.runLater(new Runnable() {
 
-        if (warning) {
-            alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Foutmelding");
-        } else {
-            alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Melding");
-        }
+            @Override
+            public void run() {
+                clearMessages();
+                
+                Alert alert = null;
 
-        if (!title.isEmpty()) {
-            alert.setHeaderText(title);
-        } else {
-            alert.setHeaderText(null);
-        }
+                if (warning) {
+                    alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Foutmelding");
+                } else {
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Melding");
+                }
 
-        alert.setContentText(melding);
-        alert.showAndWait();
+                if (!title.isEmpty()) {
+                    alert.setHeaderText(title);
+                } else {
+                    alert.setHeaderText(null);
+                }
+
+                alert.setContentText(melding);
+                alert.showAndWait();
+            }
+            
+        });
     }
 
     /**

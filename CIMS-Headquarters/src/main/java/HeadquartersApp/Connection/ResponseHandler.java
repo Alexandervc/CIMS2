@@ -89,10 +89,6 @@ class ResponseHandler implements IResponseHandler {
                             + ": "
                             + transaction.result.toString());
 
-                    if (transaction.result == ConnState.COMMAND_ERROR) {
-                        throw new NetworkException(transaction.command.toString());
-                    }
-
                     switch (transaction.command) {
                         default:
                             throw new NetworkException("(Unknown Command) - "
@@ -134,19 +130,47 @@ class ResponseHandler implements IResponseHandler {
                             this.handleUnsubscribeUnsorted(transaction);
                             break;
                         case UNSORTED_GET_ID:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_GET_SOURCE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_STATUS_RESET:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_UPDATE_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_DISCARD:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UPDATE_REQUEST_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UPDATE_REQUEST_GET:
+                            this.handleGenericResult(transaction);
+                            break;
                         case TASK_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case PLAN_SEND_NEW:
+                            this.handleGenericResult(transaction);
+                            break;
                         case PLAN_APPLY:
+                            this.handleGenericResult(transaction);
+                            break;
                         case TASK_UPDATE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case NEWSITEM_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case NEWSITEM_UPDATE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case USERS_REGISTER:
                             this.handleGenericResult(transaction);
                             break;
@@ -170,118 +194,114 @@ class ResponseHandler implements IResponseHandler {
      * @param transaction
      */
     private void handleGenericResult(ClientBoundTransaction transaction) {
-//        System.err.println("Command result received for "
-//                + transaction.command.toString()
-//                + ": "
-//                + transaction.result.toString());
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            loginController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
     }
 
     private void handleLoginResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result != ConnState.COMMAND_ERROR) {
-                IUser user = (IUser) transaction.data;
-                this.loginController.logIn(user);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            loginController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if(transaction.result == ConnState.COMMAND_SUCCESS) {
+            IUser user = (IUser) transaction.data;
+            this.loginController.logIn(user);
         }
     }
 
     private void handleUnsortedResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<IData> list = (List) transaction.data;
-                this.hqController.displayData(list);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IData> list = (List) transaction.data;
+            this.hqController.displayData(list);
         }
     }
 
     private void handleSearchPlansResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<IPlan> plans = (List) transaction.data;
-                this.hqController.displayPlans(plans);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IPlan> plans = (List) transaction.data;
+            this.hqController.displayPlans(plans);
         }
     }
 
     private void handleSortedResponse(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<ISortedData> data = (List) transaction.data;
-                this.hqController.displaySortedData(data);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<ISortedData> data = (List) transaction.data;
+            this.hqController.displaySortedData(data);
         }
     }
 
     private void handleServiceUsersResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<IServiceUser> users = (List) transaction.data;
-                this.hqController.displayServiceUsers(users);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IServiceUser> users = (List) transaction.data;
+            this.hqController.displayServiceUsers(users);
         }
     }
 
     private void handleTasksResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<ITask> tasks = (List) transaction.data;
-                this.hqController.displayTasks(tasks);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<ITask> tasks = (List) transaction.data;
+            this.hqController.displayTasks(tasks);
         }
     }
     
     private void handleNewsItemsResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<INewsItem> news = (List) transaction.data;
-                this.hqController.displayNewsItems(news);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<INewsItem> news = (List) transaction.data;
+            this.hqController.displayNewsItems(news);
         }
     }
 
     private void handleSituationsResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                Set<Situation> situations = (Set) transaction.data;
-                this.hqController.displaySituations(situations);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            Set<Situation> situations = (Set) transaction.data;
+            this.hqController.displaySituations(situations);
         }
     }
 
     private void handleTaskPush(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                ITask task = (ITask) transaction.data;
-                this.hqController.displayTasks(Arrays.asList(new ITask[]{task}));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            ITask task = (ITask) transaction.data;
+            this.hqController.displayTasks(Arrays.asList(new ITask[]{task}));
         }
     }
 
     private void handleSubscribeUnsorted(ClientBoundTransaction transaction) {
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
         if(transaction.result == ConnState.COMMAND_SUCCESS) {
             this.connectionHandler.setSubscribedUnsorted(true);
         }
     }
     
     private void handleUnsubscribeUnsorted(ClientBoundTransaction transaction) {
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
         if(transaction.result == ConnState.COMMAND_SUCCESS) {
             this.connectionHandler.setSubscribedUnsorted(false);
         }

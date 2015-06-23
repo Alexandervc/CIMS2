@@ -138,8 +138,7 @@ public class SortedData implements ISortedData {
     
     @Override
     public String toString() {
-        return this.title + ", " + String.valueOf(this.relevance) + ", " +
-                String.valueOf(this.reliability) + ", " + String.valueOf(this.quality);
+        return this.title;
     }
 
     @Override

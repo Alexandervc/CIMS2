@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import Shared.NetworkException;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class PlanExecutorHandler {
      * Add plan executor with the given plan
      * @param plan 
      */
-    public synchronized void addPlanExecutor(IPlan plan) {
+    public synchronized void addPlanExecutor(IPlan plan) throws NetworkException {
         this.executors.put(plan.getId(), new PlanExecutor(plan));
         executors.get(plan.getId()).executeNextStep();
     }
@@ -42,7 +43,7 @@ public class PlanExecutorHandler {
      * Send the step after this step to the executor
      * @param step 
      */
-    public void executeNextStepOf(IStep step) {
+    public void executeNextStepOf(IStep step) throws NetworkException {
         if(this.executors.get((step.getPlanId())) == null) {
             System.out.println("planExecutor null");
         }

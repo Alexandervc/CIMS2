@@ -111,6 +111,6 @@ public class DataRequest implements IDataRequest {
     
     @Override
     public String toString() {
-        return "MELDING: " + this.title;
+        return this.title;
     }
 }

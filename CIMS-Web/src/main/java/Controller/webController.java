@@ -10,6 +10,7 @@ import Shared.Data.Advice;
 import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
+import Shared.NetworkException;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -45,7 +46,7 @@ public class webController extends HttpServlet {
                 "Source1", situations, 0, date));
     }
 
-    public INewsItem getNewsWithID(String ID) {
+    public INewsItem getNewsWithID(String ID) throws NetworkException {
         return ServerMain.sortedDatabaseManager.getNewsItemByID(Integer.parseInt(ID));
     }
 
@@ -96,28 +97,23 @@ public class webController extends HttpServlet {
         return "http://athena.fhict.nl/users/i204267/" + photoName;
     }
 
-    public boolean sendPhoto(String path, INewsItem item) {
-        try {
-            System.out.println("filepath = " + path);
-            String newName = "";
-            if(!item.getPictures().isEmpty()){
-            newName = "NewsItem" + item.getId() + "_" + (item.getPictures().size() + 10) + ".jpg";
-            }
-            else
-            {
-                newName = "NewsItem" + item.getId() + "_10.jpg";
-            }
-            boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
-            boolean database = ServerMain.sortedDatabaseManager.insertPicture(item, newName);
-            if (upload && database)
-            {
-                return true;
-            }
-            return false;
-        } catch (Exception ex) {
-            Logger.getLogger(webController.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+    public boolean sendPhoto(String path, INewsItem item) throws NetworkException {
+        System.out.println("filepath = " + path);
+        String newName = "";
+        if(!item.getPictures().isEmpty()){
+        newName = "NewsItem" + item.getId() + "_" + (item.getPictures().size() + 10) + ".jpg";
         }
+        else
+        {
+            newName = "NewsItem" + item.getId() + "_10.jpg";
+        }
+        boolean upload = ServerMain.ftpManager.uploadFile(path, newName);
+        ServerMain.sortedDatabaseManager.insertPicture(item, newName);
+        if (upload)
+        {
+            return true;
+        }
+        return false;
     }
     
     public void calcDistance(int newsid, int distance) {

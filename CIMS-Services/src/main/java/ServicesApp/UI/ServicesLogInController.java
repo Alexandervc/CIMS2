@@ -104,24 +104,31 @@ public class ServicesLogInController implements Initializable {
         this.connectionManager.close();
     }
 
-    private void showDialog(String title, String melding, boolean warning) {
-        Alert alert = null;
+    public void showDialog(String title, String melding, boolean warning) {
+        Platform.runLater(new Runnable() {
 
-        if (warning) {
-            alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Foutmelding");
-        } else {
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Melding");
-        }
+            @Override
+            public void run() {
+                Alert alert = null;
 
-        if (!title.isEmpty()) {
-            alert.setHeaderText(title);
-        } else {
-            alert.setHeaderText(null);
-        }
+                if (warning) {
+                    alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Foutmelding");
+                } else {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Melding");
+                }
 
-        alert.setContentText(melding);
-        alert.showAndWait();
+                if (!title.isEmpty()) {
+                    alert.setHeaderText(title);
+                } else {
+                    alert.setHeaderText(null);
+                }
+
+                alert.setContentText(melding);
+                alert.showAndWait();
+            }
+            
+        });
     }
 }

@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import Shared.NetworkException;
 import Shared.Tasks.IPlan;
 
 /**
@@ -25,7 +26,7 @@ public class PlanExecutor {
         this.plan = plan;
     }
     
-    public void executeNextStep() {
+    public void executeNextStep() throws NetworkException {
         if(this.plan.nextStep()) {
             //push
             ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(this.plan.getCurrentStep() - 1));

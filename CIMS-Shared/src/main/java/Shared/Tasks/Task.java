@@ -118,7 +118,7 @@ public class Task implements ITask {
     
     @Override
     public String toString(){
-        return this.title + " - " + this.status;
+        return this.title;
     }
 
     @Override

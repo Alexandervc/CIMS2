@@ -13,6 +13,7 @@ import ServerApp.Database.TasksDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.FTP.FTPManager;
+import Shared.NetworkException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -76,20 +77,24 @@ public class ServerMain {
     }
 
     public static void startDatabases(String baseDir) {
-        if (baseDir == null) {
-            baseDir = "";
-        } else if (!baseDir.endsWith("\\")) {
-            baseDir += "\\";
+        try {
+            if (baseDir == null) {
+                baseDir = "";
+            } else if (!baseDir.endsWith("\\")) {
+                baseDir += "\\";
+            }
+            System.out.println("baseDir: " + baseDir);
+            sortedDatabaseManager = new SortedDatabaseManager(baseDir + "sorteddatabase.properties");
+            unsortedDatabaseManager = new UnsortedDatabaseManager(baseDir + "unsorteddatabase.properties");
+            tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
+            
+            planExecutorHandler = new PlanExecutorHandler();
+            dummyDatabaseManager = new DummyDatabaseManager();
+            
+            ftpManager = new FTPManager();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-        System.out.println("baseDir: " + baseDir);
-        sortedDatabaseManager = new SortedDatabaseManager(baseDir + "sorteddatabase.properties");
-        unsortedDatabaseManager = new UnsortedDatabaseManager(baseDir + "unsorteddatabase.properties");
-        tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
-
-        planExecutorHandler = new PlanExecutorHandler();
-        dummyDatabaseManager = new DummyDatabaseManager();
-
-        ftpManager = new FTPManager();
     }
 
     public static void stopDatabases() {

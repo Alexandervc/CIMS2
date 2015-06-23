@@ -4,6 +4,7 @@
     Author     : Alexander
 --%>
 
+<%@page import="Shared.NetworkException"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="Shared.Users.IUser"%>
 <%@page import="Controller.ReportValidationController"%>
@@ -41,8 +42,8 @@
                 session.setAttribute("Error", "Kon nieuwe melding niet versturen");
                 response.sendRedirect("report.jsp");
             }
-        } catch (IllegalArgumentException iaEx) {
-            session.setAttribute("Error", iaEx.getMessage());
+        } catch (Exception ex) {
+            session.setAttribute("Error", ex.getMessage());
             response.sendRedirect("report.jsp");
         } %>
         </article>

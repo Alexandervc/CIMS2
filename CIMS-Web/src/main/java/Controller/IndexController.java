@@ -11,6 +11,7 @@ import Shared.Data.Advice;
 import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
+import Shared.NetworkException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +30,11 @@ public class IndexController {
     public IndexController() {
     }
     
-    public List<INewsItem> getNewsItems(int offset, int limit) {        
+    public List<INewsItem> getNewsItems(int offset, int limit) throws NetworkException {        
         return ServerMain.sortedDatabaseManager.getNewsItems(offset, limit);
     }
     
-    public int getNewsItemCount() {
+    public int getNewsItemCount() throws NetworkException {
         return ServerMain.sortedDatabaseManager.getNewsItemCount();
     }
     

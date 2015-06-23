@@ -7,6 +7,7 @@ package Controller;
 
 import HelpClasses.HelpUser;
 import ServerApp.ServerMain;
+import Shared.NetworkException;
 import Shared.Users.IUser;
 
 /**
@@ -24,7 +25,7 @@ public class SigninValidationController {
      * @param tempSigninUser
      * @return true if sign in is succesfull, otherwise false
      */
-    public IUser signIn(HelpUser tempSigninUser) {
+    public IUser signIn(HelpUser tempSigninUser) throws NetworkException {
         if(tempSigninUser == null) {
             throw new IllegalArgumentException("Kon waarden niet ophalen");
         }

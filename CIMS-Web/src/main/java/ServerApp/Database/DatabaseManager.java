@@ -5,6 +5,7 @@
  */
 package ServerApp.Database;
 
+import Shared.NetworkException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,7 +39,7 @@ class DatabaseManager {
      *
      * @param fileName
      */
-    public DatabaseManager(String fileName) {
+    public DatabaseManager(String fileName) throws NetworkException {
         this.managerName = fileName;
         this.configure(fileName);
     }
@@ -48,7 +49,7 @@ class DatabaseManager {
      *
      * @param fileName
      */
-    private void configure(String fileName) {
+    private void configure(String fileName) throws NetworkException {
         props = new Properties();
 
         try (FileInputStream in = new FileInputStream(fileName)) {
@@ -67,7 +68,7 @@ class DatabaseManager {
                 throw new SQLException("Connection was null or closed");
             }
         } catch (SQLException ex) {
-            System.out.println("failed to init connection: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             closeConnection();
         }
@@ -78,7 +79,7 @@ class DatabaseManager {
      *
      * @return
      */
-    protected boolean resetDatabase() {
+    protected boolean resetDatabase() throws NetworkException {
         if (!openConnection()) {
             return false;
         }
@@ -88,8 +89,7 @@ class DatabaseManager {
             cs.executeQuery();
             return true;
         } catch (SQLException ex) {
-            System.out.println("Failed to reset database: " + ex.getMessage());
-            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             return false;
         } finally {
             closeConnection();
@@ -101,26 +101,20 @@ class DatabaseManager {
      *
      * @return
      */
-    protected synchronized boolean openConnection() {
+    protected synchronized boolean openConnection() throws NetworkException {
 
         try {
             if (conn != null && !conn.isClosed()) {
-//                System.out.println("connection already open");
                 return true;
             }
-//            System.out.println("-trying to acquire lock for "
-//                        + Thread.currentThread().getName()
-//                        + " on " + managerName);
+
             if (!lock.isHeldByCurrentThread()
                     && !lock.tryLock(10000, TimeUnit.MILLISECONDS)) {
-                System.out.println("------ERROR: Database lock timeout for "
+                throw new NetworkException("Database lock timeout for "
                         + Thread.currentThread().getName()
                         + " on " + managerName);
-                return false;
             }
-//            System.out.println("--lock acquired for "
-//                    + Thread.currentThread().getName()
-//                    + " on " + managerName);
+
             System.setProperty("jdbc.drivers", props.getProperty("driver"));
             this.conn = DriverManager.getConnection(
                     (String) props.get("url"),
@@ -128,9 +122,10 @@ class DatabaseManager {
                     (String) props.get("password"));
             return true;
         } catch (Exception ex) {
-            System.out.println("Connection open failed: " + ex);
             closeConnection();
-            return false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon geen verbinding maken met de database: "
+                                        + ex.getMessage());
         }
     }
 
@@ -142,20 +137,6 @@ class DatabaseManager {
             return;
         }
         lock.unlock();
-//        System.out.println("---lock released for "
-//                + Thread.currentThread().getName()
-//                + " on " + managerName);
-        if (conn == null) {
-            return;
-        }
-
-//        try {
-//            conn.close();
-//        } catch (SQLException ex) {
-//            System.out.println("Connection close failed: " + ex);
-//        } finally {
-//            conn = null;
-//        }
     }
 
     public void shutDownConnection() {
@@ -165,7 +146,7 @@ class DatabaseManager {
         try {
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("Connection close failed: " + ex);
+            ex.printStackTrace();
         } finally {
             conn = null;
         }

@@ -107,29 +107,36 @@ public class HeadquartersLogInController implements Initializable {
     
     public void showDialog(String title, String melding, boolean warning)
     {
-        Alert alert = null;
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                Alert alert = null;
         
-        if (warning)
-        {
-            alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Foutmelding");
-        }
-        else
-        {
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Melding");            
-        }     
-        
-        if (!title.isEmpty())
-        {
-            alert.setHeaderText(title);
-        }
-        else
-        {
-            alert.setHeaderText(null);
-        }
-        
-        alert.setContentText(melding);
-        alert.showAndWait();
+                if (warning)
+                {
+                    alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Foutmelding");
+                }
+                else
+                {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Melding");            
+                }     
+
+                if (!title.isEmpty())
+                {
+                    alert.setHeaderText(title);
+                }
+                else
+                {
+                    alert.setHeaderText(null);
+                }
+
+                alert.setContentText(melding);
+                alert.showAndWait();
+            }
+            
+        });
     }
 }

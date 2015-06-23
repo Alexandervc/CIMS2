@@ -8,6 +8,7 @@ package ServerApp.Database;
 import Shared.Data.IData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
+import Shared.NetworkException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +25,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
     private final String unsortedDataTable = "UNSORTEDDATA";
 
-    public UnsortedDatabaseManager(String propsFileName) {
+    public UnsortedDatabaseManager(String propsFileName) throws NetworkException {
         super(propsFileName);
     }
 
@@ -32,13 +33,16 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public IData insertToUnsortedData(IData data) {
+    public IData insertToUnsortedData(IData data) throws NetworkException {
         IData output = null;
         int id = -1;
-        if (!openConnection() || data == null) {
-            return null;
+        
+        if (data == null) {
+            throw new IllegalArgumentException("Voer een data in");
         }
-
+        
+        openConnection();
+        
         try {
             String query = "INSERT INTO " + unsortedDataTable + " VALUES (ID,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
@@ -49,10 +53,10 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             unsortedData.setString(5, Status.NONE.toString());
             unsortedData.execute();            
 
-//            System.out.println("insertToUnsortedData succeeded");
             id = super.getMaxID(unsortedDataTable);
         } catch (SQLException ex) {
-            System.out.println("insertToUnsortedData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon ongesorteerde data niet opslaan: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -63,7 +67,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return List unsorteddata first get information from database second
      * change status to INPROCESS
      */
-    public List<IData> getFromUnsortedData() {
+    public List<IData> getFromUnsortedData() throws NetworkException {
         List<IData> unsorted = new ArrayList();
 
         int id;
@@ -72,10 +76,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         String location;
         String source;
 
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+        openConnection();
 
         try {
             String query = "SELECT * FROM " + unsortedDataTable + " WHERE STATUS "
@@ -93,7 +94,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                     Status status = Status.valueOf(result.getString("STATUS"));
 
                     unsorted.add(new UnsortedData(id, title, description, location, source, status));
-//                    System.out.println("Getting object" + unsorted.size() + " unsorted succeed");
             }
 
             //update data
@@ -102,12 +102,10 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                         + Status.INPROCESS.toString() + "' WHERE ID = " + x.getId();
                 PreparedStatement updateData = conn.prepareStatement(update);
                 updateData.execute();
-//                System.out.println("Updating unsorted status succeed");
             }
-
-//            System.out.println("getFromUnsortedData succeed");
         } catch (SQLException ex) {
-            System.out.println("getFromUnsortedData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon ongesorteerde data niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -118,16 +116,12 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @param data list of unsorteddata
      * @return succeed reset status unsorted data
      */
-    public boolean resetUnsortedData(List<IData> data) {
+    public void resetUnsortedData(List<IData> data) throws NetworkException {
         if(data.isEmpty()){
-            return true;
+            return;
         }
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
-
-        boolean succeed = false;
+        
+        openConnection();
 
         try {
             for (IData x : data) {
@@ -136,31 +130,22 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 PreparedStatement reset = conn.prepareStatement(query);
 
                 reset.execute();
-//                System.out.println("Resetting object succeed");
             }
-
-//            System.out.println("resetUnsortedData succeeded");
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("resetUnsortedData failed: " + ex);
-            succeed = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon ongesorteerde data niet resetten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-        return succeed;
     }
 
     /**
      * @param data object of unsorteddata
      * @return succeed reset status unsorted data to Completed
      */
-    public boolean updateStatusUnsortedData(IData data) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
-
-        boolean succeed = false;
+    public void updateStatusUnsortedData(IData data) throws NetworkException {
+        openConnection();
+        
         try {
             String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                     + Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
@@ -168,16 +153,12 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
-
-//            System.out.println("updateStatusUnsortedData succeeded");
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("updateStatusUnsortedData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon de status van de ongesorteerde data niet updaten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-
-        return succeed;
     }
 
     /**
@@ -187,13 +168,9 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @param iData
      * @return false if id not found
      */
-    public boolean updateUnsortedData(IData iData) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
-
-        boolean succeed = false;
+    public void updateUnsortedData(IData iData) throws NetworkException {
+        openConnection();
+        
         try {
             String query = "UPDATE " + unsortedDataTable + " SET TITLE = '"
                     + iData.getTitle() + "', DESCRIPTION = '"
@@ -205,29 +182,21 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
-
-//            System.out.println("updateUnsortedData succeeded");
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("updateUnsortedData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon ongesorteerde data niet updaten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-
-        return succeed;
     }
 
     /**
      * @param iData object of unsorteddata
      * @return succeed reset status unsorted data to Discard
      */
-    public boolean discardUnsortedData(IData iData) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
+    public void discardUnsortedData(IData iData) throws NetworkException {
+        openConnection();
 
-        boolean succeed = false;
         try {
             String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                     + Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
@@ -235,27 +204,20 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
-
-//            System.out.println("discardUnsortedData succeeded");
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("discardUnsortedData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon ongesorteerde data niet verwijderen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-
-        return succeed;
     }
 
     /**
      * @param id of object
      * @return unsorted-object with correct id
      */
-    public IData getDataItem(int id) {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public IData getDataItem(int id) throws NetworkException {
+        openConnection();
         IData unsorted = null;
 
         String title;
@@ -277,10 +239,10 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 Status status = Status.valueOf(result.getString("STATUS"));
 
                 unsorted = new UnsortedData(id, title, description, location, source, status);
-//                System.out.println("Getting object getDataItem succeed");
             }
         } catch (SQLException ex) {
-            System.out.println("getDataItem failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon data niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -291,11 +253,8 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @param source of object
      * @return list unsorted-objects with correct source
      */
-    public List<IData> getSentData(String source) {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public List<IData> getSentData(String source) throws NetworkException {
+        openConnection();
         List<IData> unsorted = new ArrayList();
 
         int id;
@@ -323,11 +282,11 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 Status status = Status.valueOf(result.getString("STATUS"));
 
                 unsorted.add(new UnsortedData(id, title, description, location, realSource, status));
-//                System.out.println("Getting object getSentData succeed");
             }
 
         } catch (SQLException ex) {
-            System.out.println("getSentData failed: " + ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon verzonden data niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }

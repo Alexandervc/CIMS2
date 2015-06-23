@@ -6,6 +6,7 @@
 package ServerApp.Database;
 
 import ServerApp.ServerMain;
+import Shared.NetworkException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ResetDB {
     }
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws NetworkException {
         if(ServerMain.sortedDatabaseManager == null){
             ServerMain.startDatabases(null);
         }

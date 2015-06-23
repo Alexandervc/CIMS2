@@ -8,6 +8,7 @@ package ServerApp.Database;
 import ServerApp.ServerMain;
 import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
+import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
@@ -72,7 +73,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         List<IStep> steps = new ArrayList<>();
     }
 
-    public TasksDatabaseManager(String fileName) {
+    public TasksDatabaseManager(String fileName) throws NetworkException {
         super(fileName);
     }
 
@@ -83,7 +84,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param rs
      * @return
      */
-    private List<IUser> extractUsers(ResultSet rs) throws SQLException {
+    private List<IUser> extractUsers(ResultSet rs) throws SQLException, NetworkException {
         List<IUser> output = new ArrayList<>();
         while (rs.next()) {
             String outputUserName = rs.getString("USERNAME");
@@ -134,7 +135,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      * @throws SQLException
      */
-    private List<ITask> extractTasks(ResultSet rs, ISortedData data) throws SQLException {
+    private List<ITask> extractTasks(ResultSet rs, ISortedData data) throws SQLException, NetworkException {
         List<ITask> output = new ArrayList<>();
         while (rs.next()) {
             int outputID = rs.getInt("ID");
@@ -159,10 +160,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             output.add(outputItem);
         }
 
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+        openConnection();
 
         IStep outputStep;
         String query;
@@ -207,11 +205,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param taskID
      * @return IServiceUser currently slated to execute given task.
      */
-    private IServiceUser getTaskExecutor(int taskID) throws SQLException {
-//        if(conn == null){
-//            openConnection();
-//        }
-
+    private IServiceUser getTaskExecutor(int taskID) throws SQLException, NetworkException {
         IServiceUser output = null;
         String query;
         PreparedStatement prepStat;
@@ -227,6 +221,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         while (rs.next()) {
             execUserName = rs.getString("USERNAME");
         }
+        
         // return null if task was not matched with an executor yet.
         if (execUserName == null) {
             return null;
@@ -256,11 +251,9 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param newTask
      * @return
      */
-    public ITask insertNewTask(ITask newTask) {
-        if (!openConnection() || (newTask == null)) {
-            closeConnection();
-            return null;
-        }
+    public ITask insertNewTask(ITask newTask) throws NetworkException {
+        openConnection();
+        
         ITask output = null;
         String query;
         PreparedStatement prepStat;
@@ -303,9 +296,9 @@ public class TasksDatabaseManager extends DatabaseManager {
             output = newTask;
 
         } catch (SQLException ex) {
-            System.out.println("failed to execute insertNewTask: " + ex.getMessage());
+            ex.printStackTrace();
             output = null;
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            throw new NetworkException("Kon taak niet opslaan: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -318,7 +311,10 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param input
      * @return
      */
-    public IPlan insertNewPlan(IPlan input) {
+    public IPlan insertNewPlan(IPlan input) throws NetworkException {
+        if(input == null) {
+            throw new IllegalArgumentException("Voer een plan in");
+        }
 
         // inserts tasks
         // done beforehand, as method called opens/closes connection
@@ -327,15 +323,10 @@ public class TasksDatabaseManager extends DatabaseManager {
             ITask newTask = this.insertNewTask(step);
             if (newTask != null) {
                 step.setId(newTask.getId());
-            } else {
-                System.out.println("newtask was null");
             }
         }
 
-        if (!openConnection() || (input == null)) {
-            closeConnection();
-            return null;
-        }
+        openConnection();
 
         IPlan output = null;
         String query;
@@ -382,9 +373,9 @@ public class TasksDatabaseManager extends DatabaseManager {
             output = input;
 
         } catch (SQLException ex) {
-            System.out.println("failed to insert new plan: " + ex.getMessage());
             output = null;
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon nieuw plan niet opslaan: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -396,13 +387,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param input
      * @return
      */
-    public boolean updatePlan(IPlan input) {
-        if (!openConnection() || (input == null)) {
-            closeConnection();
-            return false;
+    public void updatePlan(IPlan input) throws NetworkException {
+        if(input == null) {
+            throw new IllegalArgumentException("Voer een plan in");
         }
-
-        boolean output = false;
+        
+        openConnection();
+        
         String query;
         PreparedStatement prepStat;
 
@@ -414,15 +405,12 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setInt(1, input.getCurrentStep());
             prepStat.execute();
 
-            output = true;
         } catch (SQLException ex) {
-            System.out.println("failed to update plan: " + ex.getMessage());
-            output = false;
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon plan niet updaten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-        return output;
     }
 
     /**
@@ -430,11 +418,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param ID
      * @return Task with given ID. Null if ID == -1 or no Task found.
      */
-    public ITask getTask(int ID) {
-        if (!openConnection() || (ID == -1)) {
-            closeConnection();
-            return null;
+    public ITask getTask(int ID) throws NetworkException {
+        if(ID == -1) {
+            throw new IllegalArgumentException("ID mag niet -1 zijn");
         }
+        
+        openConnection();
+        
         ITask output = null;
         String query;
         PreparedStatement prepStat;
@@ -446,13 +436,13 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
+            
             // delegates actually extracting said tasks
             output = this.extractTasks(rs, null).get(0);
-
         } catch (SQLException ex) {
-            System.out.println("failed to get task with id " + ID + ": " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon taak niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -465,12 +455,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param input
      * @return
      */
-    public boolean updateTask(ITask input) {
-        if (!openConnection() || (input == null)) {
-            closeConnection();
-            return false;
+    public void updateTask(ITask input) throws NetworkException {
+        if(input == null) {
+            throw new IllegalArgumentException("Voer een taak in");
         }
-        boolean output = false;
+        
+        openConnection();
+        
         String query;
         PreparedStatement prepStat;
 
@@ -496,17 +487,12 @@ public class TasksDatabaseManager extends DatabaseManager {
                 prepStat.setString(2, input.getExecutor().getUsername());
                 prepStat.execute();
             }
-
-            // returns updated task
-            output = true;
         } catch (SQLException ex) {
-            System.out.println("failed to update task: " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon taak niet updaten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-        return output;
     }
 
     /**
@@ -515,11 +501,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param userName
      * @return ServiceUser/HQChief/HQUser with given name
      */
-    public IUser getUser(String userName) {
-        if (!openConnection() || (userName == null)) {
-            closeConnection();
-            return null;
+    public IUser getUser(String userName) throws NetworkException {
+        if(userName == null) {
+            throw new IllegalArgumentException("Voer een gebruikersnaam in");
         }
+        
+        openConnection();
+        
         IUser output = null;
         String query;
         PreparedStatement prepStat;
@@ -537,10 +525,9 @@ public class TasksDatabaseManager extends DatabaseManager {
                 output = extractedUsers.get(0);
             }
         } catch (SQLException ex) {
-            System.out.println("failed to retrieve user " + userName + ": "
-                    + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon gebruiker niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -551,11 +538,9 @@ public class TasksDatabaseManager extends DatabaseManager {
      *
      * @return all ServiceUsers
      */
-    public List<IServiceUser> getServiceUsers() {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public List<IServiceUser> getServiceUsers() throws NetworkException {
+        openConnection();
+        
         List<IServiceUser> output = null;
         String query;
         PreparedStatement prepStat;
@@ -578,11 +563,9 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("failed to retrieve serviceUsers: "
-                    + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon serviceUsers niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -595,11 +578,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param filter
      * @return
      */
-    public List<ITask> getTasks(String execUserName, HashSet<TaskStatus> filter) {
-        if (!openConnection() || filter == null) {
-            closeConnection();
-            return null;
+    public List<ITask> getTasks(String execUserName, HashSet<TaskStatus> filter) throws NetworkException {
+        if(filter == null) {
+            throw new IllegalArgumentException("Voer een filter in");
         }
+        
+        openConnection();
+        
         List<ITask> output = null;
         String query;
         PreparedStatement prepStat;
@@ -656,10 +641,9 @@ public class TasksDatabaseManager extends DatabaseManager {
                 System.out.print("(given IServiceUser: "
                         + execUserName + ") ");
             }
-            System.out.println("failed to retrieve tasks: " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon taken niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -673,11 +657,16 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param password
      * @return null if not found
      */
-    public IUser loginUser(String userName, String password) {
-        if (!openConnection() || (userName == null) || (password == null)) {
-            closeConnection();
-            return null;
+    public IUser loginUser(String userName, String password) throws NetworkException {
+        if(userName == null) {
+            throw new IllegalArgumentException("Voer een gebruikersnaam in");
         }
+        if(password == null) {
+            throw new IllegalArgumentException("Voer een wachtwoord in");
+        }
+        
+        openConnection();
+        
         IUser output = null;
         String query;
         PreparedStatement prepStat;
@@ -695,24 +684,25 @@ public class TasksDatabaseManager extends DatabaseManager {
             List<IUser> extractedUsers = this.extractUsers(rs);
             if (extractedUsers.size() == 1) {
                 output = extractedUsers.get(0);
+            } else {
+                throw new SQLException("Combinatie van gebruikersnaam en wachtwoord is onjuist");
             }
         } catch (SQLException ex) {
-            System.out.println("failed login attempt for " + userName
-                    + ": " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon gebruiker niet inloggen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
         return output;
     }
 
-    private ICitizen checkCitizen(IUser user) {
-        if (!openConnection() || user == null) {
-            closeConnection();
-            return null;
+    private ICitizen checkCitizen(IUser user) throws NetworkException {
+        if(user == null) {
+            throw new IllegalArgumentException("Voer een gebruiker in");
         }
+        
+        openConnection();
 
         ICitizen output = null;
         String query;
@@ -731,11 +721,9 @@ public class TasksDatabaseManager extends DatabaseManager {
                 output = extractedCitizens.get(0);
             }
         } catch (SQLException ex) {
-            System.out.println("failed check if citizen attempt for " + user.getUsername()
-                    + ": " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon niet controleren of gebruiker een burger is: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -748,11 +736,15 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param password
      * @return
      */
-    public ICitizen registerCitizen(ICitizen input, String password) {
-        if (!openConnection() || input == null || password == null) {
-            closeConnection();
-            return null;
+    public ICitizen registerCitizen(ICitizen input, String password) throws NetworkException {
+        if(input == null) {
+            throw new IllegalArgumentException("Voer een gebruiker in");
         }
+        if(password == null) {
+            throw new IllegalArgumentException("Voer een wachtwoord in");
+        }
+        
+        openConnection();
 
         ICitizen output = null;
         String query;
@@ -779,10 +771,9 @@ public class TasksDatabaseManager extends DatabaseManager {
 
             output = input;
         } catch (SQLException ex) {
-            System.out.println("failed register citizen: " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon gebruiker niet registreren: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -796,11 +787,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * Will return all Plans in database if empty <br>
      * only returns templates
      */
-    public List<IPlan> getTemplatePlans(HashSet<String> keywords) {
-        if (!openConnection() || (keywords == null)) {
-            closeConnection();
-            return null;
+    public List<IPlan> getTemplatePlans(HashSet<String> keywords) throws NetworkException {
+        if(keywords == null) {
+            throw new IllegalArgumentException("Voer keywords in");
         }
+        
+        openConnection();
+        
         List<IPlan> output = null;
         String query;
         PreparedStatement prepStat;
@@ -925,11 +918,9 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
 
         } catch (SQLException ex) {
-            System.out.println("Error trying to retrieve plans filtered by keyword: "
-                    + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon templateplannen niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -942,11 +933,13 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return tasks associated with given ISortedData. Reflects what tasks are
      * steps
      */
-    public List<ITask> getSortedDataTasks(ISortedData input) {
-        if (!openConnection() || (input == null)) {
-            closeConnection();
-            return null;
+    public List<ITask> getSortedDataTasks(ISortedData input) throws NetworkException {
+        if(input == null) {
+            throw new IllegalArgumentException("Voer gesorteerde data in");
         }
+        
+        openConnection();
+        
         HashMap<Integer, ITask> output = null;
         String query;
         PreparedStatement prepStat;
@@ -994,9 +987,9 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
 
         } catch (SQLException ex) {
-            System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             output = null;
+            throw new NetworkException("Kon taken van gesorteerde data niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }

@@ -27,7 +27,7 @@ public class ClientBoundTransaction implements Serializable {
     public ClientBoundTransaction(ServerBoundTransaction tract) {
         this.ID = tract.ID;
         this.command = tract.command;
-        this.result = ConnState.COMMAND_ERROR;
+        this.result = ConnState.COMMAND_FAIL;
         this.data = null;
     }
 
@@ -38,7 +38,7 @@ public class ClientBoundTransaction implements Serializable {
         this.data = data;
     }
 
-    public ClientBoundTransaction setResult(boolean isSuccess) {
+    public ClientBoundTransaction setSuccess(boolean isSuccess) {
         if (isSuccess) {
             this.result = ConnState.COMMAND_SUCCESS;
         } else {
@@ -49,18 +49,11 @@ public class ClientBoundTransaction implements Serializable {
 
     public ClientBoundTransaction setResult(Object data) {
         this.data = data;
-        if (data == null) {
+        if (data instanceof Exception) {
             this.result = ConnState.COMMAND_FAIL;
         } else {
             this.result = ConnState.COMMAND_SUCCESS;
         }
         return this;
     }
-
-    public ClientBoundTransaction setError() {
-        this.result = ConnState.COMMAND_ERROR;
-        this.data = null;
-        return this;
-    }
-
 }

@@ -9,6 +9,7 @@ import HelpClasses.HelpUnsortedData;
 import ServerApp.ServerMain;
 import Shared.Data.IData;
 import Shared.Data.UnsortedData;
+import Shared.NetworkException;
 import Shared.Users.IUser;
 
 /**
@@ -27,7 +28,7 @@ public class ReportValidationController {
      * @param uploader the signed in user
      * @return true if sending unsortedData is successfull, otherwise false
      */
-    public boolean sendUnsortedData(HelpUnsortedData unsortedData, IUser uploader) {
+    public boolean sendUnsortedData(HelpUnsortedData unsortedData, IUser uploader) throws NetworkException {
         if(unsortedData == null || uploader == null) {
             throw new IllegalArgumentException("Kon waarden niet ophalen");
         }

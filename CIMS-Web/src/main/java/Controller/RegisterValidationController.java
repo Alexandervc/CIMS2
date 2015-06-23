@@ -7,6 +7,7 @@ package Controller;
 
 import HelpClasses.HelpUser;
 import ServerApp.ServerMain;
+import Shared.NetworkException;
 import Shared.Users.Citizen;
 import Shared.Users.ICitizen;
 
@@ -25,7 +26,7 @@ public class RegisterValidationController {
      * @param registeredUser
      * @return true if the user is successfull registered, otherwise false
      */
-    public boolean registerUser(HelpUser registeredUser) {
+    public boolean registerUser(HelpUser registeredUser) throws NetworkException {
         if(registeredUser == null) {
             throw new IllegalArgumentException("Kon waarden niet ophalen");
         }

@@ -14,6 +14,7 @@ import Shared.Data.ISortedData;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.Data.SortedData;
+import Shared.NetworkException;
 import Shared.Tag;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,11 +47,11 @@ public class SortedDatabaseManager extends DatabaseManager {
             situationsAdviceTable = "SITUATIONADVICE",
             adviceTable = "ADVICE";
 
-    public SortedDatabaseManager(String propsFileName) {
+    public SortedDatabaseManager(String propsFileName) throws NetworkException {
         super(propsFileName);
     }
 
-    private List<INewsItem> extractNewsItems(ResultSet rs) throws SQLException {
+    private List<INewsItem> extractNewsItems(ResultSet rs) throws SQLException, NetworkException {
         // key: newsItem ID
         HashMap<Integer, NewsItem> newsItems;
         // key: newsItem ID, value = situation IDs
@@ -101,7 +102,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param newsItems
      * @return
      */
-    private HashMap<Integer, INewsItem> assignSituations(HashMap<NewsItem, Set<Integer>> newsItems) {
+    private HashMap<Integer, INewsItem> assignSituations(HashMap<NewsItem, Set<Integer>> newsItems) throws NetworkException {
         if (newsItems == null) {
             return null;
         }
@@ -139,11 +140,15 @@ public class SortedDatabaseManager extends DatabaseManager {
         return output;
     }
     
-    public boolean insertPicture(INewsItem news, String link) {
-        if (!openConnection() || news == null || link == null) {
-            closeConnection();
-            return false;
+    public void insertPicture(INewsItem news, String link) throws NetworkException {
+        if(news == null) {
+            throw new IllegalArgumentException("Voer een nieuwsbericht in");
         }
+        if(link == null) {
+            throw new IllegalArgumentException("Voer een link in");
+        }
+        
+        openConnection();
         
         boolean success = false;
         String query;
@@ -155,26 +160,21 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat.setInt(1, news.getId());
             prepStat.setString(2, link);
             prepStat.execute();
-            
-            success = true;
         } catch(SQLException ex) {
-            System.out.println("addPicture failed: " + ex);
-            success = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon foto niet toevoegen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-        return success;
     }
 
     /**
      * @param sorted object sorteddata
      * @return succeed on attempting to insert sorted data.
      */
-    public boolean insertToSortedData(ISortedData sorted) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
+    public boolean insertToSortedData(ISortedData sorted) throws NetworkException {
+        openConnection();
+        
         Set<Tag> tags = sorted.getTags();
         boolean succeed = false;
         try {
@@ -205,10 +205,9 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
 
             ServerMain.unsortedDatabaseManager.updateStatusUnsortedData(sorted);
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("insertToSortedData failed: " + ex);
-            succeed = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon gesorteerde data niet toevoegen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -219,11 +218,8 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param info list of tags
      * @return List sorteddata
      */
-    public List<ISortedData> getFromSortedData(HashSet<Tag> info) {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public List<ISortedData> getFromSortedData(HashSet<Tag> info) throws NetworkException {
+        openConnection();
 
         List<ISortedData> sorted = new ArrayList();
         HashSet<Integer> numbers = new HashSet<Integer>();
@@ -307,8 +303,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("getFromSortedData failed: " + ex);
-            return null;
+            ex.printStackTrace();
+            throw new NetworkException("Kon gesorteerde data niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -319,13 +315,9 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param data object of datarequest
      * @return succeed if succeeded
      */
-    public boolean insertDataRequest(IDataRequest data) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
+    public void insertDataRequest(IDataRequest data) throws NetworkException {
+        openConnection();
 
-        boolean succeed = false;
         try {
             Set<Tag> tags = data.getTags();
             //insert to sorteddata
@@ -353,28 +345,21 @@ public class SortedDatabaseManager extends DatabaseManager {
                 requestData.setString(2, element.toString());
                 requestData.execute();
             }
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("insertDataRequest failed: " + ex);
-            succeed = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon melding niet opslaan: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-
-        return succeed;
     }
 
     /**
      * @param tags list of tags
      * @return succeed if succeeded
      */
-    public List<IDataRequest> getUpdateRequests(HashSet tags) {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public List<IDataRequest> getUpdateRequests(HashSet tags) throws NetworkException {
+        openConnection();
 
-        boolean succeed = false;
         List<IDataRequest> request = new ArrayList();
         HashSet<Integer> numbers = new HashSet<Integer>();
 
@@ -445,13 +430,11 @@ public class SortedDatabaseManager extends DatabaseManager {
 
                         request.add(new DataRequest(id, title, description, location, source, dataID, tags));
                     }
-//                    System.out.println("getUpdateRequests object succeed");
                 }
             }
-            succeed = true;
         } catch (SQLException ex) {
-            System.out.println("getUpdateRequests failed: " + ex);
-            return null;
+            ex.printStackTrace();
+            throw new NetworkException("Kon meldingen niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -464,11 +447,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param ID
      * @return SortedData with given ID. null if unknown.
      */
-    public ISortedData getFromSortedData(int ID) {
-        if (!openConnection() || (ID == -1)) {
-            closeConnection();
-            return null;
+    public ISortedData getFromSortedData(int ID) throws NetworkException {
+        if(ID == -1) {
+            throw new IllegalArgumentException("ID mag niet -1 zijn");
         }
+        
+        openConnection();
 
         ISortedData output = null;
         String query;
@@ -503,7 +487,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
             // if no data found
             if (outputID == -1) {
-                return null;
+                throw new SQLException("Kon data niet vinden");
             }
 
             HashSet<Tag> tags = new HashSet<>();
@@ -522,9 +506,8 @@ public class SortedDatabaseManager extends DatabaseManager {
 
             output.setTasks(ServerMain.tasksDatabaseManager.getSortedDataTasks(output));
         } catch (SQLException ex) {
-            System.out.println("failed to getFromSortedData by ID: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = null;
+            ex.printStackTrace();
+            throw new NetworkException("Kon sortedData niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -535,7 +518,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      *
      * @return all situations as set
      */
-    public Set<Situation> getSituations() {
+    public Set<Situation> getSituations() throws NetworkException {
         HashMap<Integer, Situation> map = this.getSituationsMap();
         if (map != null) {
             return new HashSet(map.values());
@@ -548,11 +531,8 @@ public class SortedDatabaseManager extends DatabaseManager {
      *
      * @return all situations as HashMap, key being their ID
      */
-    public HashMap<Integer, Situation> getSituationsMap() {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
+    public HashMap<Integer, Situation> getSituationsMap() throws NetworkException {
+        openConnection();
 
         HashMap<Integer, Situation> output = null;
         String query;
@@ -580,9 +560,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                 output.get(sitID).addAdvice(new Advice(advID, advDesc));
             }
         } catch (SQLException ex) {
-            System.out.println("failed to get situations: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = null;
+            ex.printStackTrace();
+            throw new NetworkException("Kon situaties niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -595,11 +574,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param limit must be >= 1
      * @return news items from database
      */
-    public List<INewsItem> getNewsItems(int startIndex, int limit) {
-        if (!openConnection() || limit < 1) {
-            closeConnection();
-            return null;
+    public List<INewsItem> getNewsItems(int startIndex, int limit) throws NetworkException {
+        if(limit < 1) {
+            throw new IllegalArgumentException("Limiet mag niet kleiner zijn dan 1");
         }
+        
+        openConnection();
 
         // key: newsItem ID, value = situation IDs
         HashMap<NewsItem, Set<Integer>> newsItems;
@@ -632,9 +612,8 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
 
         } catch (SQLException ex) {
-            System.out.println("failed to get news items: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            newsItems = null;
+            ex.printStackTrace();
+            throw new NetworkException("Kon geen nieuwsberichten ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -646,7 +625,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      *
      * @return all NewsItems
      */
-    public List<INewsItem> getNewsItems() {
+    public List<INewsItem> getNewsItems() throws NetworkException {
         return this.getNewsItems(0, Integer.MAX_VALUE);
     }
 
@@ -656,11 +635,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param item
      * @return
      */
-    public INewsItem insertNewsItem(INewsItem item) {
-        if (!openConnection() || item == null) {
-            closeConnection();
-            return null;
+    public INewsItem insertNewsItem(INewsItem item) throws NetworkException {
+        if(item == null) {
+            throw new IllegalArgumentException("Voer een item in");
         }
+        
+        openConnection();
 
         INewsItem output = null;
         String query;
@@ -717,8 +697,8 @@ public class SortedDatabaseManager extends DatabaseManager {
 
             output = item;
         } catch (SQLException ex) {
-            System.out.println("failed to insert newsitem: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon nieuwsbericht niet opslaan: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -731,13 +711,16 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param item
      * @return
      */
-    public boolean updateNewsItem(INewsItem item) {
-        if (!openConnection() || item == null || item.getId() == -1) {
-            closeConnection();
-            return false;
+    public void updateNewsItem(INewsItem item) throws NetworkException {
+        if(item == null) {
+            throw new IllegalArgumentException("Voer een item in");
         }
+        if(item.getId() == -1) {
+            throw new IllegalArgumentException("ID van item mag niet -1 zijn");
+        }
+        
+        openConnection();
 
-        boolean output = false;
         String query;
         PreparedStatement prepStat;
 
@@ -788,26 +771,20 @@ public class SortedDatabaseManager extends DatabaseManager {
                 prepStat.addBatch();
             }
             prepStat.executeBatch();
-            output = true;
         } catch (SQLException ex) {
-            System.out.println("failed to update newsitem: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = false;
+            ex.printStackTrace();
+            throw new NetworkException("Kon nieuwsbericht niet updaten: " + ex.getMessage());
         } finally {
             closeConnection();
         }
-        return output;
     }
 
     /**
      *
      * @return total number of newsitems present in database.
      */
-    public int getNewsItemCount() {
-        if (!openConnection()) {
-            closeConnection();
-            return -1;
-        }
+    public int getNewsItemCount() throws NetworkException {
+        openConnection();
 
         String query;
         ResultSet rs;
@@ -820,18 +797,20 @@ public class SortedDatabaseManager extends DatabaseManager {
                 output = rs.getInt("COUNT(ID)");
             }
         } catch (SQLException ex) {
-            System.out.println("failed to get newsitem count: " + ex.getMessage());
-            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            throw new NetworkException("Kon aantal nieuwsberichten niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }
         return output;
     }
 
-    public INewsItem getNewsItemByID(int ID) {
-        if (ID < 0 || !openConnection()) {
-            return null;
+    public INewsItem getNewsItemByID(int ID) throws NetworkException {
+        if(ID < 0) {
+            throw new IllegalArgumentException("ID mag niet kleiner zijn dan 0");
         }
+        
+        openConnection();
 
         // key: newsItem ID, value = situation IDs
         List<INewsItem> outputList = new ArrayList<>();
@@ -863,8 +842,8 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
 
         } catch (SQLException ex) {
-            System.out.println("failed to get newsitem by ID " + ID);
             ex.printStackTrace();
+            throw new NetworkException("Kon nieuwsbericht niet ophalen: " + ex.getMessage());
         } finally {
             closeConnection();
         }

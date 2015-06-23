@@ -83,10 +83,6 @@ class ResponseHandler implements IResponseHandler {
                         this.connHandler.notifyCommandResponse(transaction.ID);
                     }
 
-                    if (transaction.result == ConnState.COMMAND_ERROR) {
-                        throw new NetworkException(transaction.command.toString());
-                    }
-
                     System.out.println(transaction.command.toString() // debugging println
                             + ": "
                             + transaction.result.toString());
@@ -123,21 +119,53 @@ class ResponseHandler implements IResponseHandler {
                             this.handleTaskPush(transaction);
                             break;
                         case UNSORTED_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_GET:
+                            this.handleGenericResult(transaction);
+                            break;
                         case USERS_UNSORTED_SUBSCRIBE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case USERS_UNSORTED_UNSUBSCRIBE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case PLAN_SEARCH:
+                            this.handleGenericResult(transaction);
+                            break;
                         case USERS_GET_SERVICEUSERS:
+                            this.handleGenericResult(transaction);
+                            break;
                         case SITUATIONS_GET:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_STATUS_RESET:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_UPDATE_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UNSORTED_DISCARD:
+                            this.handleGenericResult(transaction);
+                            break;
                         case UPDATE_REQUEST_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case TASK_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case PLAN_SEND_NEW:
+                            this.handleGenericResult(transaction);
+                            break;
                         case PLAN_APPLY:
+                            this.handleGenericResult(transaction);
+                            break;
                         case TASK_UPDATE:
+                            this.handleGenericResult(transaction);
+                            break;
                         case NEWSITEM_SEND:
+                            this.handleGenericResult(transaction);
+                            break;
                         case NEWSITEM_UPDATE:
                             this.handleGenericResult(transaction);
                             break;
@@ -155,103 +183,91 @@ class ResponseHandler implements IResponseHandler {
     }
 
     private void handleGenericResult(ClientBoundTransaction transaction) {
-        System.err.println("Command result received for "
-                + transaction.command.toString()
-                + ": "
-                + transaction.result.toString());
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            loginController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
     }
 
     private void handleLoginResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                IUser user = (IUser) transaction.data;
-                this.loginController.logIn(user);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            loginController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            IUser user = (IUser) transaction.data;
+            this.loginController.logIn(user);
         }
     }
 
     private void handleSortedResponse(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<ISortedData> data = (List) transaction.data;
-                this.servicesController.displaySortedData(data);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<ISortedData> data = (List) transaction.data;
+            this.servicesController.displaySortedData(data);
         }
     }
 
     private void handleTasksResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<ITask> tasks = (List) transaction.data;
-                this.servicesController.displayTasks(tasks);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<ITask> tasks = (List) transaction.data;
+            this.servicesController.displayTasks(tasks);
         }
     }
 
     private void handleDataItemResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                IData data = (IData) transaction.data;
-                this.servicesController.displayDataItem(data);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            IData data = (IData) transaction.data;
+            this.servicesController.displayDataItem(data);
         }
     }
 
     private void handleRequestsResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<IDataRequest> requests = (List) transaction.data;
-                this.servicesController.displayRequests(requests);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IDataRequest> requests = (List) transaction.data;
+            this.servicesController.displayRequests(requests);
         }
     }
 
     private void handleSentDataResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                List<IData> data = (List) transaction.data;
-                this.servicesController.displaySentData(data);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IData> data = (List) transaction.data;
+            this.servicesController.displaySentData(data);
         }
     }
 
     private void handleRegisterResult(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
         }
     }
 
     private void handleTaskPush(ClientBoundTransaction transaction) {
-        try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
-                ITask task = (ITask) transaction.data;
-                List<ITask> tasks = Arrays.asList(new ITask[]{task});
-                List<ITask> myTasks = new ArrayList<>();
-                for(ITask t : tasks) {
-                    if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor())) {
-                        myTasks.add(t);
-                    }
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            ITask task = (ITask) transaction.data;
+            List<ITask> tasks = Arrays.asList(new ITask[]{task});
+            List<ITask> myTasks = new ArrayList<>();
+            for(ITask t : tasks) {
+                if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor())) {
+                    myTasks.add(t);
                 }
-                this.servicesController.displayTasks(myTasks);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            this.servicesController.displayTasks(myTasks);
         }
     }
 

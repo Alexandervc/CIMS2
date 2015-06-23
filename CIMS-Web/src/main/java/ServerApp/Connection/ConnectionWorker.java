@@ -14,6 +14,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
@@ -25,6 +26,8 @@ import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConnectionWorker implements Runnable {
 
@@ -162,7 +165,7 @@ public class ConnectionWorker implements Runnable {
                     break;
                 default:
                     outgoing = new ClientBoundTransaction(incoming);
-                    outgoing.result = ConnState.COMMAND_UNKNOWN;
+                    outgoing.result = ConnState.COMMAND_FAIL;
                     break;
             }
 
@@ -177,8 +180,12 @@ public class ConnectionWorker implements Runnable {
      */
     private ClientBoundTransaction sendUnsortedData(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
-        return output.setResult(
-                ServerMain.unsortedDatabaseManager.getFromUnsortedData());
+        try {
+            return output.setResult(
+                    ServerMain.unsortedDatabaseManager.getFromUnsortedData());
+        } catch (Exception ex) {
+            return output.setResult(ex);
+        }
     }
 
     /**
@@ -196,8 +203,7 @@ public class ConnectionWorker implements Runnable {
             }
             return output.setResult(result);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -210,16 +216,15 @@ public class ConnectionWorker implements Runnable {
         try {
             IData data = (IData) input.objects[0];
             data = ServerMain.unsortedDatabaseManager.insertToUnsortedData(data);
-                // pushes getFromUnsorted to set status as it should
+            // pushes getFromUnsorted to set status as it should
             // resets if it couldn't push
             List<IData> newData = ServerMain.unsortedDatabaseManager.getFromUnsortedData();
             if (!ServerMain.pushHandler.push(newData, null)) {
                 ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
             }
-            return output.setResult(data != null);
+            return output.setSuccess(data != null);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -233,14 +238,13 @@ public class ConnectionWorker implements Runnable {
             List<IData> inputList = (List) input.objects[0];
             // first checks if can push to other HQ
             if (ServerMain.pushHandler.push(inputList, dataEvent.socket.socket())) {
-                return output.setResult(true);
+                return output.setSuccess(true);
             }
             // if not: resets
-            return output.setResult(
-                    ServerMain.unsortedDatabaseManager.resetUnsortedData(inputList));
+            ServerMain.unsortedDatabaseManager.resetUnsortedData(inputList);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -251,11 +255,10 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData inObject = (IData) input.objects[0];
-            return output.setResult(
-                    ServerMain.unsortedDatabaseManager.updateUnsortedData(inObject));
+            ServerMain.unsortedDatabaseManager.updateUnsortedData(inObject);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -266,11 +269,10 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData inObject = (IData) input.objects[0];
-            return output.setResult(
-                    ServerMain.unsortedDatabaseManager.discardUnsortedData(inObject));
+            ServerMain.unsortedDatabaseManager.discardUnsortedData(inObject);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -281,14 +283,11 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IDataRequest data = (IDataRequest) input.objects[0];
-            boolean result = ServerMain.sortedDatabaseManager.insertDataRequest(data);
-            if (result) {
-                ServerMain.pushHandler.push(data);
-            }
-            return output.setResult(result);
+            ServerMain.sortedDatabaseManager.insertDataRequest(data);
+            ServerMain.pushHandler.push(data);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -299,11 +298,10 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             HashSet<Tag> tags = (HashSet) input.objects[0];
-            return output.setResult(
-                    ServerMain.sortedDatabaseManager.getUpdateRequests(tags));
+            ServerMain.sortedDatabaseManager.getUpdateRequests(tags);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -314,11 +312,10 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             int inObject = (int) input.objects[0];
-            return output.setResult(
-                    ServerMain.unsortedDatabaseManager.getDataItem((int) inObject));
+            ServerMain.unsortedDatabaseManager.getDataItem((int) inObject);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -329,11 +326,10 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             String source = (String) input.objects[0];
-            return output.setResult(
-                    ServerMain.unsortedDatabaseManager.getSentData(source));
+            ServerMain.unsortedDatabaseManager.getSentData(source);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -351,8 +347,7 @@ public class ConnectionWorker implements Runnable {
             }
             return output.setResult(insertedTask);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
     
@@ -363,16 +358,15 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ITask task = (ITask) input.objects[0];
-            boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
+            ServerMain.tasksDatabaseManager.updateTask(task);
             ITask updatedTask = ServerMain.tasksDatabaseManager.getTask(task.getId());
-            if (success) {
-                ServerMain.pushHandler.pushTaskToChief(updatedTask);
-                ServerMain.pushHandler.pushTaskToService(updatedTask);
-            }
+            
+            ServerMain.pushHandler.pushTaskToChief(updatedTask);
+            ServerMain.pushHandler.pushTaskToService(updatedTask);
+            
             return output.setResult(updatedTask);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -386,8 +380,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.tasksDatabaseManager.insertNewPlan(plan));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -402,10 +395,9 @@ public class ConnectionWorker implements Runnable {
                 plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
                 ServerMain.planExecutorHandler.addPlanExecutor(plan);
             }
-            return output.setResult(plan != null);
+            return output.setSuccess(plan != null);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -420,8 +412,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.tasksDatabaseManager.loginUser(username, password));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -436,8 +427,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.tasksDatabaseManager.getTasks(username, statuses));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -449,26 +439,23 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ITask task = (ITask) input.objects[0];
-            boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
+            ServerMain.tasksDatabaseManager.updateTask(task);
             task = ServerMain.tasksDatabaseManager.getTask(task.getId());
-            if (success) {
-                if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
-                    ServerMain.pushHandler.pushTaskToChief(task);
-                }
+            
+            if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
+                ServerMain.pushHandler.pushTaskToChief(task);
             }
-
-            if (success 
-                    && (task.getStatus() == TaskStatus.SUCCEEDED
+            
+            if ((task.getStatus() == TaskStatus.SUCCEEDED
                     || task.getStatus() == TaskStatus.FAILED)
                     && task instanceof IStep) {
                 // Execute next step of plan
                 System.out.println("task plan id: " + ((IStep) task).getPlanId());
                 ServerMain.planExecutorHandler.executeNextStepOf((IStep) task);
             }
-            return output.setResult(success);
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -482,8 +469,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.tasksDatabaseManager.getTemplatePlans(keywords));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -497,8 +483,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.sortedDatabaseManager.getFromSortedData(tags));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -511,8 +496,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.tasksDatabaseManager.getServiceUsers());
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -527,8 +511,7 @@ public class ConnectionWorker implements Runnable {
             ServerMain.pushHandler.push(item);
             return output;
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -539,12 +522,11 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             INewsItem item = (INewsItem) input.objects[0];
-            output.setResult(ServerMain.sortedDatabaseManager.updateNewsItem(item));
+            ServerMain.sortedDatabaseManager.updateNewsItem(item);
             ServerMain.pushHandler.push(item);
-            return output;
+            return output.setSuccess(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -554,8 +536,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.sortedDatabaseManager.getNewsItems());
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -568,8 +549,7 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(
                     ServerMain.sortedDatabaseManager.getSituations());
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
+            return output.setResult(ex);
         }
     }
 
@@ -583,18 +563,13 @@ public class ConnectionWorker implements Runnable {
     private ClientBoundTransaction registerUser(
             ServerBoundTransaction input, ServerDataEvent event) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
-        try {
-            UserRole role = (UserRole) input.objects[0];
-            Tag tag = (Tag) input.objects[1];
-            String username = (String) input.objects[2];
+        UserRole role = (UserRole) input.objects[0];
+        Tag tag = (Tag) input.objects[1];
+        String username = (String) input.objects[2];
 
-            boolean result = ServerMain.pushHandler.subscribe(
-                    role, tag, username, event.socket);
-            return output.setResult(result);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
-        }
+        boolean result = ServerMain.pushHandler.subscribe(
+                role, tag, username, event.socket);
+        return output.setSuccess(result);
     }
 
     /**
@@ -607,13 +582,8 @@ public class ConnectionWorker implements Runnable {
     private ClientBoundTransaction subscribeUnsorted(
             ServerBoundTransaction input, ServerDataEvent dataEvent) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
-        try {
-            return output.setResult(
-                    ServerMain.pushHandler.subscribeUnsorted(dataEvent.socket));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
-        }
+        return output.setSuccess(
+                ServerMain.pushHandler.subscribeUnsorted(dataEvent.socket));
     }
 
     /**
@@ -626,12 +596,7 @@ public class ConnectionWorker implements Runnable {
     private ClientBoundTransaction unsubscribeUnsorted(
             ServerBoundTransaction input, ServerDataEvent dataEvent) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
-        try {
-            return output.setResult(
-                    ServerMain.pushHandler.unsubscribeUnsorted(dataEvent.socket));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
-        }
+        return output.setSuccess(
+                ServerMain.pushHandler.unsubscribeUnsorted(dataEvent.socket));
     }
 }

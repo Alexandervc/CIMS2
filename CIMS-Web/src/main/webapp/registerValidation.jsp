@@ -33,10 +33,10 @@
                     response.sendRedirect("register.jsp");
                     session.setAttribute("Error", "Er ging iets fout met registreren");
                 }
-            } catch (IllegalArgumentException iaEx) {
-                session.setAttribute("Error", iaEx.getMessage());
+            } catch (Exception ex) {
+                session.setAttribute("Error", ex.getMessage());
                 response.sendRedirect("register.jsp");
-                iaEx.printStackTrace();
+                ex.printStackTrace();
             }
             %>
         </article>

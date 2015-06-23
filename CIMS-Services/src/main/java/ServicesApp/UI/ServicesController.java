@@ -307,7 +307,7 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if (!showingDataItem) {
+                if (!showingDataItem && sentData != null) {
                     lvuSentData.getItems().addAll(sentData);
                     if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                         lvuSentData.getSelectionModel().selectFirst();
@@ -350,7 +350,7 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if (chbsRequests.isSelected()) {
+                if (chbsRequests.isSelected() && requests != null) {
                     lvsSortedData.getItems().addAll(requests);
                     if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                         lvsSortedData.getSelectionModel().selectFirst();
@@ -795,26 +795,41 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
+    
+    private void clearMessages() {
+        lblMessageSend.setText(null);
+        lblMessageTask.setText(null);
+        lblMessageUpdate.setText(null);
+    }
 
     public void showDialog(String title, String melding, boolean warning) {
-        Alert alert = null;
+        Platform.runLater(new Runnable() {
 
-        if (warning) {
-            alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Foutmelding");
-        } else {
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Melding");
-        }
+            @Override
+            public void run() {
+                clearMessages();
+                
+                Alert alert = null;
 
-        if (!title.isEmpty()) {
-            alert.setHeaderText(title);
-        } else {
-            alert.setHeaderText(null);
-        }
+                if (warning) {
+                    alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Foutmelding");
+                } else {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Melding");
+                }
 
-        alert.setContentText(melding);
-        alert.showAndWait();
+                if (!title.isEmpty()) {
+                    alert.setHeaderText(title);
+                } else {
+                    alert.setHeaderText(null);
+                }
+
+                alert.setContentText(melding);
+                alert.showAndWait();
+            }
+            
+        });
     }
 
     public String showArgumentDialog() {
