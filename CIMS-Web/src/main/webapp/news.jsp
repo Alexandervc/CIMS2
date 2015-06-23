@@ -30,6 +30,7 @@
             } catch (Exception ex) {
                 item = null;
             }
+            
         %>
     </head>	
     <body>	
@@ -177,7 +178,7 @@
                     </ul>
                     <%}%>
                 </article>
-                <% if(item !=null){ %>
+                <% if(item !=null && session.getAttribute("User") != null){ %>
                 <article class="advice">
                     <h2>Foto uploaden</h2>
                     <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
