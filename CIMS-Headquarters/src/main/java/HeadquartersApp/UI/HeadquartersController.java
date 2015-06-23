@@ -34,8 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -55,8 +53,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import org.controlsfx.control.CheckComboBox;
 
@@ -119,7 +120,15 @@ public class HeadquartersController implements Initializable {
     @FXML
     Tab tabNews;
     @FXML
-    ListView lvnSorted;
+    TableView tvnSortedData;
+    @FXML
+    TableColumn tcnTitle;
+    @FXML
+    TableColumn tcnRelevance;
+    @FXML
+    TableColumn tcnReliability;
+    @FXML
+    TableColumn tcnQuality;
     @FXML
     TextField tfnTitleSorted;
     @FXML
@@ -171,7 +180,15 @@ public class HeadquartersController implements Initializable {
     @FXML
     Tab tabProcessSortedData;
     @FXML
-    ListView lvsSortedData;
+    TableView tvsSortedData;
+    @FXML
+    TableColumn tcsTitle;
+    @FXML
+    TableColumn tcsRelevance;
+    @FXML
+    TableColumn tcsReliability;
+    @FXML
+    TableColumn tcsQuality;
     @FXML
     TextField tfsSortedDataTitle;
     @FXML
@@ -245,7 +262,11 @@ public class HeadquartersController implements Initializable {
     @FXML
     Tab tabTask;
     @FXML
-    ListView lvtTasks;
+    TableView tvtTasks;
+    @FXML
+    TableColumn tctTitle;
+    @FXML
+    TableColumn tctStatus;
     @FXML
     TextField tftTaskTitle;
     @FXML
@@ -295,7 +316,7 @@ public class HeadquartersController implements Initializable {
                     }
                 });
 
-        lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
+        tvsSortedData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -335,7 +356,7 @@ public class HeadquartersController implements Initializable {
                     }
                 });
 
-        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
+        tvtTasks.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -343,7 +364,7 @@ public class HeadquartersController implements Initializable {
                     }
                 });
 
-        lvnSorted.getSelectionModel().selectedItemProperty().addListener(
+        tvnSortedData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -358,6 +379,19 @@ public class HeadquartersController implements Initializable {
                         selectNewsItem();
                     }
                 });
+        
+        tcnTitle.setCellValueFactory(new PropertyValueFactory<ISortedData, String>("title"));
+        tcnRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
+        tcnReliability.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("reliability"));
+        tcnQuality.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("quality"));
+        
+        tcsTitle.setCellValueFactory(new PropertyValueFactory<ISortedData, String>("title"));
+        tcsRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
+        tcsReliability.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("reliability"));
+        tcsQuality.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("quality"));
+        
+        tctTitle.setCellValueFactory(new PropertyValueFactory<ITask, String>("title"));
+        tctStatus.setCellValueFactory(new PropertyValueFactory<ITask, TaskStatus>("status"));
     }
 
     /**
@@ -702,20 +736,21 @@ public class HeadquartersController implements Initializable {
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
+        ObservableList<ISortedData> data =  FXCollections.observableArrayList(sortedData);
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                lvsSortedData.getItems().removeAll(sortedData);
-                lvsSortedData.getItems().addAll(sortedData);
-                if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-                    lvsSortedData.getSelectionModel().selectFirst();
+                tvsSortedData.getItems().removeAll(data);
+                tvsSortedData.getItems().addAll(data);
+                if (tvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                    tvsSortedData.getSelectionModel().selectFirst();
                 }
 
-                lvnSorted.getItems().removeAll(sortedData);
-                lvnSorted.getItems().addAll(sortedData);
-                if (lvnSorted.getSelectionModel().getSelectedItem() == null) {
-                    lvnSorted.getSelectionModel().selectFirst();
+                tvnSortedData.getItems().removeAll(data);
+                tvnSortedData.getItems().addAll(data);
+                if (tvnSortedData.getSelectionModel().getSelectedItem() == null) {
+                    tvnSortedData.getSelectionModel().selectFirst();
                 }
             }
 
@@ -793,7 +828,7 @@ public class HeadquartersController implements Initializable {
                     cbaExecutor.getSelectionModel().selectFirst();
                 }
 
-                task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+                task = (ITask) tvtTasks.getSelectionModel().getSelectedItem();
                 users = new ArrayList<>();
                 if (task != null) {
                     for (IServiceUser s : serviceUsers) {
@@ -821,7 +856,7 @@ public class HeadquartersController implements Initializable {
      */
     public void selectSortedData() {
         ISortedData sorted
-                = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+                = (ISortedData) tvsSortedData.getSelectionModel().getSelectedItem();
         if (sorted != null) {
             // Fill GUI with information
             tfsSortedDataTitle.setText(sorted.getTitle());
@@ -894,7 +929,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
 
-            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+            ISortedData data = (ISortedData) tvsSortedData.getSelectionModel().getSelectedItem();
             String title = tfsTaskTitle.getText();
             String description = tasTaskDescription.getText();
             ServiceUser executor = null;
@@ -914,7 +949,7 @@ public class HeadquartersController implements Initializable {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
 
-                Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+                Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) tvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
 
                 connectionManager.sendTask(task);
 
@@ -945,7 +980,7 @@ public class HeadquartersController implements Initializable {
         try {
             // Load values from GUI
             ISortedData data
-                    = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+                    = (ISortedData) tvsSortedData.getSelectionModel().getSelectedItem();
             if (data == null) {
                 showDialog("Foutmelding", "Selecteer eerst een gesorteerd bericht", true);
             }
@@ -1330,10 +1365,10 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
-                lvtTasks.getItems().removeAll(tasks);
-                lvtTasks.getItems().addAll(tasks);
-                if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
-                    lvtTasks.getSelectionModel().selectFirst();
+                tvtTasks.getItems().removeAll(tasks);
+                tvtTasks.getItems().addAll(tasks);
+                if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
+                    tvtTasks.getSelectionModel().selectFirst();
                 }
             }
 
@@ -1342,7 +1377,7 @@ public class HeadquartersController implements Initializable {
 
     public void selectTask() {
         ITask task
-                = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+                = (ITask) tvtTasks.getSelectionModel().getSelectedItem();
         if (task != null) {
             if (task.getSortedData() != null) {
                 tftTaskTitle.setText(task.getSortedData().getTitle());
@@ -1382,7 +1417,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
 
-            ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+            ITask task = (ITask) tvtTasks.getSelectionModel().getSelectedItem();
             if (task != null) {
                 task.setStatus(TaskStatus.READ);
 
@@ -1404,7 +1439,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
 
-            ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+            ITask task = (ITask) tvtTasks.getSelectionModel().getSelectedItem();
 
             if (task != null) {
                 Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
@@ -1434,7 +1469,7 @@ public class HeadquartersController implements Initializable {
      */
     public void selectNewsSorted() {
         ISortedData sorted
-                = (ISortedData) lvnSorted.getSelectionModel().getSelectedItem();
+                = (ISortedData) tvnSortedData.getSelectionModel().getSelectedItem();
         if (sorted != null) {
             // Fill GUI with information
             tfnTitleSorted.setText(sorted.getTitle());

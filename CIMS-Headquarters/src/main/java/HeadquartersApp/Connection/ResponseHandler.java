@@ -181,7 +181,7 @@ class ResponseHandler implements IResponseHandler {
             if (transaction.result != ConnState.COMMAND_ERROR) {
                 IUser user = (IUser) transaction.data;
                 this.loginController.logIn(user);
-            }
+            } 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
