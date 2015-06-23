@@ -129,6 +129,7 @@ public class ServerMain {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface intf = en.nextElement();
+                System.out.println(intf);
                 if (intf.getName().contains("eth1")) {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                         InetAddress addr = enumIpAddr.nextElement();

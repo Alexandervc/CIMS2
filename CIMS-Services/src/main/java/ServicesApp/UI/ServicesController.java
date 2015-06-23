@@ -18,7 +18,6 @@ import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
-import Shared.Users.UserRole;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,14 +36,17 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
@@ -87,7 +89,15 @@ public class ServicesController implements Initializable {
     @FXML
     Tab tabReadSortedData;
     @FXML
-    ListView lvsSortedData;
+    TableView tvsSortedData;
+    @FXML
+    TableColumn tcsTitle;
+    @FXML
+    TableColumn tcsRelevance;
+    @FXML
+    TableColumn tcsReliability;
+    @FXML
+    TableColumn tcsQuality;
     @FXML
     CheckBox chbsData;
     @FXML
@@ -107,7 +117,11 @@ public class ServicesController implements Initializable {
     @FXML
     Tab tabReadTask;
     @FXML
-    ListView lvtTasks;
+    TableView tvtTasks;
+    @FXML
+    TableColumn tctTitle;
+    @FXML
+    TableColumn tctStatus;
     @FXML
     TextField tftTaskTitle;
     @FXML
@@ -171,7 +185,7 @@ public class ServicesController implements Initializable {
                     }
                 });
 
-        lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
+        tvsSortedData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
 
                     @Override
@@ -183,7 +197,7 @@ public class ServicesController implements Initializable {
                     }
                 });
         
-        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
+        tvtTasks.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
 
             @Override
@@ -194,67 +208,75 @@ public class ServicesController implements Initializable {
                 });
 
         // Set cell factories
-        lvsSortedData.setCellFactory(new Callback<ListView<IData>, ListCell<IData>>() {
-
-            @Override
-            public ListCell<IData> call(ListView<IData> param) {
-                return new ListCell<IData>() {
-
-                    @Override
-                    protected void updateItem(IData item, boolean empty) {
-                        super.updateItem(item, empty);
-                        lblMessageUpdate.setText("");
-                        lblMessageTask.setText("");
-                        lblMessageSend.setText("");
-                        if (!empty) {
-                            setItem(item);
-                            setText(item.toString());
-
-                            if (item instanceof IDataRequest) {
-                                setTextFill(Color.RED);
-                            } else if (item instanceof ISortedData) {
-                                setTextFill(Color.BLACK);
-                            }
-                        } else {
-                            setItem(null);
-                            setText("");
-                        }
-
-                    }
-                };
-            }
-        });
+//        Callback callback = new Callback<TableColumn<IData>, TableCell<IData>>() {};
+//        tcsTitle.setCellFactory(new Callback<TableColumn<IData>, TableCell<IData>> (
+//
+//            @Override
+//              public TableCell<IData> call(TableColumn<IData> param) {
+//                return new TableCell<IData>() {
+//
+//                    protected void updateItem(IData item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        lblMessageUpdate.setText("");
+//                        lblMessageTask.setText("");
+//                        lblMessageSend.setText("");
+//                        if (!empty) {
+//                            setItem(item);
+//                            setText(item.toString());
+//
+//                            if (item instanceof IDataRequest) {
+//                                setTextFill(Color.RED);
+//                            } else if (item instanceof ISortedData) {
+//                                setTextFill(Color.BLACK);
+//                            }
+//                        } else {
+//                            setItem(null);
+//                            setText("");
+//                        }
+//
+//                    }
+//                };
+//            }
+//        });
         
-        lvtTasks.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
-
-            @Override
-            public ListCell<ITask> call(ListView<ITask> param) {
-                selectTask();
-                return new ListCell<ITask>() {
-
-                    @Override
-                    protected void updateItem(ITask item, boolean empty) {
-                        super.updateItem(item, empty);
-                        lblMessageUpdate.setText("");
-                        lblMessageTask.setText("");
-                        lblMessageSend.setText("");
-                        if (!empty) {
-                            setItem(item);
-                            setText(item.toString());
-
-                            if (item.getStatus() == TaskStatus.INPROCESS) {
-                                setTextFill(Color.GREEN);
-                            } else {
-                                setTextFill(Color.BLACK);
-                            }
-                        } else {
-                            setItem(null);
-                            setText("");
-                        }
-                    }
-                };
-            };
-        });
+//        tctStatus.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
+//
+//            @Override
+//            public ListCell<ITask> call(ListView<ITask> param) {
+//                selectTask();
+//                return new ListCell<ITask>() {
+//
+//                    @Override
+//                    protected void updateItem(ITask item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        lblMessageUpdate.setText("");
+//                        lblMessageTask.setText("");
+//                        lblMessageSend.setText("");
+//                        if (!empty) {
+//                            setItem(item);
+//                            setText(item.toString());
+//
+//                            if (item.getStatus() == TaskStatus.INPROCESS) {
+//                                setTextFill(Color.GREEN);
+//                            } else {
+//                                setTextFill(Color.BLACK);
+//                            }
+//                        } else {
+//                            setItem(null);
+//                            setText("");
+//                        }
+//                    }
+//                };
+//            };
+//        });
+        
+        tcsTitle.setCellValueFactory(new PropertyValueFactory<IData, String>("title"));
+        tcsRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
+        tcsReliability.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("reliability"));
+        tcsQuality.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("quality"));
+        
+        tctTitle.setCellValueFactory(new PropertyValueFactory<ITask, String>("title"));
+        tctStatus.setCellValueFactory(new PropertyValueFactory<ITask, TaskStatus>("status"));
     }
 
     /**
@@ -328,11 +350,11 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 if (!showingDataItem) {
-                    lvtTasks.getItems().removeAll(tasks);
-                    lvtTasks.getItems().addAll(tasks);
+                    tvtTasks.getItems().removeAll(tasks);
+                    tvtTasks.getItems().addAll(tasks);
                     
-                    if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
-                        lvtTasks.getSelectionModel().selectFirst();
+                    if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
+                        tvtTasks.getSelectionModel().selectFirst();
                     }
                 }
             }
@@ -351,9 +373,9 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 if (chbsRequests.isSelected() && requests != null) {
-                    lvsSortedData.getItems().addAll(requests);
-                    if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-                        lvsSortedData.getSelectionModel().selectFirst();
+                    tvsSortedData.getItems().addAll(requests);
+                    if (tvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                        tvsSortedData.getSelectionModel().selectFirst();
                     }
                 }
             }
@@ -367,15 +389,15 @@ public class ServicesController implements Initializable {
      *
      * @param sortedData
      */
-    public void displaySortedData(List<ISortedData> sortedData) {
+    public void displaySortedData(List<ISortedData> sortedData) {        
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
                 if (chbsData.isSelected()) {
-                    lvsSortedData.getItems().addAll(sortedData);
-                    if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-                        lvsSortedData.getSelectionModel().selectFirst();
+                    tvsSortedData.getItems().addAll(sortedData);
+                    if (tvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                        tvsSortedData.getSelectionModel().selectFirst();
                     }
                 }
             }
@@ -474,7 +496,7 @@ public class ServicesController implements Initializable {
      */
     private void removeAnsweredRequest() {
         if (this.answeredRequest != null) {
-            lvsSortedData.getItems().remove(this.answeredRequest);
+            tvsSortedData.getItems().remove(this.answeredRequest);
             this.answeredRequest = null;
         }
     }
@@ -563,7 +585,7 @@ public class ServicesController implements Initializable {
      * Fills the GUI with the information of the selected data
      */
     public void selectData() {
-        IData data = (IData) lvsSortedData.getSelectionModel().getSelectedItem();
+        IData data = (IData) tvsSortedData.getSelectionModel().getSelectedItem();
         if (data != null) {
             // Fill GUI with information
             tfsTitle.setText(data.getTitle());
@@ -587,7 +609,7 @@ public class ServicesController implements Initializable {
      * Fills the GUI with the information of the tasks
      */
     public void selectTask() {
-        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        ITask task = (ITask) tvtTasks.getSelectionModel().getSelectedItem();
         //all buttons invisible
         btnAcceptTask.setVisible(false);
         btnDismissTask.setVisible(false);
@@ -653,7 +675,7 @@ public class ServicesController implements Initializable {
             List<ISortedData> sortedData = new ArrayList<>();
             List<IDataRequest> requests = new ArrayList<>();
 
-            for (Object o : lvsSortedData.getItems()) {
+            for (Object o : tvsSortedData.getItems()) {
                 if (o instanceof ISortedData) {
                     sortedData.add((ISortedData) o);
                 } else if (o instanceof IDataRequest) {
@@ -664,12 +686,12 @@ public class ServicesController implements Initializable {
             if (source == chbsData) {
                 // Remove sortedData
                 for (ISortedData s : sortedData) {
-                    lvsSortedData.getItems().remove(s);
+                    tvsSortedData.getItems().remove(s);
                 }
             } else if (source == chbsRequests) {
                 // Remove dataRequest
                 for (IDataRequest r : requests) {
-                    lvsSortedData.getItems().remove(r);
+                    tvsSortedData.getItems().remove(r);
                 }
             }
         }
@@ -680,7 +702,7 @@ public class ServicesController implements Initializable {
      */
     public void goToSendUpdate() {
         try {
-            IDataRequest request = (IDataRequest) lvsSortedData.getSelectionModel().getSelectedItem();
+            IDataRequest request = (IDataRequest) tvsSortedData.getSelectionModel().getSelectedItem();
 
             if (request != null) {
                 if (request.getRequestId() == -1) {
@@ -743,7 +765,7 @@ public class ServicesController implements Initializable {
                 selectedTask.setStatus(TaskStatus.REFUSED);
                 selectedTask.setDeclineReason(argument);
                 this.connectionManager.updateTask(selectedTask);
-                lvtTasks.getItems().remove(selectedTask);
+                tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het weigeren van de taak is gelukt.");
@@ -762,7 +784,7 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.FAILED);
                 this.connectionManager.updateTask(selectedTask);
-                lvtTasks.getItems().remove(selectedTask);
+                tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");
@@ -783,7 +805,7 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.SUCCEEDED);
                 this.connectionManager.updateTask(selectedTask);
-                lvtTasks.getItems().remove(selectedTask);
+                tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");

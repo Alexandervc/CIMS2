@@ -7,8 +7,7 @@ package ServicesApp.UI;
  */
 import ServicesApp.Connection.ConnectionHandler;
 import Shared.NetworkException;
-import Shared.Users.IHQChief;
-import Shared.Users.IHQUser;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,7 +17,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -86,12 +84,12 @@ public class ServicesLogInController implements Initializable {
                     if (user == null) {
                         showDialog("Log in fout", "De combinatie van wachtwoord en "
                                 + "gebruikersnaam is onjuist", true);
-                    } else if (user instanceof IHQChief || user instanceof IHQUser) {
-                        showDialog("Log in fout", "Je mag hier niet inloggen met deze "
-                                + "gegevens", true);
-                    } else {
+                    } else if (user instanceof IServiceUser) {
                         main.goToServices(connectionManager, user);
                         System.out.println("User ingelogd");
+                    } else {
+                        showDialog("Log in fout", "Je mag hier niet inloggen met deze "
+                                + "gegevens", true);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);

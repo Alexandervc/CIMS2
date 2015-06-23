@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -122,9 +122,9 @@
     </TabPane>
     <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" minHeight="26.999908447265625" prefHeight="26.999908447265625" prefWidth="796.0">
       <menus>
-        <Menu mnemonicParsing="false" text="Log uit" fx:id="btnLogOut">
+        <Menu fx:id="btnLogOut" mnemonicParsing="false" text="Log uit">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#logOutClick" text="Log uit" fx:id="btnLogout" />
+            <MenuItem fx:id="btnLogout" mnemonicParsing="false" onAction="#logOutClick" text="Log uit" />
           </items>
         </Menu>
       </menus>

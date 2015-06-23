@@ -35,11 +35,10 @@ public class webController extends HttpServlet {
     private HashSet<Situation> situations = new HashSet<Situation>();
     private HashSet<Advice> advices = new HashSet<Advice>();
     private List<INewsItem> news = new ArrayList<INewsItem>();
-    private HashMap<Integer,Integer> distances = new HashMap<>();
+    private HashMap<Integer, Integer> distances = new HashMap<>();
     private Date date = new Date();
 
     public webController() {
-        //File tmpDir = (File)getServletContext().getAttribute(ServletContext.TEMPDIR);
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         news.add(new NewsItem(1, "Title1", "Description1", "Rachelsmolen, Eindhoven",
@@ -93,7 +92,6 @@ public class webController extends HttpServlet {
     }
 
     public String getFile(String photoName) {
-        System.out.println("Filepath = " + "http://athena.fhict.nl/users/i204267/" + photoName);
         return "http://athena.fhict.nl/users/i204267/" + photoName;
     }
 
@@ -115,14 +113,13 @@ public class webController extends HttpServlet {
         }
         return false;
     }
-    
+
     public void calcDistance(int newsid, int distance) {
         if (distance >= 0) {
             distances.put(newsid, distance);
         } else {
             distances.put(newsid, -1);
         }
-        
         System.out.println(distance);
     }
 }
