@@ -624,8 +624,9 @@ public class SortedDatabaseManager extends DatabaseManager {
 
             for (INewsItem n : output) {
                 query = "SELECT LINK FROM " + pictureTable
-                        + " WHERE ID = " + n.getId();
+                        + " WHERE ID = ?";
                 prepStat = conn.prepareStatement(query);
+                prepStat.setInt(1, n.getId());
                 rs = prepStat.executeQuery();
                 this.addPicturesToNewsItem(n, rs);
             }
