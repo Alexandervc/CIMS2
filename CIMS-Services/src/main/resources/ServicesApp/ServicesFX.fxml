@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -64,15 +64,14 @@
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Gesorteerde data" underline="false" />
-                <TableView fx:id="tvData" layoutX="14.0" layoutY="14.0" prefHeight="487.0" prefWidth="352.0" visible="false">
+                <TableView fx:id="tvsSortedData" layoutX="14.0" layoutY="49.0" prefHeight="451.0" prefWidth="352.0">
                   <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
-                    <TableColumn prefWidth="60.0" text="Relevantie" />
-                    <TableColumn prefWidth="60.0" text="Betrouwbaarheid" />
-                    <TableColumn prefWidth="60.0" text="Kwaliteit" />
+                    <TableColumn fx:id="tcsTitle" maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
+                    <TableColumn fx:id="tcsRelevance" prefWidth="60.0" text="R" />
+                    <TableColumn fx:id="tcsReliability" prefWidth="60.0" text="B" />
+                    <TableColumn fx:id="tcsQuality" prefWidth="60.0" text="K" />
                   </columns>
                 </TableView>
-                <ListView id="lvSortedData" fx:id="lvsSortedData" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
                 <Label layoutX="396.0" layoutY="28.0" text="Weergave" />
                 <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Data" />
                 <CheckBox id="chbsRequest" fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Meldingen" />
@@ -94,7 +93,6 @@
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Taken" underline="false" />
-                <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
                 <Label layoutX="384.0" layoutY="28.0" text="Titel" />
                 <Label layoutX="384.0" layoutY="65.0" text="Beschrijving" />
                 <Label layoutX="384.0" layoutY="295.0" text="Pre-Conditie" />
@@ -114,6 +112,12 @@
                 <Button fx:id="btnSucceed" layoutX="591.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="181.0" text="Geslaagd" visible="false" />
                 <Button fx:id="btnFailed" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="195.0" text="Niet uitgevoerd / Gefaald" visible="false" />
                 <Label fx:id="lblMessageTask" font="$x2" layoutX="384.0" layoutY="472.0" text="Melding" />
+                        <TableView fx:id="tvtTasks" layoutX="14.0" layoutY="49.0" prefHeight="451.0" prefWidth="352.0">
+                          <columns>
+                            <TableColumn fx:id="tctTitle" prefWidth="209.0" text="Titel" />
+                            <TableColumn fx:id="tctStatus" prefWidth="142.0" text="Status" />
+                          </columns>
+                        </TableView>
               </children>
             </AnchorPane>
           </content>
@@ -122,9 +126,9 @@
     </TabPane>
     <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" minHeight="26.999908447265625" prefHeight="26.999908447265625" prefWidth="796.0">
       <menus>
-        <Menu mnemonicParsing="false" text="Log uit" fx:id="btnLogOut">
+        <Menu fx:id="btnLogOut" mnemonicParsing="false" text="Log uit">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#logOutClick" text="Log uit" fx:id="btnLogout" />
+            <MenuItem fx:id="btnLogout" mnemonicParsing="false" onAction="#logOutClick" text="Log uit" />
           </items>
         </Menu>
       </menus>
