@@ -4,7 +4,8 @@
     Author     : Alexander
 --%>
 
-
+<%@page import="Shared.Users.IUser"%>
+<%@page import="Shared.Users.ICitizen"%>
 <%@page import="com.sun.glass.ui.Application"%>
 <%@page import="Shared.Data.INewsItem"%>
 <%@page import="Controller.IndexController"%>
@@ -16,6 +17,16 @@
     <head>
         <title>Algemeen</title>
         <% IndexController controller = new IndexController();
+            ICitizen citizen = null;
+
+            if(session.getAttribute("User") != null) {
+                IUser user = (IUser) session.getAttribute("User");
+
+                if (user instanceof ICitizen) {
+                    citizen = (ICitizen)user;
+                }
+            }
+
            int pagenr = 1;
            int limit = 5;
            int maxPagenr = 1;
@@ -28,7 +39,16 @@
         %>
     </head>	
     <body>	
-        <% if (controller.getNewsItemCount() > 0) {
+        <% 
+            if(session.getAttribute("User") != null) {
+                IUser user = (IUser) session.getAttribute("User");
+
+                if (user instanceof ICitizen) {
+                    citizen = (ICitizen)user;
+                }
+            }
+           
+            if (controller.getNewsItemCount() > 0) {
             for (INewsItem n : controller.getNewsItems(limit * (pagenr - 1), limit)) { 
             if(n != null) { %>
 
@@ -44,12 +64,18 @@
                     <p class ="date"><%= n.getDateString() %></p>
                     
                     <%
-                        String des = "";
-                        if (n.getDescription().length() >= 200) {
-                            des = n.getDescription().substring(0,200);
-                        } else {
-                            des = n.getDescription();
+                        int i = 0;
+                        
+                        if (citizen != null) {
+                            i = citizen.getDistance(n.getId());
                         }
+                        
+                        String des = String.valueOf(i);
+                        //if (n.getDescription().length() >= 200) {
+                        //    des = n.getDescription().substring(0,200);
+                        //} else {
+                        //    des = n.getDescription();
+                        //}
                     %>
                     
                     <p><% out.println(n.getCity().toUpperCase() +  " - " + des + "..."); %></p>

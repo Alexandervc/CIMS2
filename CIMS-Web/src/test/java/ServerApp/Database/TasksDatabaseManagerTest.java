@@ -82,8 +82,13 @@ public class TasksDatabaseManagerTest {
         tags.add(Tag.POLICE);
         SortedData data = new SortedData(100, "title", "description",
                 "location", "source", 1, 2, 3, tags);
-        assertTrue("failed to insert sorted data",
-                ServerMain.sortedDatabaseManager.insertToSortedData(data));
+
+        try {
+            ServerMain.sortedDatabaseManager.insertToSortedData(data);
+        } catch (NetworkException ex) {
+            Logger.getLogger(TasksDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         task = new Task(-1, "title", "desc", TaskStatus.UNASSIGNED, data,
                 Tag.FIREDEPARTMENT, executor);
         task = (Task) myDB.insertNewTask(task);
@@ -118,7 +123,7 @@ public class TasksDatabaseManagerTest {
                 int expectedDataID = -9999;
                 TaskStatus expectedStatus = null;
                 boolean expectedHasData = true;
-                
+
                 if (taskItem.getId() == 3) {
                     expectedTitle = "Zet ladder neer";
                     expectedDescription = "Zet de ladder tegen de boom.";
@@ -138,7 +143,7 @@ public class TasksDatabaseManagerTest {
                 } else {
                     fail("no recognized task ID");
                 }
-                
+
                 assertEquals("different title " + taskItem.getId(),
                         expectedTitle, taskItem.getTitle());
                 assertEquals("different description " + taskItem.getId(),
@@ -194,7 +199,11 @@ public class TasksDatabaseManagerTest {
         assertNotNull("failed to insert new task", task);
 
         task.setStatus(TaskStatus.FAILED);
-//        assertTrue("failed to update task", myDB.updateTask(task));
+        try {
+            myDB.updateTask(task);
+        } catch (NetworkException ex) {
+            Logger.getLogger(TasksDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         Task task2 = (Task) myDB.getTask(task.getId());
         assertEquals("task was not updated", task.getStatus(), task2.getStatus());
@@ -262,7 +271,7 @@ public class TasksDatabaseManagerTest {
                 } else {
                     fail("id fail (testGetPlans): " + planItem.getId());
                 }
-                
+
                 // checks values
                 assertEquals("title fail (testGetPlans)", expectedTitle, planItem.getTitle());
                 assertEquals("desc fail (testGetPlans)", expectedDesc, planItem.getDescription());
@@ -281,7 +290,7 @@ public class TasksDatabaseManagerTest {
         // register citizen
         ICitizen result = new Citizen("testey", "Test McTestey", "Eindhoven", "Rachelsmolen 4");
         result = myDB.registerCitizen(result, "test123");
-        
+
         assertNotNull("citizen was not registered", result);
         // loginUser
         IUser chiefUser = myDB.loginUser("chief01", "chief01");
@@ -291,24 +300,26 @@ public class TasksDatabaseManagerTest {
         assertNotNull("chiefUser was null", chiefUser);
         assertNotNull("fireUser was null", fireUser);
         assertNotNull("citizenUser was null", citizenUser);
-        assertNull("able to login on blank info",
-                myDB.loginUser("", ""));
-        assertNull("able to login on wrongly capitalised info",
-                myDB.loginUser("CHIEF01", "CHIEF01"));
-        assertNull("able to login on mixed info",
-                myDB.loginUser("chief01", "firefighter01"));
+        
+        try {
+            myDB.loginUser("", "");
+            myDB.loginUser("CHIEF01", "CHIEF01");
+            myDB.loginUser("chief01", "firefighter01");
+        } catch (NetworkException ex) {
+            Logger.getLogger(TasksDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         assertEquals("chiefUser had wrong name",
                 "Melanie Kwetters", chiefUser.getName());
         assertEquals("fireUser had wrong name",
                 "Bart Bouten", fireUser.getName());
-        assertEquals("citizenUser had wrong name", 
+        assertEquals("citizenUser had wrong name",
                 "Test McTestey", citizenUser.getName());
         assertTrue("chiefUser was not a hqChief",
                 chiefUser instanceof HQChief);
         assertTrue("fireUser was not a ServiceUser",
                 fireUser instanceof ServiceUser);
-        assertTrue("citizenUser was not a Citizen", 
+        assertTrue("citizenUser was not a Citizen",
                 citizenUser instanceof Citizen);
 
         HQChief chief = (HQChief) chiefUser;
@@ -328,13 +339,13 @@ public class TasksDatabaseManagerTest {
                 chief.getName(), chiefUser.getName());
         assertEquals("getUser fireUser had wrong name",
                 firefighter.getName(), fireUser.getName());
-        assertEquals("getUser citizenUser had wrong name", 
+        assertEquals("getUser citizenUser had wrong name",
                 citizen.getName(), citizenUser.getName());
         assertTrue("getUser chiefUser was not a hqChief",
                 chiefUser instanceof HQChief);
         assertTrue("getUser fireUser was not a ServiceUser",
                 fireUser instanceof ServiceUser);
-        assertTrue("getUser citizenUser was not a Citizen", 
+        assertTrue("getUser citizenUser was not a Citizen",
                 citizenUser instanceof Citizen);
 
         // get service users

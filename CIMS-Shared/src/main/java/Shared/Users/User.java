@@ -37,6 +37,5 @@ public class User implements IUser {
     @Override
     public String getName() {
         return this.name;
-    }
-    
+    }     
 }

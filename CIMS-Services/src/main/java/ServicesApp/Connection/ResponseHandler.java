@@ -184,7 +184,7 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleGenericResult(ClientBoundTransaction transaction) {
         if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
-            loginController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+            servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
         }
     }
 

@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -67,224 +69,123 @@ import org.controlsfx.control.CheckComboBox;
  */
 public class HeadquartersController implements Initializable {
 
-    @FXML
-    TabPane tabPane;
+    @FXML TabPane tabPane;
 
     // ProcessInfo
-    @FXML
-    Tab tabProcessInfo;
-    @FXML
-    ListView lvuUnsortedData;
-    @FXML
-    TextField tfuTitle;
-    @FXML
-    TextArea tauDescription;
-    @FXML
-    TextField tfuSource;
-    @FXML
-    TextField tfuLocation;
-    @FXML
-    Slider suRelevance;
-    @FXML
-    Slider suReliability;
-    @FXML
-    Slider suQuality;
-    @FXML
-    AnchorPane apuPane;
-    @FXML
-    CheckComboBox ccuTags;
-    @FXML
-    Label lblUnsortedReport;
+    @FXML Tab tabProcessInfo;
+    @FXML ListView lvuUnsortedData;
+    @FXML TextField tfuTitle;
+    @FXML TextArea tauDescription;
+    @FXML TextField tfuSource;
+    @FXML TextField tfuLocation;
+    @FXML Slider suRelevance;
+    @FXML Slider suReliability;
+    @FXML Slider suQuality;
+    @FXML AnchorPane apuPane;
+    @FXML CheckComboBox ccuTags;
+    @FXML Label lblUnsortedReport;
 
     // RequestInfo
-    @FXML
-    Tab tabRequestInfo;
-    @FXML
-    TextField tfrRequestTitle;
-    @FXML
-    TextField tfrTitle;
-    @FXML
-    TextArea tarDescription;
-    @FXML
-    TextField tfrSource;
-    @FXML
-    TextField tfrLocation;
-    @FXML
-    AnchorPane aprPane;
-    @FXML
-    CheckComboBox ccrTags;
-    @FXML
-    Label lblInformationReport;
+    @FXML Tab tabRequestInfo;
+    @FXML TextField tfrRequestTitle;
+    @FXML TextField tfrTitle;
+    @FXML TextArea tarDescription;
+    @FXML TextField tfrSource;
+    @FXML TextField tfrLocation;
+    @FXML AnchorPane aprPane;
+    @FXML CheckComboBox ccrTags;
+    @FXML Label lblInformationReport;
 
     // SendNewsItems
-    @FXML
-    Tab tabNews;
-    @FXML
-    TableView tvnSortedData;
-    @FXML
-    TableColumn tcnTitle;
-    @FXML
-    TableColumn tcnRelevance;
-    @FXML
-    TableColumn tcnReliability;
-    @FXML
-    TableColumn tcnQuality;
-    @FXML
-    TextField tfnTitleSorted;
-    @FXML
-    TextArea tanDescriptionSorted;
-    @FXML
-    TextField tfnSourceSorted;
-    @FXML
-    TextField tfnLocationSorted;
-    @FXML
-    TextField tfnTitle;
-    @FXML
-    TextArea tanDescription;
-    @FXML
-    TextField tfnStreet;
-    @FXML
-    TextField tfnCity;
-    @FXML
-    TextField tfnVictims;
-    @FXML
-    CheckComboBox ccnSituations;
-    @FXML
-    Label lblnMessage;
-    @FXML
-    AnchorPane apnPane;
+    @FXML Tab tabNews;
+    @FXML TableView tvnSortedData;
+    @FXML TableColumn tcnTitle;
+    @FXML TableColumn tcnRelevance;
+    @FXML TableColumn tcnReliability;
+    @FXML TableColumn tcnQuality;
+    @FXML TextField tfnTitleSorted;
+    @FXML TextArea tanDescriptionSorted;
+    @FXML TextField tfnSourceSorted;
+    @FXML TextField tfnLocationSorted;
+    @FXML TextField tfnTitle;
+    @FXML TextArea tanDescription;
+    @FXML TextField tfnStreet;
+    @FXML TextField tfnCity;
+    @FXML TextField tfnVictims;
+    @FXML CheckComboBox ccnSituations;
+    @FXML Label lblnMessage;
+    @FXML AnchorPane apnPane;
 
     // UpdateNewsItems
-    @FXML
-    Tab tabNewsUpdate;
-    @FXML
-    ListView lvbNews;
-    @FXML
-    TextField tfbTitle;
-    @FXML
-    TextArea tabDescription;
-    @FXML
-    TextField tfbStreet;
-    @FXML
-    TextField tfbCity;
-    @FXML
-    TextField tfbVictims;
-    @FXML
-    CheckComboBox ccbSituations;
-    @FXML
-    Label lblbMessage;
-    @FXML
-    AnchorPane apbPane;
+    @FXML Tab tabNewsUpdate;
+    @FXML ListView lvbNews;
+    @FXML TextField tfbTitle;
+    @FXML TextArea tabDescription;
+    @FXML TextField tfbStreet;
+    @FXML TextField tfbCity;
+    @FXML TextField tfbVictims;
+    @FXML CheckComboBox ccbSituations;
+    @FXML Label lblbMessage;
+    @FXML AnchorPane apbPane;
 
     // ProcessSortedData
-    @FXML
-    Tab tabProcessSortedData;
-    @FXML
-    TableView tvsSortedData;
-    @FXML
-    TableColumn tcsTitle;
-    @FXML
-    TableColumn tcsRelevance;
-    @FXML
-    TableColumn tcsReliability;
-    @FXML
-    TableColumn tcsQuality;
-    @FXML
-    TextField tfsSortedDataTitle;
-    @FXML
-    TextArea tasSortedDataDescription;
-    @FXML
-    TextField tfsSource;
-    @FXML
-    TextField tfsLocation;
-    @FXML
-    ListView lvsTasks;
-    @FXML
-    TextField tfsTaskTitle;
-    @FXML
-    TextArea tasTaskDescription;
-    @FXML
-    ComboBox cbsExecutor;
-    @FXML
-    Label lblProcessSortedData;
-    @FXML
-    Button btnAddSortedTask;
-    @FXML
-    Button btnAddRoadMap;
+    @FXML Tab tabProcessSortedData;
+    @FXML TableView tvsSortedData;
+    @FXML TableColumn tcsTitle;
+    @FXML TableColumn tcsRelevance;
+    @FXML TableColumn tcsReliability;
+    @FXML TableColumn tcsQuality;
+    @FXML TextField tfsSortedDataTitle;
+    @FXML TextArea tasSortedDataDescription;
+    @FXML TextField tfsSource;
+    @FXML TextField tfsLocation;
+    @FXML ListView lvsTasks;
+    @FXML TextField tfsTaskTitle;
+    @FXML TextArea tasTaskDescription;
+    @FXML ComboBox cbsExecutor;
+    @FXML Label lblProcessSortedData;
+    @FXML Button btnAddSortedTask;
+    @FXML Button btnAddRoadMap;
 
     // SendPlan
-    @FXML
-    Tab tabSendPlan;
-    @FXML
-    TextField tfpPlanTitle;
-    @FXML
-    TextArea tapPlanDescription;
-    @FXML
-    TextArea tapKeyWords;
-    @FXML
-    ListView lvpTasks;
-    @FXML
-    TextField tfpTaskTitle;
-    @FXML
-    TextArea tapTaskDescription;
-    @FXML
-    ComboBox cbExecutor;
-    @FXML
-    TextField tfpCondition;
-    @FXML
-    Label lblSendPlan;
+    @FXML Tab tabSendPlan;
+    @FXML TextField tfpPlanTitle;
+    @FXML TextArea tapPlanDescription;
+    @FXML TextArea tapKeyWords;
+    @FXML ListView lvpTasks;
+    @FXML TextField tfpTaskTitle;
+    @FXML TextArea tapTaskDescription;
+    @FXML ComboBox cbExecutor;
+    @FXML TextField tfpCondition;
+    @FXML Label lblSendPlan;
 
     // ApplyPlan
-    @FXML
-    Tab tabApplyPlan;
-    @FXML
-    TextField tfaDataTitle;
-    @FXML
-    TextArea taaDataDescription;
-    @FXML
-    TextField tfaSearch;
-    @FXML
-    ListView lvaPlans;
-    @FXML
-    ListView lvaSteps;
-    @FXML
-    TextField tfaTaskTitle;
-    @FXML
-    TextArea tfaTaskDescription;
-    @FXML
-    TextField tfaTaskCondition;
-    @FXML
-    ComboBox cbaExecutor;
-    @FXML
-    Label lblApplyPlan;
+    @FXML Tab tabApplyPlan;
+    @FXML TextField tfaDataTitle;
+    @FXML TextArea taaDataDescription;
+    @FXML TextField tfaSearch;
+    @FXML ListView lvaPlans;
+    @FXML ListView lvaSteps;
+    @FXML TextField tfaTaskTitle;
+    @FXML TextArea tfaTaskDescription;
+    @FXML TextField tfaTaskCondition;
+    @FXML ComboBox cbaExecutor;
+    @FXML Label lblApplyPlan;
 
     // Tasks
-    @FXML
-    Tab tabTask;
-    @FXML
-    TableView tvtTasks;
-    @FXML
-    TableColumn tctTitle;
-    @FXML
-    TableColumn tctStatus;
-    @FXML
-    TextField tftTaskTitle;
-    @FXML
-    TextArea tatTaskDescription;
-    @FXML
-    TextField tftTitle;
-    @FXML
-    TextArea tatDescription;
-    @FXML
-    TextField tftExecutor;
-    @FXML
-    TextField tftReason;
-    @FXML
-    ComboBox cbtNewExecutor;
-    @FXML
-    Label lblTasks;
-    @FXML
-    Button btnNewTask;
+    @FXML Tab tabTask;
+    @FXML TableView tvtTasks;
+    @FXML TableColumn tctTitle;
+    @FXML TableColumn tctStatus;
+    @FXML TextField tftTaskTitle;
+    @FXML TextArea tatTaskDescription;
+    @FXML TextField tftTitle;
+    @FXML TextArea tatDescription;
+    @FXML TextField tftExecutor;
+    @FXML TextField tftReason;
+    @FXML ComboBox cbtNewExecutor;
+    @FXML Label lblTasks;
+    @FXML Button btnNewTask;
 
     private IData requestData;
     private ISortedData sortedData;
@@ -296,6 +197,9 @@ public class HeadquartersController implements Initializable {
     private Headquarters main;
 
     private HashMap<Integer, Task> displayedTasks;
+    
+    private boolean exception;
+    private Timer timer = new Timer();
 
     public void setApp(Headquarters application) {
         this.main = application;
@@ -565,6 +469,7 @@ public class HeadquartersController implements Initializable {
         if (lvuUnsortedData.getItems().size() < 10) {
             this.connectionManager.getData();
 
+            //TODO
             // Start timer
             if (lvuUnsortedData.getItems().size() == 0) {
                 this.connectionManager.subscribeUnsorted();
@@ -611,9 +516,7 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
 
-            lblUnsortedReport.setVisible(true);
-            lblUnsortedReport.setText("Data is verzonden naar de database");
-
+            this.displaySuccessMessage(lblUnsortedReport, "Data is verzonden naar de database");
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -644,9 +547,7 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
 
-            lblUnsortedReport.setVisible(true);
-            lblUnsortedReport.setText("Data is verwijderd uit de database");
-
+            this.displaySuccessMessage(lblUnsortedReport, "Data is verwijderd uit de database");
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -705,10 +606,8 @@ public class HeadquartersController implements Initializable {
 
             // Reset tab
             resetRequest();
-
-            lblInformationReport.setVisible(true);
-            lblInformationReport.setText("Verzoek is verstuurd");
-
+            
+            this.displaySuccessMessage(lblInformationReport, "Verzoek is verstuurd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -959,9 +858,8 @@ public class HeadquartersController implements Initializable {
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
-
-                lblProcessSortedData.setVisible(true);
-                lblProcessSortedData.setText("Taak is verzonden naar de database");
+                
+                this.displaySuccessMessage(lblProcessSortedData, "Taak is verzonden naar de database");
             } else {
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             }
@@ -1113,8 +1011,7 @@ public class HeadquartersController implements Initializable {
                     connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, true));
                     resetPlanInfo();
 
-                    lblSendPlan.setVisible(true);
-                    lblSendPlan.setText("Plan is verzonden naar de database");
+                    this.displaySuccessMessage(lblSendPlan, "Plan is verzonden naar de database");
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
                 }
@@ -1274,8 +1171,7 @@ public class HeadquartersController implements Initializable {
                             connectionManager.applyPlan(tempPlan);
                             resetApplyPlan();
 
-                            lblApplyPlan.setVisible(true);
-                            lblApplyPlan.setText("Plan is in werking gezet");
+                            this.displaySuccessMessage(lblApplyPlan, "Plan is in werking gezet");
                         } else {
                             showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
                         }
@@ -1424,8 +1320,7 @@ public class HeadquartersController implements Initializable {
                 connectionManager.updateTask(task);
             }
 
-            lblTasks.setVisible(true);
-            lblTasks.setText("Taak is gelezen");
+            this.displaySuccessMessage(lblTasks, "Taak is gelezen");
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -1448,9 +1343,8 @@ public class HeadquartersController implements Initializable {
                     task.setStatus(TaskStatus.SENT);
                     task.setDeclineReason(null);
                     connectionManager.resendTask(task);
-
-                    lblTasks.setVisible(true);
-                    lblTasks.setText("Taak is up-to-date");
+                    
+                    this.displaySuccessMessage(lblTasks, "Taak is up-to-date");
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
@@ -1515,8 +1409,7 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.sendNewsItem(newsItem);
 
             // Show message
-            lblnMessage.setVisible(true);
-            lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
+            this.displaySuccessMessage(lblnMessage, "Nieuwsbericht is succesvol verzonden");
 
             // Reset GUI
             tfnTitle.clear();
@@ -1641,8 +1534,7 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.updateNewsItem(newsItem);
 
             // Show message
-            lblbMessage.setVisible(true);
-            lblbMessage.setText("Nieuwsbericht is succesvol verzonden");
+            this.displaySuccessMessage(lblbMessage, "Nieuwsbericht is succesvol verzonden");
 
             // Reset GUI
             tfbTitle.clear();
@@ -1687,17 +1579,7 @@ public class HeadquartersController implements Initializable {
                 this.connectionManager.close();
             }
         }
-    }
-    
-    private void clearMessages() {
-        lblApplyPlan.setVisible(false);
-        lblInformationReport.setVisible(false);
-        lblProcessSortedData.setVisible(false);
-        lblSendPlan.setVisible(false);
-        lblTasks.setVisible(false);
-        lblUnsortedReport.setVisible(false);
-        lblbMessage.setVisible(false);
-        lblnMessage.setVisible(false);
+        timer.cancel();
     }
 
     public void showDialog(String title, String melding, boolean warning) {
@@ -1705,7 +1587,7 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
-                clearMessages();
+                exception = true;
                 
                 Alert alert = null;
 
@@ -1748,5 +1630,45 @@ public class HeadquartersController implements Initializable {
                 .replace("ÃƒÂ©", "e");
 
         return s;
+    }
+    
+    private void displaySuccessMessage(Label lblMessage, String message) {
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if(!exception) {
+                            lblMessage.setText(message);
+                            lblMessage.setVisible(true);
+                        } else {
+                            exception = false;
+                        }
+                    }
+                    
+                });
+            }
+            
+        }, 1000);
+        
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        lblMessage.setText(null);
+                        lblMessage.setVisible(false);
+                    }
+                    
+                });
+            }
+            
+        }, 6000);
     }
 }

@@ -148,7 +148,11 @@
                     function calcDistance() {
                             //Distance in meter
                             distance = google.maps.geometry.spherical.computeDistanceBetween(LatLng, LatLng2);
-                            controller.calculateDistance(ID, distance);
+                            
+                            <% if (citizen != null) { %>
+                                citizen.setDistance(ID, distance);
+                                session.setAttribute("User", citizen);
+                            <% } %>
                     }
                 <% } %>
             }
