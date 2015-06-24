@@ -263,7 +263,7 @@ class ResponseHandler implements IResponseHandler {
             List<ITask> tasks = Arrays.asList(new ITask[]{task});
             List<ITask> myTasks = new ArrayList<>();
             for(ITask t : tasks) {
-                if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor())) {
+                if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor().getUsername())) {
                     myTasks.add(t);
                 }
             }
