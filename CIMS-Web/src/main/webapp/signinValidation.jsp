@@ -37,7 +37,7 @@
                     response.sendRedirect("signin.jsp");
                 }
 
-            } catch (IllegalArgumentException iaEx) {
+            } catch (Exception iaEx) {
                 session.setAttribute("Error", iaEx.getMessage());
                 response.sendRedirect("signin.jsp");
                 iaEx.printStackTrace();
