@@ -172,11 +172,10 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param sorted object sorteddata
      * @return succeed on attempting to insert sorted data.
      */
-    public boolean insertToSortedData(ISortedData sorted) throws NetworkException {
+    public void insertToSortedData(ISortedData sorted) throws NetworkException {
         openConnection();
         
         Set<Tag> tags = sorted.getTags();
-        boolean succeed = false;
         try {
             //insert to sorteddata
             String query = "INSERT INTO " + sortedDataTable + " VALUES (?,?,?,?,?,?,?,?)";
@@ -211,7 +210,6 @@ public class SortedDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-        return succeed;
     }
 
     /**
