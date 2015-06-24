@@ -469,8 +469,6 @@ public class HeadquartersController implements Initializable {
         if (lvuUnsortedData.getItems().size() < 10) {
             this.connectionManager.getData();
 
-            //TODO
-            // Start timer
             if (lvuUnsortedData.getItems().size() == 0) {
                 this.connectionManager.subscribeUnsorted();
             } else {

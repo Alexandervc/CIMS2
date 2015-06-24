@@ -45,7 +45,7 @@ public class PlanExecutorHandler {
      */
     public void executeNextStepOf(IStep step) throws NetworkException {
         if(this.executors.get((step.getPlanId())) == null) {
-            System.out.println("planExecutor null");
+            throw new IllegalArgumentException("Er is geen executor bij dit plan");
         }
         this.executors.get(step.getPlanId()).executeNextStep();
     }
