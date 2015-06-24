@@ -12,6 +12,8 @@ import Shared.NetworkException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -84,8 +86,12 @@ public class UnsortedDatabaseManagerTest {
                 unsortedBatch2.isEmpty());
 
         int size = unsortedBatch.size();
-//        assertTrue("failed to reset status (resetUnsortedData)",
-//                myDB.resetUnsortedData(unsortedBatch));
+        
+        try{
+            myDB.resetUnsortedData(unsortedBatch);
+        }catch (NetworkException ex) {
+            Logger.getLogger(UnsortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         long now = System.currentTimeMillis();
         while(System.currentTimeMillis() < now + 500){}
