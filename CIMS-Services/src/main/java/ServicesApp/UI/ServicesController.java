@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -56,98 +58,58 @@ import javafx.util.Callback;
  */
 public class ServicesController implements Initializable {
 
-    @FXML
-    TabPane tabPane;
+    @FXML TabPane tabPane;
 
     // SendInfo
-    @FXML
-    Tab tabSendInfo;
-    @FXML
-    TextField tfnTitle;
-    @FXML
-    TextArea tanDescription;
-    @FXML
-    TextField tfnSource;
-    @FXML
-    TextField tfnLocation;
+    @FXML Tab tabSendInfo;
+    @FXML TextField tfnTitle;
+    @FXML TextArea tanDescription;
+    @FXML TextField tfnSource;
+    @FXML TextField tfnLocation;
 
     // UpdateInfo
-    @FXML
-    Tab tabUpdateInfo;
-    @FXML
-    ListView lvuSentData;
-    @FXML
-    TextField tfuTitle;
-    @FXML
-    TextArea tauDescription;
-    @FXML
-    TextField tfuSource;
-    @FXML
-    TextField tfuLocation;
+    @FXML Tab tabUpdateInfo;
+    @FXML ListView lvuSentData;
+    @FXML TextField tfuTitle;
+    @FXML TextArea tauDescription;
+    @FXML TextField tfuSource;
+    @FXML TextField tfuLocation;
 
     // ReadSortedData
-    @FXML
-    Tab tabReadSortedData;
-    @FXML
-    TableView tvsSortedData;
-    @FXML
-    TableColumn tcsTitle;
-    @FXML
-    TableColumn tcsRelevance;
-    @FXML
-    TableColumn tcsReliability;
-    @FXML
-    TableColumn tcsQuality;
-    @FXML
-    CheckBox chbsData;
-    @FXML
-    CheckBox chbsRequests;
-    @FXML
-    TextField tfsTitle;
-    @FXML
-    TextArea tasDescription;
-    @FXML
-    TextField tfsSource;
-    @FXML
-    TextField tfsLocation;
-    @FXML
-    Button btnAnswerRequest;
+    @FXML Tab tabReadSortedData;
+    @FXML TableView tvsSortedData;
+    @FXML TableColumn tcsTitle;
+    @FXML TableColumn tcsRelevance;
+    @FXML TableColumn tcsReliability;
+    @FXML TableColumn tcsQuality;
+    @FXML CheckBox chbsData;
+    @FXML CheckBox chbsRequests;
+    @FXML TextField tfsTitle;
+    @FXML TextArea tasDescription;
+    @FXML TextField tfsSource;
+    @FXML TextField tfsLocation;
+    @FXML Button btnAnswerRequest;
 
     // TaskInfo
-    @FXML
-    Tab tabReadTask;
-    @FXML
-    TableView tvtTasks;
-    @FXML
-    TableColumn tctTitle;
-    @FXML
-    TableColumn tctStatus;
-    @FXML
-    TextField tftTaskTitle;
-    @FXML
-    TextArea tatDescription;
-    @FXML
-    TextArea tatCondition;
-    @FXML
-    Button btnAcceptTask;
-    @FXML
-    Button btnDismissTask;
-    @FXML
-    Button btnFailed;
-    @FXML
-    Button btnSucceed;
+    @FXML Tab tabReadTask;
+    @FXML TableView tvtTasks;
+    @FXML TableColumn tctTitle;
+    @FXML TableColumn tctStatus;
+    @FXML TextField tftTaskTitle;
+    @FXML TextArea tatDescription;
+    @FXML TextArea tatCondition;
+    @FXML Button btnAcceptTask;
+    @FXML Button btnDismissTask;
+    @FXML Button btnFailed;
+    @FXML Button btnSucceed;
 
     //report message label
-    @FXML
-    Label lblMessageUpdate;
-    @FXML
-    Label lblMessageTask;
-    @FXML
-    Label lblMessageSend;
+    @FXML Label lblMessageUpdate;
+    @FXML Label lblMessageTask;
+    @FXML Label lblMessageSend;
 
     //menuBar
-    @FXML
-    MenuBar menuHQ;
+    @FXML MenuBar menuHQ;
 
     private ConnectionHandler connectionManager;
     private boolean showingDataItem;
@@ -157,6 +119,9 @@ public class ServicesController implements Initializable {
     private HashSet<Tag> tags = new HashSet<>();
 
     private Services main;
+    
+    private boolean exception = false;
+    private Timer timer = new Timer();
 
     public void setApp(Services application) {
         this.main = application;
@@ -432,6 +397,7 @@ public class ServicesController implements Initializable {
         if (!logout) {
             this.connectionManager.close();
         }
+        timer.cancel();
     }
 
     /**
@@ -473,7 +439,7 @@ public class ServicesController implements Initializable {
             this.removeAnsweredRequest();
 
             // Bevestiging tonen
-            lblMessageSend.setText("Verzenden van ongesorteerde data is"
+            this.displaySuccessMessage(lblMessageSend, "Verzenden van ongesorteerde data is"
                     + " geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
@@ -552,7 +518,7 @@ public class ServicesController implements Initializable {
             lvuSentData.getItems().add(update);
 
             // Bevestiging tonen
-            lblMessageUpdate.setText("Het verzenden van de update is geslaagd");
+            this.displaySuccessMessage(lblMessageUpdate, "Het verzenden van de update is geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -739,7 +705,7 @@ public class ServicesController implements Initializable {
                 btnSucceed.setVisible(true);                
                 //resetTaskData();
                 //dismiss task succeed message
-                lblMessageTask.setText("Het accepteren van de taak is gelukt.");
+                this.displaySuccessMessage(lblMessageTask, "Het accepteren van de taak is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
@@ -768,7 +734,7 @@ public class ServicesController implements Initializable {
                 tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
-                lblMessageTask.setText("Het weigeren van de taak is gelukt.");
+                this.displaySuccessMessage(lblMessageTask, "Het weigeren van de taak is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
@@ -787,7 +753,7 @@ public class ServicesController implements Initializable {
                 tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
-                lblMessageTask.setText("Het veranderen van de status is gelukt.");
+                this.displaySuccessMessage(lblMessageTask, "Het veranderen van de status is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
@@ -808,7 +774,7 @@ public class ServicesController implements Initializable {
                 tvtTasks.getItems().remove(selectedTask);
                 //resetTaskData();
                 //dismiss task succeed message
-                lblMessageTask.setText("Het veranderen van de status is gelukt.");
+                this.displaySuccessMessage(lblMessageTask, "Het veranderen van de status is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
@@ -817,19 +783,13 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
-    
-    private void clearMessages() {
-        lblMessageSend.setText(null);
-        lblMessageTask.setText(null);
-        lblMessageUpdate.setText(null);
-    }
 
     public void showDialog(String title, String melding, boolean warning) {
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                clearMessages();
+                exception = true;
                 
                 Alert alert = null;
 
@@ -866,5 +826,43 @@ public class ServicesController implements Initializable {
         } else {
             return null;
         }
+    }
+    
+    private void displaySuccessMessage(Label lblMessage, String message) {
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if(!exception) {
+                            lblMessage.setText(message);
+                        } else {
+                            exception = false;
+                        }
+                    }
+                    
+                });
+            }
+            
+        }, 1000);
+        
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        lblMessage.setText(null);
+                    }
+                    
+                });
+            }
+            
+        }, 6000);
     }
 }
