@@ -298,8 +298,7 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             HashSet<Tag> tags = (HashSet) input.objects[0];
-            ServerMain.sortedDatabaseManager.getUpdateRequests(tags);
-            return output.setSuccess(true);
+            return output.setResult(ServerMain.sortedDatabaseManager.getUpdateRequests(tags));
         } catch (Exception ex) {
             return output.setResult(ex);
         }
