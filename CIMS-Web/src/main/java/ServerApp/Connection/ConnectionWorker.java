@@ -197,11 +197,9 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ISortedData data = (ISortedData) input.objects[0];
-            boolean result = ServerMain.sortedDatabaseManager.insertToSortedData(data);
-            if (result) {
-                ServerMain.pushHandler.push(data);
-            }
-            return output.setResult(result);
+            ServerMain.sortedDatabaseManager.insertToSortedData(data);
+            ServerMain.pushHandler.push(data);
+            return output.setSuccess(true);
         } catch (Exception ex) {
             return output.setResult(ex);
         }
@@ -298,8 +296,7 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             HashSet<Tag> tags = (HashSet) input.objects[0];
-            ServerMain.sortedDatabaseManager.getUpdateRequests(tags);
-            return output.setSuccess(true);
+            return output.setResult(ServerMain.sortedDatabaseManager.getUpdateRequests(tags));
         } catch (Exception ex) {
             return output.setResult(ex);
         }

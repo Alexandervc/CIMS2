@@ -12,4 +12,6 @@ package Shared.Users;
 public interface ICitizen extends IUser {
     String getCity();
     String getStreet();
+    void setDistance(int newsid, int distance);
+    int getDistance(int newsid);
 }

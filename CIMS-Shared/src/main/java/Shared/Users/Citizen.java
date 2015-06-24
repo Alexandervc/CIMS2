@@ -5,6 +5,8 @@
  */
 package Shared.Users;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Alexander
@@ -12,6 +14,7 @@ package Shared.Users;
 public class Citizen extends User implements ICitizen {
     private String city;
     private String street;
+    private HashMap<Integer, Integer> distances = new HashMap<>();
     
     /**
      * 
@@ -37,5 +40,29 @@ public class Citizen extends User implements ICitizen {
     @Override
     public String getStreet() {
         return this.street;
-    }    
+    }      
+        
+    @Override
+    public void setDistance(int newsid, int distance) {
+        if (newsid > 0 && distance >= 0) {
+            distances.put(newsid, distance);
+        } else {
+            distances.put(newsid, -1);
+        }
+    }
+    
+    @Override
+    public int getDistance(int newsid) {
+        int dis = -1;
+        
+        if (newsid > 0) {
+            dis = distances.get(newsid);
+        }
+        
+        if (dis >= 0) {
+            return dis;
+        } else {
+            return -1;
+        }
+    }
 }
