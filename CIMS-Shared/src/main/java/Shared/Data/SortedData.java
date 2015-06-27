@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @author Alexander
  */
-public class SortedData implements ISortedData {
+public class SortedData implements ISortedData { 
     private int id;
     private String title;
     private String description;

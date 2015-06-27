@@ -172,15 +172,15 @@
                                 int i = 0;
 
                                 if (citizen != null) {
-                                    try { i = citizen.getDistance(n.getId()); } catch (Exception ex) {}
+                                    //try { i = citizen.getDistance(n.getId()); } catch (Exception ex) { ex.printStackTrace();}
                                 }
 
                                 String des = String.valueOf(i);
-                                //if (n.getDescription().length() >= 200) {
-                                //    des = n.getDescription().substring(0,200);
-                                //} else {
-                                //    des = n.getDescription();
-                                //}
+                                if (n.getDescription().length() >= 200) {
+                                    des = n.getDescription().substring(0,200);
+                                } else {
+                                    des = n.getDescription();
+                                }
                             %>
 
                             <p><% out.println(n.getCity().toUpperCase() +  " - " + des + "..."); %></p>
