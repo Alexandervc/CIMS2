@@ -49,6 +49,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
@@ -137,6 +139,16 @@ public class ServicesController implements Initializable {
         lblMessageTask.setText("");
         lblMessageSend.setText("");
         
+        tvsSortedData.setEditable(false);        
+        tcsTitle.setResizable(false);
+        tcsRelevance.setResizable(false);
+        tcsReliability.setResizable(false);
+        tcsQuality.setResizable(false);
+        
+        tvtTasks.setEditable(false);        
+        tctTitle.setResizable(false);
+        tctStatus.setResizable(false);
+                
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
@@ -235,7 +247,7 @@ public class ServicesController implements Initializable {
 //            };
 //        });
         
-        tcsTitle.setCellValueFactory(new PropertyValueFactory<IData, String>("title"));
+        tcsTitle.setCellValueFactory(new PropertyValueFactory<IData, String>("title"));        
         tcsRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
         tcsReliability.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("reliability"));
         tcsQuality.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("quality"));

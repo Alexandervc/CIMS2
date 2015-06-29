@@ -15,6 +15,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollBar;
 import javafx.stage.Stage;
 
 /**
@@ -44,6 +45,7 @@ public class Services extends Application {
 
         this.stage = stage;
         this.connectionmanager = new ConnectionHandler(this.ipAdressServer, this.portNumber);
+        this.stage.resizableProperty().setValue(false);
         this.goToLogIn();
     }
 
