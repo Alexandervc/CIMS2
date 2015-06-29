@@ -12,6 +12,8 @@ import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.NetworkException;
+import com.google.maps.*;
+import com.google.maps.model.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,10 +37,37 @@ public class IndexController {
     }
     
     public int getNewsItemCount() throws NetworkException {
-        return ServerMain.sortedDatabaseManager.getNewsItemCount();
+        try {
+            int i = ServerMain.sortedDatabaseManager.getNewsItemCount();
+            return i;
+        } catch (NullPointerException ex) {
+            return 0;
+        }
     }
     
     public String getFile(String photoName) {
        return "http://athena.fhict.nl/users/i204267/" + photoName;
+    }
+    
+    public int calculateDistance(String location, String livingplace) {
+        try {
+            //server key
+            //GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyDYRxQCxF__dbvcKKragjuaEVDCRFNPsIw");
+            
+            //client key
+            GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyDLsAkb6W8XFkcN-Cw3C38JawrqkN04oCU");
+            
+            GeocodingResult[] results =  GeocodingApi.geocode(context,
+                location).await();
+            GeocodingResult[] results2 =  GeocodingApi.geocode(context,
+                livingplace).await();
+            System.out.println(results[0].formattedAddress);
+            System.out.println(results2[0].formattedAddress);
+            
+            return 10;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return -1;
+        }
     }
 }

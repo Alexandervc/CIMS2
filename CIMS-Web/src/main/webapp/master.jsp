@@ -34,20 +34,12 @@
             String location = "";
             IUser user = null;
             ICitizen citizen = null;
-            String livingplace = "";
 
             if(session.getAttribute("User") != null) {
                 user = (IUser) session.getAttribute("User");
 
                 if (user instanceof ICitizen) {
                     citizen = (ICitizen)user;
-
-                    if (!citizen.getStreet().equals("") && !citizen.getCity().equals("")) {
-                        livingplace = citizen.getStreet() + ", " + citizen.getCity();
-                    }
-                    else if (!citizen.getCity().equals("")) {
-                        livingplace = citizen.getCity();
-                    }
                 }
             }
             
