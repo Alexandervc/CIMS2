@@ -948,7 +948,6 @@ public class HeadquartersController implements Initializable {
         tfpTaskTitle.clear();
         tapTaskDescription.clear();
         tfpCondition.clear();
-        lblSendPlan.setVisible(false);
     }
 
     /**

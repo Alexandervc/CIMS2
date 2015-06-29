@@ -497,11 +497,13 @@ public class ServicesController implements Initializable {
         
         boolean inSorted = false;
         
-        for(Object o : tvsSortedData.getItems()) {
-            if(o instanceof ISortedData) {
-                ISortedData s = (ISortedData) o;
-                if(s.getId() == sentData.getId()) {
-                    inSorted = true;
+        if(sentData != null) {
+            for(Object o : tvsSortedData.getItems()) {
+                if(o instanceof ISortedData) {
+                    ISortedData s = (ISortedData) o;
+                    if(s.getId() == sentData.getId()) {
+                        inSorted = true;
+                    }
                 }
             }
         }
@@ -510,14 +512,12 @@ public class ServicesController implements Initializable {
             // No editing allowed
             tfuTitle.setEditable(false);
             tauDescription.setEditable(false);
-            tfuSource.setEditable(false);
             tfuLocation.setEditable(false);
             btnuSend.setDisable(true);
             lblErrorMessageUpdate.setText("Al toegevoegd aan gesorteerde data");
         } else {
             tfuTitle.setEditable(true);
             tauDescription.setEditable(true);
-            tfuSource.setEditable(true);
             tfuLocation.setEditable(true);
             btnuSend.setDisable(false);
             lblErrorMessageUpdate.setText(null);

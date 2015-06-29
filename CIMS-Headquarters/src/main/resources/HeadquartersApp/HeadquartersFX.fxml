@@ -230,7 +230,7 @@
                             <TextArea id="tauDescription" fx:id="tapPlanDescription" layoutX="178.0" layoutY="88.0" prefHeight="174.0" prefWidth="357.0" wrapText="true" />
                             <Label layoutX="20.0" layoutY="274.0" text="Keywoorden" />
                             <Label font="$x1" layoutX="26.0" layoutY="21.0" text="Stappenplan informatie" underline="false" />
-                            <TextArea id="tauDescription" fx:id="tapKeywords" layoutX="178.0" layoutY="274.0" prefHeight="96.0" prefWidth="358.0" wrapText="true" />
+                            <TextArea id="tauDescription" fx:id="tapKeyWords" layoutX="178.0" layoutY="274.0" prefHeight="96.0" prefWidth="358.0" wrapText="true" />
                             <ListView fx:id="lvpTasks" layoutX="573.0" layoutY="55.0" prefHeight="157.0" prefWidth="597.0" />
                             <Label font="$x1" layoutX="575.0" layoutY="21.0" text="Stappen" underline="false" />
                             <Label layoutX="573.0" layoutY="232.0" text="Titel" />
