@@ -137,6 +137,16 @@ public class ServicesController implements Initializable {
         lblMessageTask.setText("");
         lblMessageSend.setText("");
         
+        tvsSortedData.setEditable(false);        
+        tcsTitle.setResizable(false);
+        tcsRelevance.setResizable(false);
+        tcsReliability.setResizable(false);
+        tcsQuality.setResizable(false);
+        
+        tvtTasks.setEditable(false);        
+        tctTitle.setResizable(false);
+        tctStatus.setResizable(false);
+                
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
