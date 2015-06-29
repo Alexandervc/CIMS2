@@ -11,6 +11,7 @@ import Shared.Data.IData;
 import Shared.Data.UnsortedData;
 import Shared.NetworkException;
 import Shared.Users.IUser;
+import java.util.List;
 
 /**
  *
@@ -53,6 +54,14 @@ public class ReportValidationController {
                                         source);
         
         IData data = ServerMain.unsortedDatabaseManager.insertToUnsortedData(newUnsortedData);
+
+        // pushes getFromUnsorted to set status as it should
+        // resets if it couldn't push
+        List<IData> newData = ServerMain.unsortedDatabaseManager.getFromUnsortedData();
+        if (!ServerMain.pushHandler.push(newData, null)) {
+            ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
+        }
+        
         return (data != null);
     }
 }

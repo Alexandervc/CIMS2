@@ -17,6 +17,7 @@ import Shared.Tasks.ITask;
 import Shared.Users.UserRole;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,11 +37,11 @@ public class PushHandler {
     // all HQ users, including the chief - can be toggled mid-session
     private final HashSet<Socket> unsortedSubscribers;
     // all HQ users, including the chief
-    private final HashSet<Socket> newsSubscribers;
+    private final HashSet<Socket> hqSubscribers;
     // key: username (ServiceUser)
-    private final HashMap<String, Set<Socket>> taskSubscribers;
+    private final HashMap<String, Set<Socket>> usernameSubscribers;
     // service users subscribing by tag - used for sorted data + requests
-    private final HashMap<Tag, Set<Socket>> serviceSubscribers;
+    private final HashMap<Tag, Set<Socket>> tagSubscribers;
 
     private final Set<Socket> faultySockets;
 
@@ -51,11 +52,11 @@ public class PushHandler {
         this.faultySockets = Collections.newSetFromMap(new ConcurrentHashMap<>());
         chiefConnections = new HashSet<>();
         unsortedSubscribers = new HashSet<>();
-        newsSubscribers = new HashSet<>();
-        taskSubscribers = new HashMap<>();
-        serviceSubscribers = new HashMap<>();
+        hqSubscribers = new HashSet<>();
+        usernameSubscribers = new HashMap<>();
+        tagSubscribers = new HashMap<>();
         for (Tag tag : Tag.values()) {
-            serviceSubscribers.put(tag, new HashSet<>());
+            tagSubscribers.put(tag, new HashSet<>());
         }
     }
 
@@ -118,26 +119,26 @@ public class PushHandler {
             synchronized (chiefConnections) {
                 chiefSubsResult = chiefConnections.add(channel.socket());
             }
-            synchronized (newsSubscribers) {
-                newsResult = newsSubscribers.add(channel.socket());
+            synchronized (hqSubscribers) {
+                newsResult = hqSubscribers.add(channel.socket());
             }
             return (newsResult && chiefSubsResult);
         } else if (role == UserRole.HQ) {
-            synchronized (newsSubscribers) {
-                return newsSubscribers.add(channel.socket());
+            synchronized (hqSubscribers) {
+                return hqSubscribers.add(channel.socket());
             }
         } else if (role == UserRole.SERVICE) {
-            boolean tasksResult, serviceSubsResult;
-            synchronized (taskSubscribers) {
-                // tasks
-                taskSubscribers.putIfAbsent(username, new HashSet<>());
-                tasksResult = taskSubscribers.get(username).add(channel.socket());
+            boolean usernameResult, tagResult;
+            synchronized (usernameSubscribers) {
+                // tasks and sent data
+                usernameSubscribers.putIfAbsent(username, new HashSet<>());
+                usernameResult = usernameSubscribers.get(username).add(channel.socket());
             }
-            synchronized (serviceSubscribers) {
+            synchronized (tagSubscribers) {
                 // requests, sorted data
-                serviceSubsResult = serviceSubscribers.get(tag).add(channel.socket());
+                tagResult = tagSubscribers.get(tag).add(channel.socket());
             }
-            return (tasksResult && serviceSubsResult);
+            return (usernameResult && tagResult);
         }
         // shouldn't be hit
         return false;
@@ -167,17 +168,17 @@ public class PushHandler {
         synchronized (unsortedSubscribers) {
             unsortedSubscribers.remove(socket);
         }
-        synchronized (newsSubscribers) {
-            newsSubscribers.remove(socket);
+        synchronized (hqSubscribers) {
+            hqSubscribers.remove(socket);
         }
-        synchronized (taskSubscribers) {
-            for (String username : taskSubscribers.keySet()) {
-                taskSubscribers.get(username).remove(socket);
+        synchronized (usernameSubscribers) {
+            for (String username : usernameSubscribers.keySet()) {
+                usernameSubscribers.get(username).remove(socket);
             }
         }
-        synchronized (serviceSubscribers) {
-            for (Tag tag : serviceSubscribers.keySet()) {
-                serviceSubscribers.get(tag).remove(socket);
+        synchronized (tagSubscribers) {
+            for (Tag tag : tagSubscribers.keySet()) {
+                tagSubscribers.get(tag).remove(socket);
             }
         }
     }
@@ -242,9 +243,9 @@ public class PushHandler {
         // to relevant serviceuser
         if (task.getExecutor() != null) {
             String userName = task.getExecutor().getUsername();
-            synchronized (taskSubscribers) {
-                if (taskSubscribers.containsKey(userName)) {
-                    for (Socket socket : taskSubscribers.get(userName)) {
+            synchronized (usernameSubscribers) {
+                if (usernameSubscribers.containsKey(userName)) {
+                    for (Socket socket : usernameSubscribers.get(userName)) {
                         System.out.println("pushing task"); // debugging
                         if (!this.trySend(socket, output)) {
                             this.faultySockets.add(socket);
@@ -286,6 +287,78 @@ public class PushHandler {
         }
         return false;
     }
+    
+    /**
+     *
+     * @param data
+     */
+    public boolean pushSentData(IData data, Socket disregard) {
+        if (data == null) {
+            return false;
+        }
+        List<IData> sentData = new ArrayList<>();
+        sentData.add(data);
+        
+        boolean result = true;
+        
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.UNSORTED_GET_SOURCE, sentData);
+        byte[] output = SerializeUtils.serialize(transaction);
+        // Pushes it towards the first valid subscriber it finds in an iterator
+        // HashSet do not guarantee order, so this should happen semi-randomly
+        synchronized (usernameSubscribers) {
+            if (!usernameSubscribers.isEmpty()) {
+                for (Socket socket : usernameSubscribers.get(data.getSource())) {
+                    if (socket != disregard) {
+                        if (!this.trySend(socket, output)) {
+                            this.faultySockets.add(socket);
+                            result = false;
+                        } else {
+                            System.out.println("pushing list of unsorted data"); // debugging
+                        }
+                    }
+                }
+                this.cleanFaultySockets();
+            }
+        }
+        return result;
+    }
+    
+    /**
+     *
+     * @param data
+     */
+    public boolean pushUnsortedUpdate(IData data, Socket disregard) {
+        if (data == null) {
+            return false;
+        }
+        List<IData> unsortedUpdate = new ArrayList<>();
+        unsortedUpdate.add(data);
+        
+        boolean result = true;
+        
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.UNSORTED_GET_UPDATE, unsortedUpdate);
+        byte[] output = SerializeUtils.serialize(transaction);
+        // Pushes it towards the first valid subscriber it finds in an iterator
+        // HashSet do not guarantee order, so this should happen semi-randomly
+        synchronized (hqSubscribers) {
+            if (!hqSubscribers.isEmpty()) {
+                for (Socket socket : hqSubscribers) {
+                    if (socket != disregard) {
+                        if (!this.trySend(socket, output)) {
+                            this.faultySockets.add(socket);
+                            result = false;
+                        } else {
+                            System.out.println("pushing list of unsorted data"); // debugging
+                        }
+                    }
+                }
+                this.cleanFaultySockets();
+            }
+        }
+        return result;
+    }
 
     /**
      *
@@ -309,9 +382,9 @@ public class PushHandler {
             }
         }
         // sends to relevant serviceusers
-        synchronized (serviceSubscribers) {
+        synchronized (tagSubscribers) {
             for (Tag target : data.getTags()) {
-                for (Socket socket : serviceSubscribers.get(target)) {
+                for (Socket socket : tagSubscribers.get(target)) {
                     System.out.println("pushing sorted data"); // debugging
                     if (!this.trySend(socket, output)) {
                         this.faultySockets.add(socket);
@@ -330,13 +403,15 @@ public class PushHandler {
         if (request == null) {
             return;
         }
+        List<IDataRequest> requests = new ArrayList<>();
+        requests.add(request);
         ClientBoundTransaction transaction
-                = new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, request);
+                = new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, requests);
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to relevant serviceusers
-        synchronized (serviceSubscribers) {
+        synchronized (tagSubscribers) {
             for (Tag target : request.getTags()) {
-                for (Socket socket : serviceSubscribers.get(target)) {
+                for (Socket socket : tagSubscribers.get(target)) {
                     System.out.println("pushing datarequest");
                     if (!this.trySend(socket, output)) {
                         this.faultySockets.add(socket);
@@ -356,8 +431,8 @@ public class PushHandler {
                         Arrays.asList(new INewsItem[]{item}));
         byte[] output = SerializeUtils.serialize(transaction);
         // sends newsitems
-        synchronized (newsSubscribers) {
-            for (Socket socket : newsSubscribers) {
+        synchronized (hqSubscribers) {
+            for (Socket socket : hqSubscribers) {
                 System.out.println("pushing newsitems"); // debugging
                 if (!this.trySend(socket, output)) {
                     this.faultySockets.add(socket);

@@ -102,6 +102,9 @@ class ResponseHandler implements IResponseHandler {
                         case UNSORTED_GET:
                             this.handleUnsortedResult(transaction);
                             break;
+                        case UNSORTED_GET_UPDATE:
+                            this.handleUnsortedUpdateResult(transaction);
+                            break;
                         case TASKS_GET:
                             this.handleTasksResult(transaction);
                             break;
@@ -216,6 +219,16 @@ class ResponseHandler implements IResponseHandler {
         if (transaction.result == ConnState.COMMAND_SUCCESS) {
             List<IData> list = (List) transaction.data;
             this.hqController.displayData(list);
+        }
+    }
+    
+    private void handleUnsortedUpdateResult(ClientBoundTransaction transaction) {
+        if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
+            hqController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
+        }
+        if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            List<IData> list = (List) transaction.data;
+            this.hqController.displayUpdatedData(list);
         }
     }
 

@@ -9,6 +9,7 @@ import ServicesApp.Connection.ConnectionHandler;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Data.SortedData;
 import Shared.NetworkException;
 import Shared.Data.Status;
 import Shared.Tag;
@@ -74,6 +75,7 @@ public class ServicesController implements Initializable {
     @FXML TextArea tauDescription;
     @FXML TextField tfuSource;
     @FXML TextField tfuLocation;
+    @FXML Button btnuSend;
 
     // ReadSortedData
     @FXML Tab tabReadSortedData;
@@ -105,6 +107,7 @@ public class ServicesController implements Initializable {
 
     //report message label
     @FXML Label lblMessageUpdate;
+    @FXML Label lblErrorMessageUpdate;
     @FXML Label lblMessageTask;
     @FXML Label lblMessageSend;
 
@@ -144,9 +147,6 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectSentData();
-                        lblMessageUpdate.setText("");
-                        lblMessageTask.setText("");
-                        lblMessageSend.setText("");
                     }
                 });
 
@@ -156,9 +156,6 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectData();
-                        lblMessageUpdate.setText("");
-                        lblMessageTask.setText("");
-                        lblMessageSend.setText("");
                     }
                 });
         
@@ -294,7 +291,8 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if (!showingDataItem && sentData != null) {
+                if (!showingDataItem && sentData != null && !sentData.isEmpty()) {
+                    lvuSentData.getItems().removeAll(sentData);
                     lvuSentData.getItems().addAll(sentData);
                     if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                         lvuSentData.getSelectionModel().selectFirst();
@@ -364,6 +362,7 @@ public class ServicesController implements Initializable {
                     if (tvsSortedData.getSelectionModel().getSelectedItem() == null) {
                         tvsSortedData.getSelectionModel().selectFirst();
                     }
+                    selectSentData();
                 }
             }
 
@@ -483,6 +482,34 @@ public class ServicesController implements Initializable {
             tfuSource.clear();
             tfuLocation.clear();
         }
+        
+        boolean inSorted = false;
+        
+        for(Object o : tvsSortedData.getItems()) {
+            if(o instanceof ISortedData) {
+                ISortedData s = (ISortedData) o;
+                if(s.getId() == sentData.getId()) {
+                    inSorted = true;
+                }
+            }
+        }
+        
+        if(inSorted) {
+            // No editing allowed
+            tfuTitle.setEditable(false);
+            tauDescription.setEditable(false);
+            tfuSource.setEditable(false);
+            tfuLocation.setEditable(false);
+            btnuSend.setDisable(true);
+            lblErrorMessageUpdate.setText("Al toegevoegd aan gesorteerde data");
+        } else {
+            tfuTitle.setEditable(true);
+            tauDescription.setEditable(true);
+            tfuSource.setEditable(true);
+            tfuLocation.setEditable(true);
+            btnuSend.setDisable(false);
+            lblErrorMessageUpdate.setText(null);
+        }
     }
 
     /**
@@ -512,10 +539,6 @@ public class ServicesController implements Initializable {
             if (this.showingDataItem) {
                 this.resetSentData();
             }
-            
-            // Update value is listview
-            lvuSentData.getItems().remove(sentData);
-            lvuSentData.getItems().add(update);
 
             // Bevestiging tonen
             this.displaySuccessMessage(lblMessageUpdate, "Het verzenden van de update is geslaagd");

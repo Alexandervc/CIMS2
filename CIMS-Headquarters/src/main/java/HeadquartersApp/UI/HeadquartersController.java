@@ -400,6 +400,30 @@ public class HeadquartersController implements Initializable {
 
         });
     }
+    
+    /**
+     * Displays the data that came from connectionManager.getData
+     *
+     * @param output
+     */
+    public void displayUpdatedData(List<IData> output) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                for(IData d : output) {
+                    if(lvuUnsortedData.getItems().contains(d)) {
+                        lvuUnsortedData.getItems().remove(d);
+                        lvuUnsortedData.getItems().add(d);
+                    }
+                }
+                if (lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
+                    lvuUnsortedData.getSelectionModel().selectFirst();
+                }
+            }
+
+        });
+    }
 
     public void displaySituations(Set<Situation> situations) {
         Platform.runLater(new Runnable() {
@@ -465,15 +489,12 @@ public class HeadquartersController implements Initializable {
         // Remove old unsorted data
         lvuUnsortedData.getItems().remove(unsortedData);
 
-        // If less than 10 items, load new unsorted data
-        if (lvuUnsortedData.getItems().size() < 10) {
+        // If 0 items, subscribe for new unsorted data
+        if (lvuUnsortedData.getItems().size() == 0) {
+            this.connectionManager.subscribeUnsorted();
             this.connectionManager.getData();
-
-            if (lvuUnsortedData.getItems().size() == 0) {
-                this.connectionManager.subscribeUnsorted();
-            } else {
-                this.connectionManager.unsubscribeUnsorted();
-            }
+        } else {
+            this.connectionManager.unsubscribeUnsorted();
         }
 
         // Select new
