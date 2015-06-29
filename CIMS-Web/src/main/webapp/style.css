@@ -251,6 +251,8 @@ footer {
 .formpart2 {
 	float: left;
 	width: 700px;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 14px
 }
 
 .forminput {

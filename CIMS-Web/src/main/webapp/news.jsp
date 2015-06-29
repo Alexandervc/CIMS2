@@ -184,12 +184,11 @@
                 <% if(item !=null && session.getAttribute("User") != null){ %>
                 <article class="advice">
                     <h2>Foto uploaden</h2>
-                    <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
-		
+                    <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>		
                     
-                    <form  method="post" enctype="multipart/form-data"
+                    <form method="post" enctype="multipart/form-data"
                            action=<%= "uploadFile.jsp?newsid="+item.getId() %> >
-                        <input type="file" required="required" name="img" class="upload"><br />
+                        <input type="file" required="required" name="img" class="upload" multiple accept='image/*'><br />
                         <div class="error">
                                 <% if(session.getAttribute("Error") != null) {
                                     String errorMessage = String.valueOf(session.getAttribute("Error"));
