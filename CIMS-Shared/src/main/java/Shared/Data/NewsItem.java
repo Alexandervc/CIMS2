@@ -132,7 +132,7 @@ public class NewsItem implements INewsItem {
         DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
         DateFormat time = new SimpleDateFormat("HH:mm");
 
-        return date.format(this.date) + " om " + time.format(this.date);
+        return date.format(this.date) + " om " + time.format(this.date) + " uur";
     }
     
     @Override
