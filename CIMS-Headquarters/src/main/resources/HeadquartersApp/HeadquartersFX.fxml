@@ -28,7 +28,7 @@
               <children>
                 <TabPane id="tabPane" fx:id="tpInformation" layoutX="0.0" layoutY="0.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
                   <tabs>
-                    <Tab fx:id="tabProcessInfo" onSelectionChanged="#selectTab" text="Informatie verwerken">
+                    <Tab fx:id="tabProcessInfo" text="Informatie verwerken">
                       <content>
                         <AnchorPane id="Content" fx:id="apuPane" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="1200.0">
                           <children>
@@ -66,7 +66,7 @@
                         </AnchorPane>
                       </content>
                     </Tab>
-                    <Tab fx:id="tabRequestInfo" onSelectionChanged="#selectTab" text="Informatie vragen">
+                    <Tab fx:id="tabRequestInfo" text="Informatie vragen">
                       <content>
                         <AnchorPane id="Content" fx:id="aprPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -101,7 +101,7 @@
               <children>
                 <TabPane id="tabPane" fx:id="tpNews" layoutX="0.0" layoutY="0.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
                   <tabs>
-                    <Tab onSelectionChanged="#selectTab" text="Nieuwsbericht publiceren">
+                    <Tab text="Nieuwsbericht publiceren">
                       <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -140,7 +140,7 @@
                         </AnchorPane>
                       </content>
                     </Tab>
-                    <Tab onSelectionChanged="#selectTab" text="Nieuwsbericht updaten">
+                    <Tab text="Nieuwsbericht updaten">
                       <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -174,7 +174,7 @@
               <children>
                 <TabPane id="tabPane" fx:id="tpTasks" layoutX="0.0" layoutY="0.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
                   <tabs>
-                    <Tab onSelectionChanged="#selectTab" text="Taken toekennen">
+                    <Tab text="Taken toekennen">
                       <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -219,7 +219,7 @@
                         </AnchorPane>
                       </content>
                     </Tab>
-                    <Tab onSelectionChanged="#selectTab" text="Stappenplan definieren">
+                    <Tab text="Stappenplan definieren">
                       <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -301,7 +301,7 @@
                         </AnchorPane>
                       </content>
                     </Tab>
-                    <Tab onSelectionChanged="#selectTab" text="Taken verwerken">
+                    <Tab text="Taken verwerken">
                       <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
