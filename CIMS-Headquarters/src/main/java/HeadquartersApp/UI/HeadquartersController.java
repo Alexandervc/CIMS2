@@ -12,9 +12,11 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.IUnsortedData;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.Data.SortedData;
+import Shared.Data.Status;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
@@ -436,6 +438,10 @@ public class HeadquartersController implements Initializable {
             public void run() {
                 for(IData d : output) {
                     if(lvuUnsortedData.getItems().contains(d)) {
+                        IUnsortedData unsorted = (IUnsortedData) d;
+                        unsorted.setStatus(Status.INPROCESS);
+                        
+                        connectionManager.updateUnsortedStatus(unsorted);
                         lvuUnsortedData.getItems().remove(d);
                         lvuUnsortedData.getItems().add(d);
                     }
@@ -612,7 +618,7 @@ public class HeadquartersController implements Initializable {
             // Load values into tabRequestInfo
             this.requestData = unsortedData;
             tfrRequestTitle.setText(this.requestData.getTitle());
-            tabPane.getSelectionModel().select(tabRequestInfo);
+            tpInformation.getSelectionModel().select(tabRequestInfo);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         }
@@ -665,7 +671,6 @@ public class HeadquartersController implements Initializable {
         tfrRequestTitle.clear();
         tfrTitle.clear();
         tarDescription.clear();
-        tfrLocation.clear();
         ccrTags.getCheckModel().clearChecks();
         lblInformationReport.setVisible(false);
     }
@@ -928,7 +933,7 @@ public class HeadquartersController implements Initializable {
             this.sortedData = data;
             tfaDataTitle.setText(data.getTitle());
             taaDataDescription.setText(data.getDescription());
-            tabPane.getSelectionModel().select(tabApplyPlan);
+            tpTasks.getSelectionModel().select(tabApplyPlan);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         }

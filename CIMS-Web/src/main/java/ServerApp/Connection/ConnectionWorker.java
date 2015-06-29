@@ -14,6 +14,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.IUnsortedData;
 import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
@@ -164,6 +165,9 @@ public class ConnectionWorker implements Runnable {
                 case USERS_UNSORTED_UNSUBSCRIBE:
                     outgoing = this.unsubscribeUnsorted(incoming, dataEvent);
                     break;
+                case UNSORTED_STATUS_UPDATE:
+                    outgoing = this.updateUnsortedStatus(incoming);
+                    break;
                 default:
                     outgoing = new ClientBoundTransaction(incoming);
                     outgoing.result = ConnState.COMMAND_FAIL;
@@ -229,6 +233,22 @@ public class ConnectionWorker implements Runnable {
             return output.setResult(ex);
         }
     }
+    
+    /**
+     * Updates the status of an UnsortedData in the database
+     *
+     */
+    private ClientBoundTransaction updateUnsortedStatus(ServerBoundTransaction input) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            IUnsortedData data = (IUnsortedData) input.objects[0];
+            ServerMain.unsortedDatabaseManager.updateUnsortedStatus(data);
+            
+            return output.setSuccess(true);
+        } catch (Exception ex) {
+            return output.setResult(ex);
+        }
+    }
 
     /**
      * Notifies Database that a list of data is no longer being worked on.
@@ -257,10 +277,6 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData inObject = (IData) input.objects[0];
-            //TODO status setten enzo
-//            if (!ServerMain.pushHandler.push(iObject, null)) {
-//                ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
-//            }
             ServerMain.unsortedDatabaseManager.updateUnsortedData(inObject);
             ServerMain.pushHandler.pushSentData(inObject, null);
             ServerMain.pushHandler.pushUnsortedUpdate(inObject, null);

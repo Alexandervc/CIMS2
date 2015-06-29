@@ -11,4 +11,5 @@ package Shared.Data;
  */
 public interface IUnsortedData extends IData{
     public Status getStatus();
+    public void setStatus(Status status);
 }

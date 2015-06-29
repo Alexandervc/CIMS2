@@ -6,6 +6,7 @@
 package ServerApp.Database;
 
 import Shared.Data.IData;
+import Shared.Data.IUnsortedData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
 import Shared.NetworkException;
@@ -149,6 +150,29 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         try {
             String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                     + Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
+
+            PreparedStatement update = conn.prepareStatement(query);
+
+            update.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new NetworkException("Kon de status van de ongesorteerde data niet updaten: " + ex.getMessage());
+        } finally {
+            closeConnection();
+        }
+    }
+    
+    /**
+     * Updates the status in the database of the unsortedData to the current status
+     * @param data object of unsorteddata
+     * @return succeed reset status unsorted data to Completed
+     */
+    public void updateUnsortedStatus(IUnsortedData data) throws NetworkException {
+        openConnection();
+        
+        try {
+            String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
+                    + data.getStatus() + "' WHERE id = " + data.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 

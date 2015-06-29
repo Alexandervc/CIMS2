@@ -45,6 +45,11 @@ public enum ConnCommand {
      */
     UNSORTED_GET_UPDATE,
     /**
+     * params: IData <br>
+     * result: boolean;
+     */
+    UNSORTED_STATUS_UPDATE,
+    /**
      * params: int <br>
      * result: IData
      */

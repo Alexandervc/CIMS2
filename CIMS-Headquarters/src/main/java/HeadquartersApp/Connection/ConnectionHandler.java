@@ -127,6 +127,24 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * Updates the status of the unsortedData
+     *
+     * @param role
+     */
+    public void updateUnsortedStatus(IUnsortedData data) {
+        ServerBoundTransaction transaction
+                = new ServerBoundTransaction(this.getCommandID(),
+                        ConnCommand.UNSORTED_STATUS_UPDATE, data, null, null);
+        // other variables are only relevant for serviceusers
+        try {
+            this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Sends sorted data to server @ default IP / port

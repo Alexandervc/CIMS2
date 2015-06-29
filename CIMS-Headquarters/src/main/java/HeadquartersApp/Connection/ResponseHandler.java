@@ -177,6 +177,9 @@ class ResponseHandler implements IResponseHandler {
                         case USERS_REGISTER:
                             this.handleGenericResult(transaction);
                             break;
+                        case UNSORTED_STATUS_UPDATE:
+                            this.handleGenericResult(transaction);
+                            break;
                     }
 
                 } catch (NetworkException nEx) {
