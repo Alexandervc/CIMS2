@@ -102,6 +102,7 @@
                     <h2>Informatie</h2>
                     <p>Slachtoffers: <%= Integer.toString(item.getVictims())%></p>
 
+                    <% if(!item.getSituations().isEmpty()){ %>
                     <h3>Situatie</h3>
                     <br />
 
@@ -111,7 +112,7 @@
                         <p>&nbsp;<%= sit.getDescription()%></p>
                     </div>
                     <%}%>
-
+                   
                     <br />
                     <h3>Advies</h3>
                     <ul>
@@ -122,8 +123,8 @@
                             <li><%= ad.getDescription() %></li>
                             <% } %>
                     </ul>
-                    
-                    <%} else {%>
+                    <%}
+                    } else {%>
                     
                     <!-- item is null-->
                     <h2>Informatie</h2>
