@@ -372,10 +372,7 @@ public class HeadquartersController implements Initializable {
         lblTasks.setVisible(false);
 
         if (user instanceof IHQChief) {
-            tabProcessSortedData.setDisable(false);
-            tabSendPlan.setDisable(false);
-            tabApplyPlan.setDisable(false);
-            tabTask.setDisable(false);
+            tabTotalTasks.setDisable(false);
         }
 
         try {
