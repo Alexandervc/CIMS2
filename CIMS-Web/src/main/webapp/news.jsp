@@ -96,6 +96,8 @@
                     </div>
                         <%}%>
                 </article>
+                
+                <div id="rightdiv">
                 <article class="advice">
                     <% if (item != null) {%>
                     <!-- item is not null -->
@@ -198,8 +200,9 @@
                             </div>
                         <input type="submit" value="Verzenden" class="btn upload" />
                     </form>
-		</article>
-                        <%} %>
+		</article>                
+                <%} %>
+                 </div>
             </section>
         </div>	
     </body>
