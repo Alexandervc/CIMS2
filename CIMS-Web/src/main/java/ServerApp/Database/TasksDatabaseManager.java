@@ -150,7 +150,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             ISortedData outputData = null;
             if (data != null) {
                 outputData = data;
-            } else if (outputDataID != -1) {
+            } else if (outputDataID > -1) {
                 outputData = ServerMain.sortedDatabaseManager
                         .getFromSortedData(outputDataID);
             }

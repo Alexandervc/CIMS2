@@ -68,8 +68,15 @@ import org.controlsfx.control.CheckComboBox;
  * @author Alexander
  */
 public class HeadquartersController implements Initializable {
-
+    
     @FXML TabPane tabPane;
+    
+    @FXML Tab tabTotalInformation;
+    @FXML TabPane tpInformation;
+    @FXML Tab tabTotalNews;
+    @FXML TabPane tpNews;
+    @FXML Tab tabTotalTasks;
+    @FXML TabPane tpTasks;     
 
     // ProcessInfo
     @FXML Tab tabProcessInfo;
@@ -366,10 +373,7 @@ public class HeadquartersController implements Initializable {
         lblTasks.setVisible(false);
 
         if (user instanceof IHQChief) {
-            tabProcessSortedData.setDisable(false);
-            tabSendPlan.setDisable(false);
-            tabApplyPlan.setDisable(false);
-            tabTask.setDisable(false);
+            tabTotalTasks.setDisable(false);
         }
 
         try {
@@ -410,6 +414,30 @@ public class HeadquartersController implements Initializable {
                 
                 lvuUnsortedData.getItems().removeAll(output);
                 lvuUnsortedData.getItems().addAll(output);
+                if (lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
+                    lvuUnsortedData.getSelectionModel().selectFirst();
+                }
+            }
+
+        });
+    }
+    
+    /**
+     * Displays the data that came from connectionManager.getData
+     *
+     * @param output
+     */
+    public void displayUpdatedData(List<IData> output) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                for(IData d : output) {
+                    if(lvuUnsortedData.getItems().contains(d)) {
+                        lvuUnsortedData.getItems().remove(d);
+                        lvuUnsortedData.getItems().add(d);
+                    }
+                }
                 if (lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
                     lvuUnsortedData.getSelectionModel().selectFirst();
                 }
@@ -482,15 +510,12 @@ public class HeadquartersController implements Initializable {
         // Remove old unsorted data
         lvuUnsortedData.getItems().remove(unsortedData);
 
-        // If less than 10 items, load new unsorted data
-        if (lvuUnsortedData.getItems().size() < 10) {
+        // If 0 items, subscribe for new unsorted data
+        if (lvuUnsortedData.getItems().size() == 0) {
+            this.connectionManager.subscribeUnsorted();
             this.connectionManager.getData();
-
-            if (lvuUnsortedData.getItems().size() == 0) {
-                this.connectionManager.subscribeUnsorted();
-            } else {
-                this.connectionManager.unsubscribeUnsorted();
-            }
+        } else {
+            this.connectionManager.unsubscribeUnsorted();
         }
 
         // Select new

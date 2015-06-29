@@ -40,6 +40,11 @@ public enum ConnCommand {
      */
     UNSORTED_GET,
     /**
+     * params: void <br>
+     * result: List&lt;IData&gt;
+     */
+    UNSORTED_GET_UPDATE,
+    /**
      * params: int <br>
      * result: IData
      */

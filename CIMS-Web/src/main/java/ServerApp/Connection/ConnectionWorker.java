@@ -23,6 +23,7 @@ import Shared.Tasks.Step;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.UserRole;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -220,6 +221,9 @@ public class ConnectionWorker implements Runnable {
             if (!ServerMain.pushHandler.push(newData, null)) {
                 ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
             }
+            
+            ServerMain.pushHandler.pushSentData(data, null);
+            
             return output.setSuccess(data != null);
         } catch (Exception ex) {
             return output.setResult(ex);
@@ -253,7 +257,13 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData inObject = (IData) input.objects[0];
+            //TODO status setten enzo
+//            if (!ServerMain.pushHandler.push(iObject, null)) {
+//                ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
+//            }
             ServerMain.unsortedDatabaseManager.updateUnsortedData(inObject);
+            ServerMain.pushHandler.pushSentData(inObject, null);
+            ServerMain.pushHandler.pushUnsortedUpdate(inObject, null);
             return output.setSuccess(true);
         } catch (Exception ex) {
             return output.setResult(ex);
@@ -323,8 +333,7 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             String source = (String) input.objects[0];
-            ServerMain.unsortedDatabaseManager.getSentData(source);
-            return output.setSuccess(true);
+            return output.setResult(ServerMain.unsortedDatabaseManager.getSentData(source));
         } catch (Exception ex) {
             return output.setResult(ex);
         }

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>s413</groupId>
     <artifactId>CIMS-Shared</artifactId>
-    <version>sprint4.7</version>
+    <version>sprint4.9</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

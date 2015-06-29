@@ -53,8 +53,9 @@
                 <Label layoutX="380.0" layoutY="368.0" text="Bron" />
                 <TextField fx:id="tfuSource" disable="false" editable="false" layoutX="490.0" layoutY="365.0" prefWidth="289.0" visible="true" />
                 <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
-                <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
-                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="499.0" layoutY="407.0" text="Het verzenden van de update is geslaagd" />
+                <Button fx:id="btnuSend" layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
+                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="490.0" layoutY="435.0" text="Het verzenden van de update is geslaagd" />
+                <Label id="lblMessageUpdate" fx:id="lblErrorMessageUpdate" font="$x2" layoutX="490.0" layoutY="404.0" text="Het verzenden van de update is geslaagd" />
               </children>
             </AnchorPane>
           </content>
