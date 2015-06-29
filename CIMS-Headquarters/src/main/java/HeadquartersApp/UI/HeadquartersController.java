@@ -68,8 +68,15 @@ import org.controlsfx.control.CheckComboBox;
  * @author Alexander
  */
 public class HeadquartersController implements Initializable {
-
+    
     @FXML TabPane tabPane;
+    
+    @FXML Tab tabTotalInformation;
+    @FXML TabPane tpInformation;
+    @FXML Tab tabTotalNews;
+    @FXML TabPane tpNews;
+    @FXML Tab tabTotalTasks;
+    @FXML TabPane tpTasks;     
 
     // ProcessInfo
     @FXML Tab tabProcessInfo;
