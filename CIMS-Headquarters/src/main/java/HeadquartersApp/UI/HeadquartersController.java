@@ -195,6 +195,7 @@ public class HeadquartersController implements Initializable {
     @FXML ComboBox cbtNewExecutor;
     @FXML Label lblTasks;
     @FXML Button btnNewTask;
+    @FXML Button btnMarkRead;
 
     private IData requestData;
     private ISortedData sortedData;
@@ -361,10 +362,7 @@ public class HeadquartersController implements Initializable {
             this.cbExecutor.getSelectionModel().selectFirst();
         }
 
-        tabProcessSortedData.setDisable(true);
-        tabSendPlan.setDisable(true);
-        tabApplyPlan.setDisable(true);
-        tabTask.setDisable(true);
+        tabTotalTasks.setDisable(true);
 
         lblUnsortedReport.setVisible(false);
         lblInformationReport.setVisible(false);
@@ -374,10 +372,7 @@ public class HeadquartersController implements Initializable {
         lblTasks.setVisible(false);
 
         if (user instanceof IHQChief) {
-            tabProcessSortedData.setDisable(false);
-            tabSendPlan.setDisable(false);
-            tabApplyPlan.setDisable(false);
-            tabTask.setDisable(false);
+            tabTotalTasks.setDisable(false);
         }
 
         try {
@@ -1308,8 +1303,20 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
-                tvtTasks.getItems().removeAll(tasks);
-                tvtTasks.getItems().addAll(tasks);
+                for(ITask t : tasks){
+                    if(tvtTasks.getItems().contains(t)){
+                        tvtTasks.getItems().remove(t);
+                        System.out.println(tvtTasks.getItems().contains(t));
+                        if(t.getStatus() != TaskStatus.READ)
+                        {
+                            System.out.println(t.getStatus());
+                            tvtTasks.getItems().add(t);
+                        }
+                    }
+                    else{
+                        tvtTasks.getItems().add(t);
+                    }
+                }
                 if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
                     tvtTasks.getSelectionModel().selectFirst();
                 }
@@ -1336,15 +1343,21 @@ public class HeadquartersController implements Initializable {
                 tftExecutor.setText(task.getExecutor().toString());
             }
 
-            if (task.getStatus() != TaskStatus.REFUSED && task.getStatus() != TaskStatus.FAILED) {
-
+            if (task.getStatus() == TaskStatus.REFUSED) {
+                cbtNewExecutor.setDisable(false);
+                btnNewTask.setDisable(false);
+                btnMarkRead.setDisable(true);
+                tftReason.setDisable(false);
+            }  else if(task.getStatus() == TaskStatus.SUCCEEDED  && task.getStatus() != TaskStatus.FAILED){
+                cbtNewExecutor.setDisable(true);
+                btnNewTask.setDisable(true);
+                btnMarkRead.setDisable(false);
+                tftReason.setDisable(true);
+            }else {
                 cbtNewExecutor.setDisable(true);
                 btnNewTask.setDisable(true);
                 tftReason.setDisable(true);
-            } else {
-                cbtNewExecutor.setDisable(false);
-                btnNewTask.setDisable(false);
-                tftReason.setDisable(false);
+                btnMarkRead.setDisable(true);
             }
 
             tftReason.setText(task.getDeclineReason());
