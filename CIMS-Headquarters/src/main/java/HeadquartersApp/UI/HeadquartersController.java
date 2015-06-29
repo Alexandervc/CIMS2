@@ -360,10 +360,7 @@ public class HeadquartersController implements Initializable {
             this.cbExecutor.getSelectionModel().selectFirst();
         }
 
-        tabProcessSortedData.setDisable(true);
-        tabSendPlan.setDisable(true);
-        tabApplyPlan.setDisable(true);
-        tabTask.setDisable(true);
+        tabTotalTasks.setDisable(true);
 
         lblUnsortedReport.setVisible(false);
         lblInformationReport.setVisible(false);
