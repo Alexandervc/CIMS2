@@ -68,8 +68,15 @@ import org.controlsfx.control.CheckComboBox;
  * @author Alexander
  */
 public class HeadquartersController implements Initializable {
-
+    
     @FXML TabPane tabPane;
+    
+    @FXML Tab tabTotalInformation;
+    @FXML TabPane tpInformation;
+    @FXML Tab tabTotalNews;
+    @FXML TabPane tpNews;
+    @FXML Tab tabTotalTasks;
+    @FXML TabPane tpTasks;     
 
     // ProcessInfo
     @FXML Tab tabProcessInfo;
@@ -210,6 +217,22 @@ public class HeadquartersController implements Initializable {
         this.requestData = null;
         this.sortedData = null;
         this.displayedTasks = new HashMap<>();
+        
+        tvnSortedData.setEditable(false);
+        tcnTitle.setResizable(false);
+        tcnRelevance.setResizable(false);
+        tcnReliability.setResizable(false);
+        tcnQuality.setResizable(false);
+                
+        tvsSortedData.setEditable(false);        
+        tcsTitle.setResizable(false);
+        tcsRelevance.setResizable(false);
+        tcsReliability.setResizable(false);
+        tcsQuality.setResizable(false);
+        
+        tvtTasks.setEditable(false);
+        tctTitle.setResizable(false);
+        tctStatus.setResizable(false);
 
         // Add ChangeListeners
         lvuUnsortedData.getSelectionModel().selectedItemProperty().addListener(

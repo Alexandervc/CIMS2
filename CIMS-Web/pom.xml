@@ -44,7 +44,7 @@
         <dependency>
             <groupId>s413</groupId>
             <artifactId>CIMS-Shared</artifactId>
-            <version>sprint4.8</version>
+            <version>sprint4.9</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -71,6 +71,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
             <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.maps</groupId>
+            <artifactId>google-maps-services</artifactId>
+            <version>0.1.7</version>
         </dependency>
     </dependencies>
 

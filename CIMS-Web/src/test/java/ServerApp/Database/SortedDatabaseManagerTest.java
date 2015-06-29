@@ -74,9 +74,17 @@ public class SortedDatabaseManagerTest {
 
     @Test
     public void testInsertToSortedData() throws NetworkException {
-        //assertTrue("database failed to insert new sorted data",                myDB.insertToSortedData(sortedData));
+        try{
+            myDB.insertToSortedData(sortedData);
+        } catch (NetworkException ex) {
+            Logger.getLogger(SortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.out.println("Next line should be an error (Duplicate entry)");
-        //assertFalse("database inserted same sorted data twice",                 myDB.insertToSortedData(sortedData));
+        try{
+        myDB.insertToSortedData(sortedData);
+        } catch (NetworkException ex) {
+            Logger.getLogger(SortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Test
@@ -140,6 +148,7 @@ public class SortedDatabaseManagerTest {
         try{
             myDB.getNewsItems(0, 0);
             myDB.getNewsItems(0, -1);
+            fail();
         }catch(IllegalArgumentException ex){
             Logger.getLogger(SortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -205,7 +214,8 @@ public class SortedDatabaseManagerTest {
 
         // runs same tests on newsItem gotten from getNewsItems
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(10, 10)) {
+        List<INewsItem> list = myDB.getNewsItems(0, 10);
+        for (INewsItem item : list) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
@@ -225,7 +235,7 @@ public class SortedDatabaseManagerTest {
 
         // and reruns tests
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(10, 10)) {
+        for (INewsItem item : myDB.getNewsItems(0, 10)) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
@@ -282,6 +292,7 @@ public class SortedDatabaseManagerTest {
             myDB.insertPicture(items.get(0), picture1);
             myDB.insertPicture(items.get(0), picture2);
             myDB.insertPicture(items.get(1), picture1);
+            fail("Primary key double");
         } catch (NetworkException ex) {
             Logger.getLogger(SortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
         }

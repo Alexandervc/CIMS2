@@ -48,10 +48,11 @@ public class Headquarters extends Application {
             this.stage.setMinWidth(100);
             this.stage.setMinHeight(100);
             this.connectionHandler = new ConnectionHandler(this.ipAdressServer, this.portNumber);
-            goToLogIn();
+            this.stage.resizableProperty().setValue(false);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        
         this.goToLogIn();
     }
 
