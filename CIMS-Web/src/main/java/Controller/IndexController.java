@@ -5,23 +5,12 @@
  */
 package Controller;
 
-import ServerApp.Database.SortedDatabaseManager;
 import ServerApp.ServerMain;
-import Shared.Data.Advice;
 import Shared.Data.INewsItem;
-import Shared.Data.NewsItem;
-import Shared.Data.Situation;
 import Shared.NetworkException;
 import com.google.maps.*;
 import com.google.maps.model.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 
 /**
  *
