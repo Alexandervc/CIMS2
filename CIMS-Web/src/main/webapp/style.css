@@ -191,9 +191,15 @@ footer {
 	font-size: 16px;
 }
 
-.advice {
-	width: 210px;
+#rightdiv {
 	float: left;
+	width: 250px;
+    background-color: RED;
+}
+
+.advice {
+	float: left;
+	width: 210px;
 	margin: 30px 0 0 10px;
 	padding: 10px;
 	font-size: 14px;
@@ -245,6 +251,8 @@ footer {
 .formpart2 {
 	float: left;
 	width: 700px;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 14px
 }
 
 .forminput {
@@ -258,6 +266,8 @@ footer {
 	color: #666;
 	margin-top: 8px;
 	resize: none;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 14px
 }
 
 .button {

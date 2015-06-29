@@ -96,12 +96,15 @@
                     </div>
                         <%}%>
                 </article>
+                
+                <div id="rightdiv">
                 <article class="advice">
                     <% if (item != null) {%>
                     <!-- item is not null -->
                     <h2>Informatie</h2>
                     <p>Slachtoffers: <%= Integer.toString(item.getVictims())%></p>
 
+                    <% if(!item.getSituations().isEmpty()){ %>
                     <h3>Situatie</h3>
                     <br />
 
@@ -111,7 +114,7 @@
                         <p>&nbsp;<%= sit.getDescription()%></p>
                     </div>
                     <%}%>
-
+                   
                     <br />
                     <h3>Advies</h3>
                     <ul>
@@ -122,8 +125,8 @@
                             <li><%= ad.getDescription() %></li>
                             <% } %>
                     </ul>
-                    
-                    <%} else {%>
+                    <%}
+                    } else {%>
                     
                     <!-- item is null-->
                     <h2>Informatie</h2>
@@ -181,12 +184,11 @@
                 <% if(item !=null && session.getAttribute("User") != null){ %>
                 <article class="advice">
                     <h2>Foto uploaden</h2>
-                    <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>
-		
+                    <p>Heeft u foto's van de situatie? Voeg ze dan hier toe aan dit artikel.</p>		
                     
-                    <form  method="post" enctype="multipart/form-data"
+                    <form method="post" enctype="multipart/form-data"
                            action=<%= "uploadFile.jsp?newsid="+item.getId() %> >
-                        <input type="file" required="required" name="img" class="upload"><br />
+                        <input type="file" required="required" name="img" class="upload" multiple accept='image/*'><br />
                         <div class="error">
                                 <% if(session.getAttribute("Error") != null) {
                                     String errorMessage = String.valueOf(session.getAttribute("Error"));
@@ -198,8 +200,9 @@
                             </div>
                         <input type="submit" value="Verzenden" class="btn upload" />
                     </form>
-		</article>
-                        <%} %>
+		</article>                
+                <%} %>
+                 </div>
             </section>
         </div>	
     </body>

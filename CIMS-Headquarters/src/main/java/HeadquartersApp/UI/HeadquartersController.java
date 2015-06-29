@@ -1525,6 +1525,8 @@ public class HeadquartersController implements Initializable {
 
             if (!news.getStreet().isEmpty()) {
                 tfbStreet.setText(news.getStreet());
+            } else{
+                tfbStreet.setText("");
             }
 
             tfbVictims.setText(String.valueOf(news.getVictims()));
