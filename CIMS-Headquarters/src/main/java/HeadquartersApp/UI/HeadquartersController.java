@@ -1313,9 +1313,17 @@ public class HeadquartersController implements Initializable {
                 for(ITask t : newTasks) {
                     if(tasks.contains(t)) {
                         tasks.remove(t);
-                        if(!t.getStatus().equals(TaskStatus.READ)) {
-                        tasks.add(t);
-                        }
+                        timer.schedule(new TimerTask() {
+
+                            @Override
+                            public void run() {
+                                if(!t.getStatus().equals(TaskStatus.READ)) {
+                                    tasks.add(t);
+                                }
+                            }
+                            
+                        }, 100);
+                        
                     } else {
                         tasks.add(t);
                     }

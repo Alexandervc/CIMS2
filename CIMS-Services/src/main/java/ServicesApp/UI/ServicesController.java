@@ -372,10 +372,21 @@ public class ServicesController implements Initializable {
                 List<ITask> tasks = tvtTasks.getItems();
                 for(ITask t : newTasks) {
                     if(tasks.contains(t)) {
-                        tasks.remove(t);
-                        tasks.add(t);
+                        tvtTasks.getItems().remove(t);
+                        timer.schedule(new TimerTask() {
+
+                            @Override
+                            public void run() {
+                                if(t.getStatus().equals(TaskStatus.SENT) || t.getStatus().equals(TaskStatus.INPROCESS)) {
+                                    tvtTasks.getItems().add(t);
+                                }
+                            }
+                            
+                        }, 100);
                     } else {
-                        tasks.add(t);
+                        if(t.getStatus().equals(TaskStatus.SENT) || t.getStatus().equals(TaskStatus.INPROCESS)) {
+                            tvtTasks.getItems().add(t);
+                        }
                     }
                 }
 
