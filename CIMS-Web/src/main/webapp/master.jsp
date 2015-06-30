@@ -126,9 +126,9 @@
                         <li class="menu"><a href="index.jsp" style="width:100px">Home</a></li>
                         <li class="menu"><a href="report.jsp" style="width:200px">Melding maken</a></li>
                         <% if(user == null) { %>
-                            <li class="account"><a href="signin.jsp">Registreren/Inloggen</a></li>
+                            <li class="account" style="width:170px"><a href="signin.jsp">Registreren/Inloggen</a></li>
                         <% } else { %>
-                                <li class="account">Hallo <%= user.getUsername() %>, <a href="signout.jsp">&nbsp; uitloggen</a></li>
+                                <li class="account">Hallo <%= user.getUsername() %>, <a href="signout.jsp" style="width:90px">&nbsp; uitloggen</a></li>
                         <% } %>
                     </ul>
                 </nav>
