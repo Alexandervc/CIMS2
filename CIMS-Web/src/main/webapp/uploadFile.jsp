@@ -3,6 +3,7 @@
     Created on : 17-jun-2015, 9:42:09
     Author     : Linda
 --%>
+<%@page import="org.apache.commons.io.FilenameUtils"%>
 <%@page import="org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException"%>
 <%@page import="org.apache.commons.fileupload.FileItem"%>
 <%@page import="java.util.List"%>
@@ -24,7 +25,7 @@
     <body>
         <%
             webController controller = new webController();
-            
+
             String ID = request.getParameter("newsid");
             INewsItem item = null;
             try {
@@ -32,7 +33,7 @@
             } catch (Exception ex) {
                 item = null;
             }
-            
+
             File file;
             int maxFileSize = 50000 * 1024;
             int maxMemSize = 50000 * 1024;
@@ -68,22 +69,46 @@
                             long sizeInBytes = fi.getSize();
                             // Write the file
                             if (fileName.lastIndexOf("\\") >= 0) {
-                                file = new File(fileName.substring(fileName.lastIndexOf("\\")));
+                                file = new File(fileName.substring(fileName
+                                        .lastIndexOf("\\")));
                             } else {
-                                file = new File(fileName.substring(fileName.lastIndexOf("\\") + 1));
+                                file = new File(fileName.substring(fileName
+                                        .lastIndexOf("\\") + 1));
                             }
-                            fi.write(file);
-                            boolean succeed =controller.sendPhoto(file.getPath(), item);
-                            if(succeed){
-                                response.sendRedirect("news.jsp?newsid=" + item.getId());
-                            }else{
-                                session.setAttribute("Error", "Versturen van de foto is mislukt");
-                                response.sendRedirect("news.jsp?newsid=" + item.getId());
+                            String ext = FilenameUtils.getExtension(fileName)
+                                    .toLowerCase();
+                            System.out.println("Extentie = " + ext);
+                            if (ext.equals("jpg") || ext.equals("png")
+                                    || ext.equals("jpeg") || ext.equals("jfif")
+                                    || ext.equals("exif") || ext.equals("tiff")
+                                    || ext.equals("rif") || ext.equals("gif")
+                                    || ext.equals("ppm") || ext.equals("pgm")
+                                    || ext.equals("pbm") || ext.equals("pnm")
+                                    || ext.equals("webp") || ext.equals("bpg")){
+                                fi.write(file);
+                                boolean succeed = controller.sendPhoto(file
+                                        .getPath(), item);
+                                if (succeed) {
+                                    response.sendRedirect("news.jsp?newsid=" 
+                                            + item.getId());
+                                } else {
+                                    session.setAttribute("Error", "Versturen "
+                                            + "van de foto is mislukt");
+                                    response.sendRedirect("news.jsp?newsid=" 
+                                            + item.getId());
+                                }
+                            } else {
+                                session.setAttribute("Error", "Versturen van"
+                                        + " het bestand is mislukt."
+                                        + " Onjuiste extentie.");
+                                response.sendRedirect("news.jsp?newsid=" 
+                                        + item.getId());
                             }
                         }
                     }
                 } catch (SizeLimitExceededException sleEx) {
-                    session.setAttribute("Error", "Bestand te groot: " + sleEx.getMessage());
+                    session.setAttribute("Error", "Bestand te groot: " 
+                            + sleEx.getMessage());
                     response.sendRedirect("news.jsp?newsid=" + item.getId());
                 } catch (Exception ex) {
                     session.setAttribute("Error", ex.getMessage());
