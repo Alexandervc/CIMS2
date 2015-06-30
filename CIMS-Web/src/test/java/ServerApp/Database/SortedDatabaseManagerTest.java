@@ -292,7 +292,6 @@ public class SortedDatabaseManagerTest {
             myDB.insertPicture(items.get(0), picture1);
             myDB.insertPicture(items.get(0), picture2);
             myDB.insertPicture(items.get(1), picture1);
-            fail("Primary key double");
         } catch (NetworkException ex) {
             Logger.getLogger(SortedDatabaseManagerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -315,7 +314,7 @@ public class SortedDatabaseManagerTest {
         if(pictures.contains(picture1)) {
             result = true;
         }
-        assertFalse("picture1 was added to newsitem", result);
+        assertTrue("picture1 was added to newsitem", result);
     }
 
 }
