@@ -45,7 +45,6 @@ nav ul {
 	list-style-type: none;
 	margin:0;
 	padding: 0;
-	text-align: center;	
 }
 
 nav li {
@@ -64,19 +63,23 @@ nav a:hover {
 
 .menu {	
 	padding-top: 15px;
-	border-right: 2px dotted #f11621;	
+	border-right: 2px dotted #f11621;
+	text-align: center;		
 }
 .menu a {
 	height: 45px;
 }
 
-.account {
-	padding: 25px 0 0 100px;
+.account{
+	width: 270px;
+	padding-top: 25px;
 	float: left;
+	text-align: right;	
 	font-size: 16px;
 }
-.account a {	
-	width: 100px;
+.account a {
+	float: right;
+	text-align: center;
 }
 
 #page {
@@ -276,5 +279,22 @@ footer {
 
 .registration {
 	width: 120px;
+}
+
+/**--------------- errors/messages ---------------**/
+
+.error {
+        color: RED;
+        margin: 10px 0;
+        font-weight: bold;
+}
+
+.message {
+	width: 880px;
+	margin: 30px 10px;
+	padding: 20px;
+	overflow: hidden;
+        font-style: italic;
+        font-size: 16px;
 }
 
