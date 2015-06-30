@@ -335,8 +335,7 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             int inObject = (int) input.objects[0];
-            ServerMain.unsortedDatabaseManager.getDataItem((int) inObject);
-            return output.setSuccess(true);
+            return output.setResult(ServerMain.unsortedDatabaseManager.getDataItem((int) inObject));
         } catch (Exception ex) {
             return output.setResult(ex);
         }
