@@ -9,6 +9,7 @@ import ServicesApp.Connection.ConnectionHandler;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Data.IUnsortedData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
 import Shared.NetworkException;
@@ -339,9 +340,13 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if (!showingDataItem && sentData != null && !sentData.isEmpty()) {
-                    lvuSentData.getItems().removeAll(sentData);
-                    lvuSentData.getItems().addAll(sentData);
+                if (sentData != null && !sentData.isEmpty()) {
+                    for(IData d : sentData) {
+                        if(lvuSentData.getItems().contains(d) || d.getSource().equals(user.getUsername())) {
+                            lvuSentData.getItems().remove(d);
+                            lvuSentData.getItems().add(d);
+                        }
+                    }
                     if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                         lvuSentData.getSelectionModel().selectFirst();
                     }
@@ -603,7 +608,23 @@ public class ServicesController implements Initializable {
 
             // Reset SentData
             if (this.showingDataItem) {
-                this.resetSentData();
+                timer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        Platform.runLater(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                if (!exception) {
+                                    resetSentData();
+                                }
+                            }
+
+                        });
+                    }
+
+                }, 900);
             }
 
             // Bevestiging tonen

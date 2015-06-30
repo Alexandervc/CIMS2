@@ -7,6 +7,7 @@ package Shared.Data;
 
 import Shared.Tag;
 import Shared.Tasks.ITask;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -79,6 +80,8 @@ public class SortedData implements ISortedData {
         if(this.tags.isEmpty()){
             this.tags.addAll(Arrays.asList(Tag.values()));
         }
+        
+        this.tasks = new ArrayList<>();
     }
 
     @Override

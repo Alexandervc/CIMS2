@@ -15,6 +15,7 @@ import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
 import Shared.Data.IUnsortedData;
+import Shared.Data.Status;
 import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
@@ -28,12 +29,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConnectionWorker implements Runnable {
 
     private static final List queue = new LinkedList();
+    private Timer timer = new Timer();
 
     /**
      * data arrived over given socket, and is put in the queue to be handled by
@@ -280,6 +284,32 @@ public class ConnectionWorker implements Runnable {
             ServerMain.unsortedDatabaseManager.updateUnsortedData(inObject);
             ServerMain.pushHandler.pushSentData(inObject, null);
             ServerMain.pushHandler.pushUnsortedUpdate(inObject, null);
+            
+            // If status is NONE after 1 second push
+            timer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    try {
+                        IData data = ServerMain.unsortedDatabaseManager.getDataItem(inObject.getId());
+                        if(data instanceof IUnsortedData) {
+                            IUnsortedData u = (IUnsortedData) data;
+                            if(u.getStatus().equals(Status.NONE)) {
+                                // pushes getFromUnsorted to set status as it should
+                                // resets if it couldn't push
+                                List<IData> newData = ServerMain.unsortedDatabaseManager.getFromUnsortedData();
+                                if (!ServerMain.pushHandler.push(newData, null)) {
+                                    ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
+                                }
+                            }
+                        }
+                    } catch (NetworkException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                
+            }, 1000);
+            
             return output.setSuccess(true);
         } catch (Exception ex) {
             return output.setResult(ex);
