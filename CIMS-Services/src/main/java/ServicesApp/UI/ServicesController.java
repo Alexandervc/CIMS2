@@ -354,8 +354,8 @@ public class ServicesController implements Initializable {
      *
      * @param tasks
      */
-    public void displayTasks(List<ITask> tasks) {
-        if (tasks == null) {
+    public void displayTasks(List<ITask> newTasks) {
+        if (newTasks == null) {
             throw new IllegalArgumentException("Geen nieuwe taken om weer te geven");
         }
 
@@ -364,19 +364,18 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
 
-                if (!showingDataItem) {
-                    for (ITask t : tasks) {
-                        if (tvtTasks.getItems().contains(t)) {
-                            tvtTasks.getItems().remove(t);
-                            tvtTasks.getItems().add(t);
-                        } else {
-                            tvtTasks.getItems().add(t);
-                        }
+                List<ITask> tasks = tvtTasks.getItems();
+                for(ITask t : newTasks) {
+                    if(tasks.contains(t)) {
+                        tasks.remove(t);
+                        tasks.add(t);
+                    } else {
+                        tasks.add(t);
                     }
+                }
 
-                    if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
-                        tvtTasks.getSelectionModel().selectFirst();
-                    }
+                if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
+                    tvtTasks.getSelectionModel().selectFirst();
                 }
             }
         });
