@@ -9,11 +9,10 @@ import ServicesApp.Connection.ConnectionHandler;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
-import Shared.NetworkException;
 import Shared.Data.Status;
-import Shared.Tag;
 import Shared.Data.UnsortedData;
+import Shared.NetworkException;
+import Shared.Tag;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
@@ -32,6 +31,8 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -43,17 +44,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.util.Callback;
 
 /**
  *
@@ -61,60 +57,102 @@ import javafx.util.Callback;
  */
 public class ServicesController implements Initializable {
 
-    @FXML TabPane tabPane;
+    @FXML
+    TabPane tabPane;
 
     // SendInfo
-    @FXML Tab tabSendInfo;
-    @FXML TextField tfnTitle;
-    @FXML TextArea tanDescription;
-    @FXML TextField tfnSource;
-    @FXML TextField tfnLocation;
+    @FXML
+    Tab tabSendInfo;
+    @FXML
+    TextField tfnTitle;
+    @FXML
+    TextArea tanDescription;
+    @FXML
+    TextField tfnSource;
+    @FXML
+    TextField tfnLocation;
 
     // UpdateInfo
-    @FXML Tab tabUpdateInfo;
-    @FXML ListView lvuSentData;
-    @FXML TextField tfuTitle;
-    @FXML TextArea tauDescription;
-    @FXML TextField tfuSource;
-    @FXML TextField tfuLocation;
-    @FXML Button btnuSend;
+    @FXML
+    Tab tabUpdateInfo;
+    @FXML
+    ListView lvuSentData;
+    @FXML
+    TextField tfuTitle;
+    @FXML
+    TextArea tauDescription;
+    @FXML
+    TextField tfuSource;
+    @FXML
+    TextField tfuLocation;
+    @FXML
+    Button btnuSend;
 
     // ReadSortedData
-    @FXML Tab tabReadSortedData;
-    @FXML TableView tvsSortedData;
-    @FXML TableColumn tcsTitle;
-    @FXML TableColumn tcsRelevance;
-    @FXML TableColumn tcsReliability;
-    @FXML TableColumn tcsQuality;
-    @FXML CheckBox chbsData;
-    @FXML CheckBox chbsRequests;
-    @FXML TextField tfsTitle;
-    @FXML TextArea tasDescription;
-    @FXML TextField tfsSource;
-    @FXML TextField tfsLocation;
-    @FXML Button btnAnswerRequest;
+    @FXML
+    Tab tabReadSortedData;
+    @FXML
+    TableView tvsSortedData;
+    @FXML
+    TableColumn tcsTitle;
+    @FXML
+    TableColumn tcsRelevance;
+    @FXML
+    TableColumn tcsReliability;
+    @FXML
+    TableColumn tcsQuality;
+    @FXML
+    CheckBox chbsData;
+    @FXML
+    CheckBox chbsRequests;
+    @FXML
+    TextField tfsTitle;
+    @FXML
+    TextArea tasDescription;
+    @FXML
+    TextField tfsSource;
+    @FXML
+    TextField tfsLocation;
+    @FXML
+    Button btnAnswerRequest;
 
     // TaskInfo
-    @FXML Tab tabReadTask;
-    @FXML TableView tvtTasks;
-    @FXML TableColumn tctTitle;
-    @FXML TableColumn tctStatus;
-    @FXML TextField tftTaskTitle;
-    @FXML TextArea tatDescription;
-    @FXML TextArea tatCondition;
-    @FXML Button btnAcceptTask;
-    @FXML Button btnDismissTask;
-    @FXML Button btnFailed;
-    @FXML Button btnSucceed;
+    @FXML
+    Tab tabReadTask;
+    @FXML
+    TableView tvtTasks;
+    @FXML
+    TableColumn tctTitle;
+    @FXML
+    TableColumn tctStatus;
+    @FXML
+    TextField tftTaskTitle;
+    @FXML
+    TextArea tatDescription;
+    @FXML
+    TextArea tatCondition;
+    @FXML
+    Button btnAcceptTask;
+    @FXML
+    Button btnDismissTask;
+    @FXML
+    Button btnFailed;
+    @FXML
+    Button btnSucceed;
 
     //report message label
-    @FXML Label lblMessageUpdate;
-    @FXML Label lblErrorMessageUpdate;
-    @FXML Label lblMessageTask;
-    @FXML Label lblMessageSend;
+    @FXML
+    Label lblMessageUpdate;
+    @FXML
+    Label lblErrorMessageUpdate;
+    @FXML
+    Label lblMessageTask;
+    @FXML
+    Label lblMessageSend;
 
     //menuBar
-    @FXML MenuBar menuHQ;
+    @FXML
+    MenuBar menuHQ;
 
     private ConnectionHandler connectionManager;
     private boolean showingDataItem;
@@ -122,9 +160,10 @@ public class ServicesController implements Initializable {
     private ITask selectedTask = null;
     private IServiceUser user = null;
     private HashSet<Tag> tags = new HashSet<>();
+    private ObservableList observableTasks = null;
 
     private Services main;
-    
+
     private boolean exception = false;
     private Timer timer = new Timer();
 
@@ -141,17 +180,17 @@ public class ServicesController implements Initializable {
         lblMessageUpdate.setText("");
         lblMessageTask.setText("");
         lblMessageSend.setText("");
-        
-        tvsSortedData.setEditable(false);        
+
+        tvsSortedData.setEditable(false);
         tcsTitle.setResizable(false);
         tcsRelevance.setResizable(false);
         tcsReliability.setResizable(false);
         tcsQuality.setResizable(false);
-        
-        tvtTasks.setEditable(false);        
+
+        tvtTasks.setEditable(false);
         tctTitle.setResizable(false);
         tctStatus.setResizable(false);
-                
+
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
@@ -170,15 +209,15 @@ public class ServicesController implements Initializable {
                         selectData();
                     }
                 });
-        
+
         tvtTasks.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                selectTask();
-            }
-                    
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectTask();
+                    }
+
                 });
 
         // Set cell factories
@@ -212,7 +251,6 @@ public class ServicesController implements Initializable {
 //                };
 //            }
 //        });
-        
 //        tctStatus.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
 //
 //            @Override
@@ -243,12 +281,11 @@ public class ServicesController implements Initializable {
 //                };
 //            };
 //        });
-        
-        tcsTitle.setCellValueFactory(new PropertyValueFactory<IData, String>("title"));        
+        tcsTitle.setCellValueFactory(new PropertyValueFactory<IData, String>("title"));
         tcsRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
         tcsReliability.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("reliability"));
         tcsQuality.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("quality"));
-        
+
         tctTitle.setCellValueFactory(new PropertyValueFactory<ITask, String>("title"));
         tctStatus.setCellValueFactory(new PropertyValueFactory<ITask, TaskStatus>("status"));
     }
@@ -260,8 +297,7 @@ public class ServicesController implements Initializable {
      */
     public void configure(ConnectionHandler manager, IUser user) {
         this.connectionManager = manager;
-        if(user instanceof IServiceUser)
-        {
+        if (user instanceof IServiceUser) {
             this.user = (IServiceUser) user;
             this.tags.add(this.user.getType());
             tfnSource.setText(this.user.getUsername());
@@ -320,14 +356,30 @@ public class ServicesController implements Initializable {
      * @param tasks
      */
     public void displayTasks(List<ITask> tasks) {
+        if(tasks == null) {
+            throw new IllegalArgumentException("Geen nieuwe taken om weer te geven");
+        }
+
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
+                
+                
                 if (!showingDataItem) {
-                    tvtTasks.getItems().removeAll(tasks);
-                    tvtTasks.getItems().addAll(tasks);
-                    
+                    if(observableTasks == null) {
+                        observableTasks = FXCollections.observableArrayList(tasks);
+                        tvtTasks.getItems().addAll(observableTasks);
+                    } else {
+                        ObservableList<ITask> temp = observableTasks;
+                        temp.addAll(FXCollections.observableArrayList(tasks));
+                        
+                        observableTasks.removeAll(observableTasks);
+                        observableTasks.addAll(temp);
+                        
+                        tvtTasks.getItems().addAll(observableTasks);
+                    }
+
                     if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
                         tvtTasks.getSelectionModel().selectFirst();
                     }
@@ -364,7 +416,7 @@ public class ServicesController implements Initializable {
      *
      * @param sortedData
      */
-    public void displaySortedData(List<ISortedData> sortedData) {        
+    public void displaySortedData(List<ISortedData> sortedData) {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -419,8 +471,10 @@ public class ServicesController implements Initializable {
             //log out connectionmanager
             this.close(true);
             main.goToLogIn();
+
         } catch (Exception ex) {
-            Logger.getLogger(ServicesController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServicesController.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -494,7 +548,7 @@ public class ServicesController implements Initializable {
             tfuSource.clear();
             tfuLocation.clear();
         }
-        
+
         boolean inSorted = false;
         
         if(sentData != null) {
@@ -507,8 +561,8 @@ public class ServicesController implements Initializable {
                 }
             }
         }
-        
-        if(inSorted) {
+
+        if (inSorted) {
             // No editing allowed
             tfuTitle.setEditable(false);
             tauDescription.setEditable(false);
@@ -737,14 +791,14 @@ public class ServicesController implements Initializable {
                 btnAcceptTask.setVisible(false);
                 btnDismissTask.setVisible(false);
                 btnFailed.setVisible(true);
-                btnSucceed.setVisible(true);                
+                btnSucceed.setVisible(true);
                 //resetTaskData();
                 //dismiss task succeed message
                 this.displaySuccessMessage(lblMessageTask, "Het accepteren van de taak is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            
+
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -756,7 +810,7 @@ public class ServicesController implements Initializable {
      */
     public void dismissTask() {
         String argument = showArgumentDialog();
-        if(argument == null){
+        if (argument == null) {
             return;
         }
         if (argument.isEmpty() || argument.equals(" ")) {
@@ -776,7 +830,6 @@ public class ServicesController implements Initializable {
         }
     }
 
-
     /**
      * Status Task to failed
      */
@@ -792,7 +845,7 @@ public class ServicesController implements Initializable {
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            
+
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -813,7 +866,7 @@ public class ServicesController implements Initializable {
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            
+
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -825,7 +878,7 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 exception = true;
-                
+
                 Alert alert = null;
 
                 if (warning) {
@@ -845,7 +898,7 @@ public class ServicesController implements Initializable {
                 alert.setContentText(melding);
                 alert.showAndWait();
             }
-            
+
         });
     }
 
@@ -862,7 +915,7 @@ public class ServicesController implements Initializable {
             return null;
         }
     }
-    
+
     private void displaySuccessMessage(Label lblMessage, String message) {
         timer.schedule(new TimerTask() {
 
@@ -872,18 +925,18 @@ public class ServicesController implements Initializable {
 
                     @Override
                     public void run() {
-                        if(!exception) {
+                        if (!exception) {
                             lblMessage.setText(message);
                         } else {
                             exception = false;
                         }
                     }
-                    
+
                 });
             }
-            
+
         }, 1000);
-        
+
         timer.schedule(new TimerTask() {
 
             @Override
@@ -894,10 +947,10 @@ public class ServicesController implements Initializable {
                     public void run() {
                         lblMessage.setText(null);
                     }
-                    
+
                 });
             }
-            
+
         }, 6000);
     }
 }
