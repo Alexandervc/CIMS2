@@ -1309,20 +1309,18 @@ public class HeadquartersController implements Initializable {
             @Override
             public void run() {
                 
-                for(ITask t : newTasks){
-                    if(tvtTasks.getItems().contains(t)){
-                        tvtTasks.getItems().remove(t);
-                        System.out.println(tvtTasks.getItems().contains(t));
-                        if(t.getStatus() != TaskStatus.READ)
-                        {
-                            System.out.println(t.getStatus());
-                            tvtTasks.getItems().add(t);
+                List<ITask> tasks = tvtTasks.getItems();
+                for(ITask t : newTasks) {
+                    if(tasks.contains(t)) {
+                        tasks.remove(t);
+                        if(!t.getStatus().equals(TaskStatus.READ)) {
+                        tasks.add(t);
                         }
-                    }
-                    else{
-                        tvtTasks.getItems().add(t);
+                    } else {
+                        tasks.add(t);
                     }
                 }
+
                 if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
                     tvtTasks.getSelectionModel().selectFirst();
                 }
@@ -1354,6 +1352,8 @@ public class HeadquartersController implements Initializable {
                 btnNewTask.setDisable(false);
                 btnMarkRead.setDisable(true);
                 tftReason.setDisable(false);
+                tftReason.setText(task.getDeclineReason());
+                System.out.println(task.getDeclineReason());
             }  else if(task.getStatus() == TaskStatus.SUCCEEDED  && task.getStatus() != TaskStatus.FAILED){
                 cbtNewExecutor.setDisable(true);
                 btnNewTask.setDisable(true);
@@ -1365,8 +1365,7 @@ public class HeadquartersController implements Initializable {
                 tftReason.setDisable(true);
                 btnMarkRead.setDisable(true);
             }
-
-            tftReason.setText(task.getDeclineReason());
+            
             lblTasks.setVisible(false);
 
             this.connectionManager.getServiceUsers();

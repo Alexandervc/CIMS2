@@ -9,6 +9,7 @@ import ServicesApp.Connection.ConnectionHandler;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Data.IUnsortedData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
 import Shared.NetworkException;
@@ -338,9 +339,13 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if (!showingDataItem && sentData != null && !sentData.isEmpty()) {
-                    lvuSentData.getItems().removeAll(sentData);
-                    lvuSentData.getItems().addAll(sentData);
+                if (sentData != null && !sentData.isEmpty()) {
+                    for(IData d : sentData) {
+                        if(lvuSentData.getItems().contains(d) || d.getSource().equals(user.getUsername())) {
+                            lvuSentData.getItems().remove(d);
+                            lvuSentData.getItems().add(d);
+                        }
+                    }
                     if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                         lvuSentData.getSelectionModel().selectFirst();
                     }
@@ -354,8 +359,8 @@ public class ServicesController implements Initializable {
      *
      * @param tasks
      */
-    public void displayTasks(List<ITask> tasks) {
-        if (tasks == null) {
+    public void displayTasks(List<ITask> newTasks) {
+        if (newTasks == null) {
             throw new IllegalArgumentException("Geen nieuwe taken om weer te geven");
         }
 
@@ -364,19 +369,18 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
 
-                if (!showingDataItem) {
-                    for (ITask t : tasks) {
-                        if (tvtTasks.getItems().contains(t)) {
-                            tvtTasks.getItems().remove(t);
-                            tvtTasks.getItems().add(t);
-                        } else {
-                            tvtTasks.getItems().add(t);
-                        }
+                List<ITask> tasks = tvtTasks.getItems();
+                for(ITask t : newTasks) {
+                    if(tasks.contains(t)) {
+                        tasks.remove(t);
+                        tasks.add(t);
+                    } else {
+                        tasks.add(t);
                     }
+                }
 
-                    if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
-                        tvtTasks.getSelectionModel().selectFirst();
-                    }
+                if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
+                    tvtTasks.getSelectionModel().selectFirst();
                 }
             }
         });
@@ -597,7 +601,23 @@ public class ServicesController implements Initializable {
 
             // Reset SentData
             if (this.showingDataItem) {
-                this.resetSentData();
+                timer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        Platform.runLater(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                if (!exception) {
+                                    resetSentData();
+                                }
+                            }
+
+                        });
+                    }
+
+                }, 900);
             }
 
             // Bevestiging tonen

@@ -308,13 +308,15 @@ public class PushHandler {
         // HashSet do not guarantee order, so this should happen semi-randomly
         synchronized (usernameSubscribers) {
             if (!usernameSubscribers.isEmpty()) {
-                for (Socket socket : usernameSubscribers.get(data.getSource())) {
-                    if (socket != disregard) {
-                        if (!this.trySend(socket, output)) {
-                            this.faultySockets.add(socket);
-                            result = false;
-                        } else {
-                            System.out.println("pushing list of unsorted data"); // debugging
+                for(String s : usernameSubscribers.keySet()) {
+                    for (Socket socket : usernameSubscribers.get(s)) {
+                        if (socket != disregard) {
+                            if (!this.trySend(socket, output)) {
+                                this.faultySockets.add(socket);
+                                result = false;
+                            } else {
+                                System.out.println("pushing list of unsorted data"); // debugging
+                            }
                         }
                     }
                 }
@@ -373,9 +375,9 @@ public class PushHandler {
                         Arrays.asList(new ISortedData[]{data}));
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to chief
-        synchronized (chiefConnections) {
-            for (Socket socket : chiefConnections) {
-                System.out.println("pushing sorted data to chief"); // debugging
+        synchronized (hqSubscribers) {
+            for (Socket socket : hqSubscribers) {
+                System.out.println("pushing sorted data to hq"); // debugging
                 if (!this.trySend(socket, output)) {
                     this.faultySockets.add(socket);
                 }
@@ -411,10 +413,12 @@ public class PushHandler {
         // sends to relevant serviceusers
         synchronized (tagSubscribers) {
             for (Tag target : request.getTags()) {
-                for (Socket socket : tagSubscribers.get(target)) {
-                    System.out.println("pushing datarequest");
-                    if (!this.trySend(socket, output)) {
-                        this.faultySockets.add(socket);
+                if(tagSubscribers.containsKey(target)) {
+                    for (Socket socket : tagSubscribers.get(target)) {
+                        System.out.println("pushing datarequest");
+                        if (!this.trySend(socket, output)) {
+                            this.faultySockets.add(socket);
+                        }
                     }
                 }
             }
