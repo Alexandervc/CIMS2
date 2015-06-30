@@ -161,7 +161,6 @@ public class ServicesController implements Initializable {
     private ITask selectedTask = null;
     private IServiceUser user = null;
     private HashSet<Tag> tags = new HashSet<>();
-    private ObservableList observableTasks = null;
 
     private Services main;
 
@@ -360,8 +359,8 @@ public class ServicesController implements Initializable {
      *
      * @param tasks
      */
-    public void displayTasks(List<ITask> tasks) {
-        if(tasks == null) {
+    public void displayTasks(List<ITask> newTasks) {
+        if (newTasks == null) {
             throw new IllegalArgumentException("Geen nieuwe taken om weer te geven");
         }
 
@@ -369,25 +368,19 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                
-                
-                if (!showingDataItem) {
-                    if(observableTasks == null) {
-                        observableTasks = FXCollections.observableArrayList(tasks);
-                        tvtTasks.getItems().addAll(observableTasks);
-                    } else {
-                        ObservableList<ITask> temp = observableTasks;
-                        temp.addAll(FXCollections.observableArrayList(tasks));
-                        
-                        observableTasks.removeAll(observableTasks);
-                        observableTasks.addAll(temp);
-                        
-                        tvtTasks.getItems().addAll(observableTasks);
-                    }
 
-                    if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
-                        tvtTasks.getSelectionModel().selectFirst();
+                List<ITask> tasks = tvtTasks.getItems();
+                for(ITask t : newTasks) {
+                    if(tasks.contains(t)) {
+                        tasks.remove(t);
+                        tasks.add(t);
+                    } else {
+                        tasks.add(t);
                     }
+                }
+
+                if (tvtTasks.getSelectionModel().getSelectedItem() == null) {
+                    tvtTasks.getSelectionModel().selectFirst();
                 }
             }
         });
@@ -555,12 +548,12 @@ public class ServicesController implements Initializable {
         }
 
         boolean inSorted = false;
-        
-        if(sentData != null) {
-            for(Object o : tvsSortedData.getItems()) {
-                if(o instanceof ISortedData) {
+
+        if (sentData != null) {
+            for (Object o : tvsSortedData.getItems()) {
+                if (o instanceof ISortedData) {
                     ISortedData s = (ISortedData) o;
-                    if(s.getId() == sentData.getId()) {
+                    if (s.getId() == sentData.getId()) {
                         inSorted = true;
                     }
                 }

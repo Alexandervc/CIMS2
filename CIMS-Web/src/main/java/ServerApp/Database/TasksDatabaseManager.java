@@ -464,6 +464,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         
         String query;
         PreparedStatement prepStat;
+        System.out.println(input.getDeclineReason());
 
         try {
             // updates task itself
