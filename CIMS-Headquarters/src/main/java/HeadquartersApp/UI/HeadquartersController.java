@@ -1294,9 +1294,9 @@ public class HeadquartersController implements Initializable {
         if (s != null) {
             tempPlan.getSteps().remove(s.getStepnr() - 1);
             lvaSteps.getItems().remove(s);
-            for (int i = 0; i < tempPlan.getSteps().size(); i++) {
-                tempPlan.getSteps().get(i).setStepnr(i + 1);
-                ((IStep) lvaSteps.getItems().get(i)).setStepnr(i + 1);
+            for (IStep step : (List<IStep>) lvaSteps.getItems()) {
+                step.setStepnr(step.getStepnr() - 1);
+                tempPlan.getSteps().get(step.getStepnr() - 1).setStepnr(step.getStepnr());                
             }
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
