@@ -906,6 +906,8 @@ public class HeadquartersController implements Initializable {
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
                 
+                btnAddRoadMap.setDisable(true);
+                
                 this.displaySuccessMessage(lblProcessSortedData, "Taak is verzonden naar de database");
             } else {
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
@@ -1216,6 +1218,8 @@ public class HeadquartersController implements Initializable {
                             sortedData.setTasks(tasks);
                             connectionManager.applyPlan(tempPlan);
                             resetApplyPlan();
+                            
+                            tvsSortedData.getSelectionModel().selectFirst();
 
                             this.displaySuccessMessage(lblApplyPlan, "Plan is in werking gezet");
                         } else {
@@ -1362,7 +1366,7 @@ public class HeadquartersController implements Initializable {
                 tftReason.setDisable(false);
                 tftReason.setText(task.getDeclineReason());
                 System.out.println(task.getDeclineReason());
-            }  else if(task.getStatus() == TaskStatus.SUCCEEDED  && task.getStatus() != TaskStatus.FAILED){
+            }  else if(task.getStatus() == TaskStatus.SUCCEEDED  || task.getStatus() == TaskStatus.FAILED){
                 cbtNewExecutor.setDisable(true);
                 btnNewTask.setDisable(true);
                 btnMarkRead.setDisable(false);

@@ -492,13 +492,11 @@ public class ConnectionWorker implements Runnable {
             ITask task = (ITask) input.objects[0];
             ServerMain.tasksDatabaseManager.updateTask(task);
             
-            if (task.getStatus() != TaskStatus.READ || task.getStatus() != TaskStatus.UNASSIGNED) {
+            if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
                 ServerMain.pushHandler.pushTaskToChief(task);
             }
             
-            if(task.getStatus() == TaskStatus.INPROCESS){
-                ServerMain.pushHandler.pushTaskToService(task);
-            }
+            ServerMain.pushHandler.pushTaskToService(task);
             
             if ((task.getStatus() == TaskStatus.SUCCEEDED
                     || task.getStatus() == TaskStatus.FAILED)

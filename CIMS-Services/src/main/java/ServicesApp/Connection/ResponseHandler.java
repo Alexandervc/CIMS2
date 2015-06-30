@@ -259,17 +259,15 @@ class ResponseHandler implements IResponseHandler {
         if(transaction.result == ConnState.COMMAND_FAIL && transaction.data instanceof Exception) {
             servicesController.showDialog("Error", ((Exception) transaction.data).getMessage(), true);
         }
-        if (transaction.result == ConnState.COMMAND_SUCCESS) {
-            ITask task = (ITask) transaction.data;
-            List<ITask> tasks = Arrays.asList(new ITask[]{task});
-            List<ITask> myTasks = new ArrayList<>();
-            for(ITask t : tasks) {
-                if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor().getUsername())) {
-                    myTasks.add(t);
-                }
+        ITask task = (ITask) transaction.data;
+        List<ITask> tasks = Arrays.asList(new ITask[]{task});
+        List<ITask> myTasks = new ArrayList<>();
+        for(ITask t : tasks) {
+            if(this.connHandler.getCurrentUser().getUsername().equals(t.getExecutor().getUsername())) {
+                myTasks.add(t);
             }
-            this.servicesController.displayTasks(myTasks);
         }
+        this.servicesController.displayTasks(myTasks);
     }
 
 }
