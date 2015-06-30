@@ -200,6 +200,8 @@ public class HeadquartersController implements Initializable {
     private IData requestData;
     private ISortedData sortedData;
     private ObservableList<IStep> tempSteps;
+    private ObservableList<ITask> observableTasks;
+    private List<ITask> tasks;
     private IPlan tempPlan;
 
     private ConnectionHandler connectionManager;
@@ -309,6 +311,9 @@ public class HeadquartersController implements Initializable {
                         selectNewsItem();
                     }
                 });
+        
+        tasks = new ArrayList<>();
+        observableTasks = FXCollections.observableArrayList(tasks);
         
         tcnTitle.setCellValueFactory(new PropertyValueFactory<ISortedData, String>("title"));
         tcnRelevance.setCellValueFactory(new PropertyValueFactory<ISortedData, Integer>("relevance"));
@@ -1297,12 +1302,14 @@ public class HeadquartersController implements Initializable {
     }
 
     // Tasks--------------------------------------------------------------------
-    public void displayTasks(List<ITask> tasks) {
+    public void displayTasks(List<ITask> newTasks) {
+        
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                for(ITask t : tasks){
+                
+                for(ITask t : newTasks){
                     if(tvtTasks.getItems().contains(t)){
                         tvtTasks.getItems().remove(t);
                         System.out.println(tvtTasks.getItems().contains(t));
