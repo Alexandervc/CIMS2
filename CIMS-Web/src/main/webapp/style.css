@@ -71,14 +71,12 @@ nav a:hover {
 }
 
 .account {
-        float: left;
-        font-size: 16px;
-        padding-top: 25px;
-        text-align: right;
-        width: 270px;
+	padding: 25px 0 0 100px;
+	float: left;
+	font-size: 16px;
 }
-.account a {
-        float: right;
+.account a {	
+	width: 100px;
 }
 
 #page {
@@ -194,7 +192,6 @@ footer {
 #rightdiv {
 	float: left;
 	width: 250px;
-    background-color: RED;
 }
 
 .advice {
@@ -251,8 +248,6 @@ footer {
 .formpart2 {
 	float: left;
 	width: 700px;
-        font-family: "Trebuchet MS", Helvetica, sans-serif;
-	font-size: 14px
 }
 
 .forminput {
@@ -266,8 +261,8 @@ footer {
 	color: #666;
 	margin-top: 8px;
 	resize: none;
-        font-family: "Trebuchet MS", Helvetica, sans-serif;
-	font-size: 14px
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 14px;
 }
 
 .button {
@@ -276,26 +271,10 @@ footer {
 }
 
 .btn {
-        height: 30px;	
+	height: 30px;	
 }
 
 .registration {
-        width: 120px;
+	width: 120px;
 }
 
-/**--------------- errors/messages ---------------**/
-
-.error {
-        color: RED;
-        margin: 10px 0;
-        font-weight: bold;
-}
-
-.message {
-	width: 880px;
-	margin: 30px 10px;
-	padding: 20px;
-	overflow: hidden;
-        font-style: italic;
-        font-size: 16px;
-}
